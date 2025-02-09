@@ -71,8 +71,8 @@ export function SidebarNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-primary-foreground/10",
-                isActive && "bg-primary-foreground/10",
+                "hover:bg-primary-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                isActive && "bg-primary-muted",
               )}
             >
               {item.icon}
@@ -84,7 +84,7 @@ export function SidebarNav() {
       <div className="mt-auto space-y-4">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-primary-foreground/10"
+          className="hover:bg-primary-muted flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
         >
           {theme === "dark" ? (
             <>
@@ -98,7 +98,7 @@ export function SidebarNav() {
             </>
           )}
         </button>
-        <div className="flex items-center gap-3 rounded-lg bg-primary-foreground/10 p-4">
+        <div className="bg-primary-muted flex items-center gap-3 rounded-lg p-4">
           <Building2 className="h-8 w-8" />
           <div>
             <div className="font-medium">Edgewater Ventures</div>

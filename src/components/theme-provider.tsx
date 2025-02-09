@@ -37,39 +37,46 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
         : "light";
 
       Object.entries(theme[currentTheme]).forEach(([key, value]) => {
-        const hsl = value as string;
-        if (hsl.startsWith("#")) {
-          // Convert hex to HSL
-          const r = parseInt(hsl.slice(1, 3), 16);
-          const g = parseInt(hsl.slice(3, 5), 16);
-          const b = parseInt(hsl.slice(5, 7), 16);
+        const hex = value as string;
+        if (hex.startsWith("#")) {
+          // Convert hex to RGB
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
 
-          const max = Math.max(r, g, b);
-          const min = Math.min(r, g, b);
+          // Convert RGB to HSL
+          const rNorm = r / 255;
+          const gNorm = g / 255;
+          const bNorm = b / 255;
+
+          const max = Math.max(rNorm, gNorm, bNorm);
+          const min = Math.min(rNorm, gNorm, bNorm);
+          const delta = max - min;
+
           let h = 0;
           let s = 0;
-          const l = ((max + min) / 2) * 100;
+          const l = (max + min) / 2;
 
-          if (max !== min) {
-            const d = max - min;
-            s = l > 50 ? (d / (2 - max - min)) * 100 : (d / (max + min)) * 100;
-            switch (max) {
-              case r:
-                h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
-                break;
-              case g:
-                h = ((b - r) / d + 2) * 60;
-                break;
-              case b:
-                h = ((r - g) / d + 4) * 60;
-                break;
+          if (delta !== 0) {
+            s = l < 0.5 ? delta / (max + min) : delta / (2 - max - min);
+
+            if (max === rNorm) {
+              h = ((gNorm - bNorm) / delta) % 6;
+            } else if (max === gNorm) {
+              h = (bNorm - rNorm) / delta + 2;
+            } else {
+              h = (rNorm - gNorm) / delta + 4;
             }
+
+            h = Math.round(h * 60);
+            if (h < 0) h += 360;
           }
 
-          root.style.setProperty(
-            `--${key}`,
-            `${h.toFixed(1)} ${s.toFixed(1)}% ${l.toFixed(1)}%`,
-          );
+          s = Math.round(s * 100);
+          const lPercent = Math.round(l * 100);
+
+          // Set HSL values
+          root.style.setProperty(`--${key}`, `${h} ${s}% ${lPercent}%`);
         }
       });
     }
