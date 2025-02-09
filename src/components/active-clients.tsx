@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, Filter, Building2, Bell, FileText } from "lucide-react";
+import Link from "next/link";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import {
@@ -56,8 +57,8 @@ export function ActiveClients() {
           <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
           <CardDescription>Manage your active client list</CardDescription>
         </div>
-        <Button variant="link" className="text-primary">
-          View All
+        <Button variant="link" className="text-primary" asChild>
+          <Link href="/Clients">View All</Link>
         </Button>
       </CardHeader>
       <CardContent>

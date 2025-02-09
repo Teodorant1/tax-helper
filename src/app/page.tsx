@@ -2,6 +2,8 @@ import { SidebarNav } from "~/components/sidebar-nav";
 import { ActiveClients } from "~/components/active-clients";
 import { Alerts } from "~/components/alerts";
 import { Greeting } from "~/components/greeting";
+import { InviteLink } from "~/components/invite-link";
+import { Resources } from "~/components/resources";
 
 export default function DashboardPage() {
   return (
@@ -12,6 +14,10 @@ export default function DashboardPage() {
         <div className="grid gap-8 md:grid-cols-2">
           <ActiveClients />
           <Alerts />
+        </div>
+        <div className="grid gap-8 md:grid-cols-2">
+          <InviteLink />
+          <Resources />
         </div>
       </main>
     </div>

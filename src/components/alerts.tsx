@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, AlertTriangle, Info } from "lucide-react";
+import Link from "next/link";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import {
@@ -73,8 +74,8 @@ export function Alerts() {
           </CardTitle>
           <CardDescription>View and manage your tax alerts</CardDescription>
         </div>
-        <Button variant="link" className="text-primary">
-          View All
+        <Button variant="link" className="text-primary" asChild>
+          <Link href="/Alerts">View All</Link>
         </Button>
       </CardHeader>
       <CardContent>
