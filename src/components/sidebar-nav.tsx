@@ -23,12 +23,12 @@ const sidebarItems = [
   },
   {
     title: "Alerts",
-    href: "/alerts",
+    href: "/Alerts",
     icon: <Bell className="h-5 w-5" />,
   },
   {
     title: "Clients",
-    href: "/clients",
+    href: "/Clients",
     icon: <Users className="h-5 w-5" />,
   },
   {
