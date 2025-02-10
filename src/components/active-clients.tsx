@@ -81,7 +81,7 @@ export function ActiveClients() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col items-center justify-between space-y-2 pb-4 md:flex-row md:space-y-0">
+      <CardHeader className="flex flex-col items-center justify-between md:flex-row md:space-y-0 md:pb-4">
         <div>
           <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
           <CardDescription>Manage your active client list</CardDescription>
@@ -120,14 +120,14 @@ export function ActiveClients() {
             .map((client) => (
               <div
                 key={client.id}
-                className="flex flex-col items-start justify-between whitespace-normal break-words rounded-lg px-4 py-6 transition-colors hover:bg-muted/50 md:flex-row md:border md:border-border"
+                className="flex flex-col items-start justify-between overflow-x-clip whitespace-normal break-words rounded-lg px-4 py-6 transition-colors hover:bg-muted/50 md:flex-row md:border md:border-border"
               >
                 <div className="flex flex-col gap-4 md:flex-row">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-center gap-2 md:flex-row">
                       <div className="font-medium">{client.name}</div>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
