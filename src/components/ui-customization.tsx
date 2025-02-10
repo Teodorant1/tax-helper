@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { useUISettings } from "~/store/ui-settings";
+import { useUISettingsForm } from "~/hooks/use-ui-settings-form";
+import type { FormValues } from "~/hooks/use-ui-settings-form";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -15,6 +16,9 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { toast } from "~/components/ui/use-toast";
+import { Slider } from "~/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -22,194 +26,104 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Slider } from "~/components/ui/slider";
-import { toast } from "~/components/ui/use-toast";
-
-const UISchema = z.object({
-  borderRadius: z.string(),
-  fontSize: z.string(),
-  animationSpeed: z.number().min(0).max(2),
-  density: z.enum(["compact", "comfortable", "spacious"]),
-  sidebarWidth: z.number().min(200).max(400),
-  greeting: z.object({
-    title: z.string().min(1),
-    subtitle: z.string().min(1),
-  }),
-  logo: z.object({
-    url: z.string().url().optional().or(z.literal("")).default(""),
-    alt: z.string().min(1),
-  }),
-});
 
 export function UICustomization() {
-  const form = useForm<z.infer<typeof UISchema>>({
-    resolver: zodResolver(UISchema),
-    defaultValues: React.useMemo(() => {
-      // Try to load saved settings from localStorage
-      const savedSettings = localStorage.getItem("ui-config");
-      if (savedSettings) {
-        try {
-          const parsed = JSON.parse(savedSettings) as z.infer<typeof UISchema>;
-          return parsed;
-        } catch (error) {
-          console.error("Failed to parse saved UI settings:", error);
-        }
-      }
-      // Fall back to defaults if no saved settings or parsing fails
-      return {
-        borderRadius: "0.5rem",
-        fontSize: "1rem",
-        animationSpeed: 1,
-        density: "comfortable",
-        sidebarWidth: 240,
-        greeting: {
-          title: "Welcome to TaxNow PRO",
-          subtitle: "Your modern tax management solution",
-        },
-        logo: {
-          url: "",
-          alt: "TaxNow PRO Logo",
-        },
-      };
-    }, []),
-  });
+  const router = useRouter();
+  const [sidebarLogoPreview, setSidebarLogoPreview] = React.useState<
+    string | null
+  >(null);
+  const [greetingLogoPreview, setGreetingLogoPreview] = React.useState<
+    string | null
+  >(null);
+  const sidebarFileInputRef = React.useRef<HTMLInputElement>(null);
+  const greetingFileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isSaved, setIsSaved] = React.useState(false);
 
-  async function onSubmit(values: z.infer<typeof UISchema>) {
-    try {
-      // Validate logo URL if provided
-      if (values.logo.url.trim()) {
-        const img = new Image();
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = values.logo.url;
+  const { form, createConfig } = useUISettingsForm();
+  const { updateSettings } = useUISettings();
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setPreview: (preview: string | null) => void,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setPreview(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onSubmit = React.useCallback(
+    async (values: FormValues) => {
+      try {
+        const config = createConfig(
+          values,
+          sidebarLogoPreview,
+          greetingLogoPreview,
+        );
+        updateSettings(config);
+        toast({
+          title: "Success",
+          description: "UI settings have been updated.",
+        });
+        setIsSaved(true);
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error("Failed to save settings");
+        console.error("Failed to save settings:", error.message);
+        toast({
+          title: "Error",
+          description:
+            error.message || "Failed to save settings. Please try again.",
+          variant: "destructive",
         });
       }
+    },
+    [createConfig, updateSettings, sidebarLogoPreview, greetingLogoPreview],
+  );
 
-      // Save UI customization values to localStorage
-      localStorage.setItem("ui-config", JSON.stringify(values));
-
-      // Apply the changes
-      const root = document.documentElement;
-      root.style.setProperty("--radius", values.borderRadius);
-      root.style.setProperty("--font-size-base", values.fontSize);
-      root.style.setProperty(
-        "--animation-duration",
-        `${0.2 * values.animationSpeed}s`,
-      );
-      root.style.setProperty(
-        "--content-spacing",
-        values.density === "compact"
-          ? "0.5rem"
-          : values.density === "comfortable"
-            ? "1rem"
-            : "1.5rem",
-      );
-      root.style.setProperty("--sidebar-width", `${values.sidebarWidth}px`);
-
-      toast({
-        title: "UI Settings updated",
-        description: "Your UI customization settings have been saved.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error updating settings",
-        description: "Please ensure the logo URL is valid and accessible.",
-        variant: "destructive",
-      });
-    }
-  }
+  // Debug log for form state
+  React.useEffect(() => {
+    console.log("Form state:", {
+      isDirty: form.formState.isDirty,
+      errors: form.formState.errors,
+      values: form.getValues(),
+    });
+  }, [form.formState.isDirty, form.formState.errors, form]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-8">
-          {/* Branding Section */}
-          <div className="rounded-lg border p-4">
-            <h3 className="mb-4 text-lg font-semibold">Branding</h3>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="logo.url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="https://example.com/logo.png"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Enter a URL for your logo image
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="logo.alt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo Alt Text</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Company Logo" />
-                      </FormControl>
-                      <FormDescription>
-                        Alternative text for accessibility
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="greeting.title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Welcome Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Welcome to TaxNow PRO" />
-                      </FormControl>
-                      <FormDescription>
-                        Main greeting text shown on the dashboard
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="greeting.subtitle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Welcome Subtitle</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Your modern tax management solution"
-                        />
-                      </FormControl>
-                      <FormDescription>Secondary greeting text</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Layout & Typography Section */}
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Layout & Spacing</h3>
+          {/* Layout & Spacing */}
+          <div>
+            <h2 className="text-2xl font-semibold">Layout & Spacing</h2>
+            <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
-                name="borderRadius"
+                name="layout.borderRadius"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Border Radius</FormLabel>
@@ -223,9 +137,10 @@ export function UICustomization() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="density"
+                name="layout.layoutDensity"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Layout Density</FormLabel>
@@ -239,8 +154,8 @@ export function UICustomization() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="compact">Compact</SelectItem>
                         <SelectItem value="comfortable">Comfortable</SelectItem>
+                        <SelectItem value="compact">Compact</SelectItem>
                         <SelectItem value="spacious">Spacious</SelectItem>
                       </SelectContent>
                     </Select>
@@ -251,27 +166,26 @@ export function UICustomization() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="sidebarWidth"
+                name="layout.sidebarWidth"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sidebar Width</FormLabel>
                     <FormControl>
-                      <div className="space-y-2">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span>200px</span>
+                          <span>400px</span>
+                        </div>
                         <Slider
                           min={200}
                           max={400}
                           step={10}
                           value={[field.value]}
-                          onValueChange={(values: number[]) =>
-                            field.onChange(values[0])
-                          }
+                          onValueChange={([value]) => field.onChange(value)}
                         />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>200px</span>
-                          <span>400px</span>
-                        </div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -279,12 +193,15 @@ export function UICustomization() {
                 )}
               />
             </div>
+          </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Typography & Animation</h3>
+          {/* Typography & Animation */}
+          <div>
+            <h2 className="text-2xl font-semibold">Typography & Animation</h2>
+            <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
-                name="fontSize"
+                name="typography.baseFontSize"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Base Font Size</FormLabel>
@@ -298,30 +215,28 @@ export function UICustomization() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="animationSpeed"
+                name="typography.animationSpeed"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Animation Speed</FormLabel>
-                    <FormControl>
-                      <div className="space-y-2">
-                        <Slider
-                          min={0}
-                          max={2}
-                          step={0.1}
-                          value={[field.value]}
-                          onValueChange={(values: number[]) =>
-                            field.onChange(values[0])
-                          }
-                        />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Slower</span>
-                          <span>Default</span>
-                          <span>Faster</span>
-                        </div>
-                      </div>
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select animation speed" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="slower">Slower</SelectItem>
+                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="faster">Faster</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormDescription>
                       Adjust the speed of UI animations
                     </FormDescription>
@@ -331,9 +246,255 @@ export function UICustomization() {
               />
             </div>
           </div>
+
+          {/* Branding */}
+          <div>
+            <h2 className="text-2xl font-semibold">Branding</h2>
+            <div className="mt-4 space-y-4">
+              <FormField
+                control={form.control}
+                name="sidebarTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sidebar Title</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="TaxNow PRO" />
+                    </FormControl>
+                    <FormDescription>
+                      This will be displayed at the top of the sidebar
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="greetingTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dashboard Title</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="TaxNow PRO" />
+                    </FormControl>
+                    <FormDescription>
+                      This will be displayed at the top of the dashboard
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="sidebarLogoType"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Sidebar Logo</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="none" />
+                          </FormControl>
+                          <FormLabel className="font-normal">No logo</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="url" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Use URL</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="upload" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Upload image
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("sidebarLogoType") === "url" && (
+                <FormField
+                  control={form.control}
+                  name="sidebarLogoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Logo URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="https://example.com/logo.png"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter the URL of your logo image
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {form.watch("sidebarLogoType") === "upload" && (
+                <FormItem>
+                  <FormLabel>Upload Logo</FormLabel>
+                  <FormControl>
+                    <div className="space-y-4">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        ref={sidebarFileInputRef}
+                        onChange={(e) =>
+                          handleFileChange(e, setSidebarLogoPreview)
+                        }
+                      />
+                      {sidebarLogoPreview && (
+                        <div className="mt-2">
+                          <p className="mb-2 text-sm text-muted-foreground">
+                            Preview:
+                          </p>
+                          <img
+                            src={sidebarLogoPreview}
+                            alt="Logo preview"
+                            className="max-h-32 rounded-lg"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Select an image file (max 5MB)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+
+              <FormField
+                control={form.control}
+                name="greetingLogoType"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Dashboard Logo</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="none" />
+                          </FormControl>
+                          <FormLabel className="font-normal">No logo</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="url" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Use URL</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="upload" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Upload image
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("greetingLogoType") === "url" && (
+                <FormField
+                  control={form.control}
+                  name="greetingLogoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dashboard Logo URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="https://example.com/logo.png"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter the URL of your dashboard logo image
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {form.watch("greetingLogoType") === "upload" && (
+                <FormItem>
+                  <FormLabel>Upload Dashboard Logo</FormLabel>
+                  <FormControl>
+                    <div className="space-y-4">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        ref={greetingFileInputRef}
+                        onChange={(e) =>
+                          handleFileChange(e, setGreetingLogoPreview)
+                        }
+                      />
+                      {greetingLogoPreview && (
+                        <div className="mt-2">
+                          <p className="mb-2 text-sm text-muted-foreground">
+                            Preview:
+                          </p>
+                          <img
+                            src={greetingLogoPreview}
+                            alt="Logo preview"
+                            className="max-h-32 rounded-lg"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Select an image file (max 5MB)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            </div>
+          </div>
         </div>
 
-        <Button type="submit">Save UI Settings</Button>
+        <div className="flex justify-start gap-4">
+          {!isSaved ? (
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Saving..." : "Save UI Settings"}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => {
+                void router.push("/");
+                router.refresh();
+              }}
+            >
+              Go to Dashboard
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
