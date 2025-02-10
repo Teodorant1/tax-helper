@@ -180,8 +180,8 @@ export default function ClientsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="space-x-2">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <div className="">
               <Button
                 variant={statusFilter === "all" ? "default" : "outline"}
                 onClick={() => setStatusFilter("all")}
@@ -210,7 +210,7 @@ export default function ClientsPage() {
                 Inactive
               </Button>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 md:flex-row">
               <Button variant="outline" className="gap-2">
                 <Calendar className="h-4 w-4" />
                 Filing Calendar
@@ -234,24 +234,24 @@ export default function ClientsPage() {
             <Button
               variant="outline"
               size="sm"
-              className="absolute right-2 top-2 gap-2"
+              className="relative right-2 top-2 gap-2"
             >
               <Filter className="h-4 w-4" />
               More Filters
             </Button>
           </div>
-          <div className="space-y-4">
+          <div className="divide-y">
             {filteredClients.map((client) => (
               <div
                 key={client.id}
-                className="flex items-start justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                className="flex flex-col items-start justify-between overflow-x-clip whitespace-normal break-words rounded-lg px-4 py-6 transition-colors hover:bg-muted/50 md:flex-row md:border md:border-border"
               >
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4 md:flex-row">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-center gap-2 md:flex-row">
                       <div className="font-medium">{client.name}</div>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -300,7 +300,7 @@ export default function ClientsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="mt-4 flex items-center gap-2 md:mt-0">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Search className="h-4 w-4" />
                   </Button>
