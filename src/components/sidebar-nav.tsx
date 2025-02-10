@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { ThemeConfig } from "~/types/theme";
-import type { UIConfig } from "~/types/ui";
+// import type { UIConfig } from "~/types/ui";
 import { cn } from "~/lib/utils";
+import { Menu, X } from "lucide-react";
 import { useUISettings } from "~/store/ui-settings";
 import {
   LayoutDashboard,
@@ -19,6 +20,13 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import styles from "~/styles/ui-settings.module.css";
+import {
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  UserButton,
+} from "@clerk/nextjs";
 
 const sidebarItems = [
   {
@@ -63,6 +71,16 @@ export function SidebarNav() {
   const { theme, setTheme } = useTheme();
   const [themeConfig, setThemeConfig] = useState<ThemeConfig | null>(null);
   const { settings } = useUISettings();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileOpen((prev) => !prev);
+  }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     // Load initial theme config
@@ -144,73 +162,116 @@ export function SidebarNav() {
   } as React.CSSProperties;
 
   return (
-    <nav
-      className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col text-white",
-        styles.sidebarWrapper,
-      )}
-      style={{
-        ...sidebarStyle,
-        backgroundColor: "var(--sidebar-bg)",
-        padding: "var(--ui-layout-spacing)",
-        transition: "all var(--ui-animation-speed) ease-in-out",
-      }}
-    >
-      <div className="mb-8 flex items-center gap-2 px-2 transition-all duration-200">
-        {settings.sidebarLogo ? (
-          <img
-            src={settings.sidebarLogo.value}
-            alt="Sidebar Logo"
-            className="h-6 w-6 object-contain"
-          />
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMobileMenu}
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-lg transition-all duration-200 hover:bg-primary/90 md:hidden"
+      >
+        {isMobileOpen ? (
+          <X className="h-6 w-6" />
         ) : (
-          <Building2 className="h-6 w-6" />
+          <Menu className="h-6 w-6" />
         )}
-        <span className="text-lg font-semibold">{settings.sidebarTitle}</span>
-      </div>
-      <div className="space-y-1 transition-all duration-200">
-        {sidebarItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20",
-                isActive && "bg-black/20",
-              )}
-            >
-              {item.icon}
-              {item.title}
-            </Link>
-          );
-        })}
-      </div>
-      <div className="mt-auto space-y-4 transition-all duration-200">
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20"
-        >
-          {theme === "dark" ? (
-            <>
-              <Sun className="h-5 w-5" />
-              Light Mode
-            </>
-          ) : (
-            <>
-              <Moon className="h-5 w-5" />
-              Dark Mode
-            </>
-          )}
-        </button>
-        <div className="flex items-center gap-3 rounded-lg bg-black/20 p-4">
-          <Building2 className="h-8 w-8" />
+      </button>
+
+      {/* Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      <nav
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex flex-col text-white shadow-xl transition-transform duration-300 ease-in-out md:translate-x-0 md:shadow-none",
+          styles.sidebarWrapper,
+          !isMobileOpen && "-translate-x-full",
+        )}
+        style={{
+          ...sidebarStyle,
+          backgroundColor: "var(--sidebar-bg)",
+          padding: "var(--ui-layout-spacing)",
+        }}
+      >
+        <div className="relative mb-8 mt-16 md:mt-0">
+          <div className="flex items-center gap-2 px-2 transition-all duration-200">
+            {settings.sidebarLogo ? (
+              <img
+                src={settings.sidebarLogo.value}
+                alt="Sidebar Logo"
+                className="h-6 w-6 object-contain"
+              />
+            ) : (
+              <Building2 className="h-6 w-6" />
+            )}
+            <span className="text-lg font-semibold">
+              {settings.sidebarTitle}
+            </span>
+          </div>
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="absolute right-0 top-0 flex h-8 w-8 items-center justify-center rounded-lg bg-black/20 text-white transition-colors hover:bg-black/30 md:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="space-y-1 transition-all duration-200">
+          {sidebarItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20",
+                  isActive && "bg-black/20",
+                )}
+              >
+                {item.icon}
+                {item.title}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="mt-auto space-y-4 transition-all duration-200">
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="h-5 w-5" />
+                Light Mode
+              </>
+            ) : (
+              <>
+                <Moon className="h-5 w-5" />
+                Dark Mode
+              </>
+            )}
+          </button>
+          <div className="flex items-center gap-3 rounded-lg bg-black/20 p-4">
+            <Building2 className="h-8 w-8" />
+            <div>
+              <div className="font-medium">Edgewater Ventures</div>
+              <div className="text-sm opacity-80">Admin</div>
+            </div>
+          </div>
           <div>
-            <div className="font-medium">Edgewater Ventures</div>
-            <div className="text-sm opacity-80">Admin</div>
+            <header className="flex h-16 items-center justify-end gap-4 p-4">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </header>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

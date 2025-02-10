@@ -175,7 +175,7 @@ export function UICustomization() {
                     <FormLabel>Sidebar Width</FormLabel>
                     <FormControl>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
                           <span>200px</span>
                           <span>400px</span>
                         </div>
@@ -478,7 +478,7 @@ export function UICustomization() {
           </div>
         </div>
 
-        <div className="flex justify-start gap-4">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-start">
           {!isSaved ? (
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Saving..." : "Save UI Settings"}

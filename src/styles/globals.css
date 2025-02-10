@@ -64,6 +64,15 @@
   body {
     @apply bg-background text-foreground;
     font-size: var(--ui-base-font-size);
+    overflow-x: hidden;
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --ui-sidebar-width: 280px;
+      --ui-layout-spacing: 0.75rem;
+      --ui-base-font-size: 0.9375rem;
+    }
   }
 
   /* Animation classes */
@@ -79,21 +88,48 @@
 @keyframes animate-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateX(-100%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
 @keyframes animate-out {
   from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateX(-100%);
   }
+}
+
+/* Sidebar Animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.sidebar-enter {
+  animation: slide-in var(--ui-animation-speed) ease-in-out forwards;
+}
+
+.sidebar-exit {
+  animation: slide-out var(--ui-animation-speed) ease-in-out forwards;
 }

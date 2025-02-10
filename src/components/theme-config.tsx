@@ -121,7 +121,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Primary Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#7c3aed" />
                       <input
                         type="color"
@@ -142,7 +142,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Secondary Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#6b7280" />
                       <input
                         type="color"
@@ -163,7 +163,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Accent Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#f59e0b" />
                       <input
                         type="color"
@@ -189,7 +189,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Primary Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#8b5cf6" />
                       <input
                         type="color"
@@ -210,7 +210,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Secondary Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#9ca3af" />
                       <input
                         type="color"
@@ -231,7 +231,7 @@ export function ThemeConfig() {
                 <FormItem>
                   <FormLabel>Accent Color</FormLabel>
                   <FormControl>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 md:flex-row">
                       <Input {...field} placeholder="#fbbf24" />
                       <input
                         type="color"
@@ -248,7 +248,7 @@ export function ThemeConfig() {
           </div>
         </div>
 
-        <div className="flex justify-start gap-4">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-start">
           {!isSaved ? (
             <Button type="submit" disabled={!form.formState.isDirty}>
               Save Theme Configuration

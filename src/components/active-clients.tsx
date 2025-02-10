@@ -52,7 +52,7 @@ export function ActiveClients() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="flex flex-col items-center justify-between space-y-2 pb-4 md:flex-row md:space-y-0">
         <div>
           <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
           <CardDescription>Manage your active client list</CardDescription>
@@ -91,9 +91,9 @@ export function ActiveClients() {
             .map((client) => (
               <div
                 key={client.id}
-                className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                className="flex flex-col items-start justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50 md:flex-row md:items-center"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Building2 className="h-5 w-5" />
                   </div>
@@ -104,7 +104,7 @@ export function ActiveClients() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="mt-4 flex gap-2 md:mt-0">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Search className="h-4 w-4" />
                   </Button>

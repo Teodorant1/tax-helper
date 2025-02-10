@@ -66,7 +66,7 @@ export function Alerts() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="flex flex-col items-center justify-between space-y-2 pb-4 md:flex-row md:space-y-0">
         <div>
           <CardTitle className="text-2xl font-bold">
             Alerts <span className="text-yellow-500">{warningCount}</span>{" "}
@@ -100,9 +100,9 @@ export function Alerts() {
             .map((alert) => (
               <div
                 key={alert.id}
-                className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                className="flex flex-col rounded-lg border p-4 transition-colors hover:bg-muted/50"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-start gap-4">
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                       alert.type === "warning"
@@ -121,7 +121,7 @@ export function Alerts() {
                     <div className="text-sm text-muted-foreground">
                       {alert.code}
                     </div>
-                    <div className="mt-1 flex gap-4 text-xs text-muted-foreground">
+                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground md:flex md:gap-4">
                       <span>{alert.period}</span>
                       <span>{alert.form}</span>
                       <span>{alert.date}</span>

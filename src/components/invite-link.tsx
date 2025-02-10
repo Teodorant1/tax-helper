@@ -31,7 +31,7 @@ export function InviteLink() {
         Send this link to your clients for an effortless self onboarding
       </p>
       <div className="space-y-2">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 md:flex-row">
           <Input value={inviteLink} readOnly className="font-mono text-sm" />
           <Button variant="outline" size="icon" onClick={handleCopy}>
             <svg

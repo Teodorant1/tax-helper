@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",
+    "@clerk/nextjs": "^6.11.2",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-form": "^0.1.2",
     "@radix-ui/react-label": "^2.1.2",
