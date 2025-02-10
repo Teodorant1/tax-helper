@@ -160,7 +160,7 @@ export function SidebarNav() {
   } as React.CSSProperties;
 
   return (
-    <div className="w-full md:w-[20%] lg:w-[16%] xl:w-[14%]">
+    <div className="md:w-[20%] lg:w-[16%] xl:w-[14%]">
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
