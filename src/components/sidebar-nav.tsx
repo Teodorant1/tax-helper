@@ -18,6 +18,7 @@ import {
   Moon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import styles from "~/styles/ui-settings.module.css";
 
 const sidebarItems = [
   {
@@ -144,8 +145,16 @@ export function SidebarNav() {
 
   return (
     <nav
-      className="sidebar fixed inset-y-0 left-0 z-50 flex flex-col text-white"
-      style={sidebarStyle}
+      className={cn(
+        "fixed inset-y-0 left-0 z-50 flex flex-col text-white",
+        styles.sidebarWrapper,
+      )}
+      style={{
+        ...sidebarStyle,
+        backgroundColor: "var(--sidebar-bg)",
+        padding: "var(--ui-layout-spacing)",
+        transition: "all var(--ui-animation-speed) ease-in-out",
+      }}
     >
       <div className="mb-8 flex items-center gap-2 px-2 transition-all duration-200">
         {settings.sidebarLogo ? (

@@ -1,117 +1,41 @@
-/* Base styles */
-.root {
-  font-size: var(--ui-base-font-size);
-  transition: all var(--ui-animation-speed) ease-in-out;
+.uiSettings {
+  --ui-sidebar-width: 240px;
+  --ui-layout-spacing: 1rem;
+  --ui-animation-speed: 200ms;
 }
 
-/* Apply spacing based on layout density */
-.root > * + * {
-  margin-top: var(--ui-layout-spacing);
-}
-
-/* Apply border radius to common elements */
-.root :global(button),
-.root :global(input),
-.root :global(select),
-.root :global(textarea),
-.root :global(.card) {
-  border-radius: var(--ui-border-radius);
-  transition: all var(--ui-animation-speed) ease-in-out;
-}
-
-/* Apply transitions based on animation speed */
-.root :global(button),
-.root :global(input),
-.root :global(select),
-.root :global(.card) {
-  transition-property: background-color, border-color, color, transform,
-    box-shadow, opacity;
-}
-
-/* Apply sidebar width */
-:global(.sidebar) {
-  width: var(--ui-sidebar-width);
-  transition: width var(--ui-animation-speed) ease-in-out;
-}
-
-/* Apply transitions to main content */
-:global(main) {
-  margin-left: var(--ui-sidebar-width);
-  transition: margin var(--ui-animation-speed) ease-in-out;
-}
-
-/* Apply layout density to form elements */
-.root :global(form) > * + * {
-  margin-top: var(--ui-layout-spacing);
-}
-
-/* Apply spacing to card content */
-.root :global(.card) {
-  padding: var(--ui-layout-spacing);
-}
-
-/* Apply spacing to button groups */
-.root :global(.button-group) > * + * {
-  margin-left: var(--ui-layout-spacing);
-}
-
-/* Apply font size to text elements */
-.root :global(h1) {
-  font-size: calc(var(--ui-base-font-size) * 2);
-  transition: font-size var(--ui-animation-speed) ease-in-out;
-}
-
-.root :global(h2) {
-  font-size: calc(var(--ui-base-font-size) * 1.5);
-  transition: font-size var(--ui-animation-speed) ease-in-out;
-}
-
-.root :global(h3) {
-  font-size: calc(var(--ui-base-font-size) * 1.25);
-  transition: font-size var(--ui-animation-speed) ease-in-out;
-}
-
-.root :global(p),
-.root :global(input),
-.root :global(select),
-.root :global(button) {
-  font-size: var(--ui-base-font-size);
-  transition: font-size var(--ui-animation-speed) ease-in-out;
-}
-
-.root :global(small) {
-  font-size: calc(var(--ui-base-font-size) * 0.875);
-  transition: font-size var(--ui-animation-speed) ease-in-out;
-}
-
-/* Layout density classes */
 .compact {
   --ui-layout-spacing: 0.5rem;
 }
 
 .comfortable {
-  --ui-layout-spacing: 1rem;
-}
-
-.spacious {
   --ui-layout-spacing: 1.5rem;
 }
 
-/* Animation speed classes */
-.slower {
-  --ui-animation-speed: 400ms;
+.borderRadius {
+  border-radius: var(--radius);
 }
 
-.default {
-  --ui-animation-speed: 200ms;
+.borderRadiusSmall {
+  border-radius: calc(var(--radius) * 0.5);
 }
 
-.faster {
-  --ui-animation-speed: 100ms;
+.borderRadiusLarge {
+  border-radius: calc(var(--radius) * 1.5);
 }
 
-/* Ensure smooth transitions for all elements */
-.root * {
-  transition-timing-function: ease-in-out;
-  will-change: transform, opacity, margin, padding, width, font-size;
+.layoutDensity {
+  padding: var(--ui-layout-spacing);
+}
+
+.sidebarWrapper {
+  width: var(--ui-sidebar-width);
+  transition: width var(--ui-animation-speed) ease-in-out;
+}
+
+.sidebarContent {
+  width: 100%;
+  height: 100%;
+  background-color: var(--sidebar-bg);
+  transition: all var(--ui-animation-speed) ease-in-out;
 }

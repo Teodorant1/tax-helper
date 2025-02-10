@@ -96,7 +96,7 @@ export function UISettingsProvider({ children }: UISettingsProviderProps) {
 
   return (
     <div
-      className={cn(styles.root, layoutClass, animationClass)}
+      className={cn(styles.uiSettings, layoutClass, animationClass)}
       style={
         {
           "--ui-border-radius": settings.layout.borderRadius,
