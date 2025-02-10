@@ -183,13 +183,13 @@ export function SidebarNav() {
 
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-full transition-transform duration-300 ease-in-out md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out md:translate-x-0",
           !isMobileOpen && "-translate-x-full",
         )}
       >
         <nav
           className={cn(
-            "flex h-full w-full flex-col p-0 text-white shadow-xl md:p-[var(--ui-layout-spacing)] md:shadow-none",
+            "flex h-full flex-col p-0 text-white shadow-xl md:p-[var(--ui-layout-spacing)] md:shadow-none",
             styles.sidebarWrapper,
           )}
           style={{
