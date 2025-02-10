@@ -91,7 +91,7 @@ export function ActiveClients() {
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="relative mb-6">
+        <div className="relative mb-6 flex-col md:flex-row">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by Name, Tax ID or Last 4 of Tax ID"
@@ -104,7 +104,7 @@ export function ActiveClients() {
           <Button
             variant="outline"
             size="sm"
-            className="absolute right-2 top-2 gap-2"
+            className="relative right-2 top-2 ml-2"
           >
             <Filter className="h-4 w-4" />
             Filters

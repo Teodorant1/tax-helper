@@ -18,7 +18,7 @@ export default function AlertsPage() {
   );
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="md:container md:mx-auto md:py-6">
       <div className="mb-6">
         <Link
           href="/"
