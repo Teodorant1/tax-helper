@@ -16,6 +16,8 @@ import {
   Sun,
   Moon,
   FileText,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import styles from "~/styles/ui-settings.module.css";
@@ -42,6 +44,16 @@ const sidebarItems = [
     title: "Data",
     href: "/Data",
     icon: <FileText className="h-5 w-5" />,
+  },
+  {
+    title: "ERC Tracker",
+    href: "/ErcTracker",
+    icon: <Target className="h-5 w-5" />,
+  },
+  {
+    title: "Tax History",
+    href: "/TaxHistory",
+    icon: <TrendingUp className="h-5 w-5" />,
   },
   {
     title: "Permissions",

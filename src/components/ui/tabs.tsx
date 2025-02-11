@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client";
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { cn } from "~/lib/utils";
+
+import { cn } from "@/lib/utils";
 
 const Tabs = TabsPrimitive.Root;
 

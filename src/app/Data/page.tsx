@@ -58,8 +58,9 @@ export default async function DataPage({
 }: {
   searchParams: { clientId?: string };
 }) {
-  const clientName = searchParams.clientId
-    ? mockTransactions.find((t) => t.id === searchParams.clientId)?.form
+  const { clientId } = searchParams;
+  const clientName = clientId
+    ? mockTransactions.find((t) => t.id === clientId)?.form
     : null;
 
   return (
@@ -92,10 +93,10 @@ export default async function DataPage({
         </CardHeader>
         <CardContent>
           <DataClient
-            clientId={searchParams.clientId}
+            clientId={clientId}
             transactions={
-              searchParams.clientId
-                ? mockTransactions.filter((t) => t.id === searchParams.clientId)
+              clientId
+                ? mockTransactions.filter((t) => t.id === clientId)
                 : mockTransactions
             }
           />

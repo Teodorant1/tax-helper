@@ -6,13 +6,13 @@ export default function AlertsPage({
 }: {
   searchParams: { clientId?: string };
 }) {
+  const { clientId } = searchParams;
   const filteredAlerts = mockAlerts.filter(
-    (alert) => !searchParams.clientId || alert.id === searchParams.clientId,
+    (alert) => !clientId || alert.id === clientId,
   );
 
-  const clientName = searchParams.clientId
-    ? (mockAlerts.find((alert) => alert.id === searchParams.clientId)
-        ?.clientName ?? null)
+  const clientName = clientId
+    ? (mockAlerts.find((alert) => alert.id === clientId)?.clientName ?? null)
     : null;
 
   return (
