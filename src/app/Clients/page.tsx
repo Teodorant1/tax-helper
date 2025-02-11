@@ -15,6 +15,7 @@ import {
   Clock,
   MoreHorizontal,
 } from "lucide-react";
+
 import Link from "next/link";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
@@ -216,7 +217,7 @@ export default function ClientsPage() {
                 Filing Calendar
               </Button>
               <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
+                <Calendar className="h-4 w-4" />
                 Export
               </Button>
             </div>
@@ -224,7 +225,7 @@ export default function ClientsPage() {
         </CardHeader>
         <CardContent>
           <div className="relative mb-6">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3 h-4 w-4" />
             <Input
               placeholder="Search by Name, Tax ID, or Email"
               className="pl-9 pr-24"
@@ -301,14 +302,35 @@ export default function ClientsPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex items-center gap-2 md:mt-0">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Search className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Data?clientId=${client.id}`}>
+                      <Search className="h-4 w-4" />
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Bell className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Alerts?clientId=${client.id}`}>
+                      <Bell className="h-4 w-4" />
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <FileText className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Documents?clientId=${client.id}`}>
+                      <FileText className="h-4 w-4" />
+                    </Link>
                   </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <MoreHorizontal className="h-4 w-4" />

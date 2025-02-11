@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import type { ThemeConfig } from "~/types/theme";
-// import type { UIConfig } from "~/types/ui";
 import { cn } from "~/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useUISettings } from "~/store/ui-settings";
@@ -17,16 +15,12 @@ import {
   Building2,
   Sun,
   Moon,
+  FileText,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import styles from "~/styles/ui-settings.module.css";
-import {
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 const sidebarItems = [
   {
@@ -43,6 +37,11 @@ const sidebarItems = [
     title: "Clients",
     href: "/Clients",
     icon: <Users className="h-5 w-5" />,
+  },
+  {
+    title: "Data",
+    href: "/Data",
+    icon: <FileText className="h-5 w-5" />,
   },
   {
     title: "Permissions",
@@ -261,16 +260,24 @@ export function SidebarNav() {
                 <div className="text-sm opacity-80">Admin</div>
               </div>
             </div>
-            <div>
-              <header className="flex h-16 items-center justify-end gap-4 p-4">
-                <SignedOut>
-                  <SignInButton />
-                  <SignUpButton />
-                </SignedOut>
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-              </header>
+            <div className="flex h-16 items-center justify-end gap-4 p-4">
+              <SignedOut>
+                <Link
+                  href="/login"
+                  className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20"
+                >
+                  Sign In / Sign Up
+                </Link>
+                {/* <Link
+                  href="/sign-up"
+                  className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20"
+                >
+                  Sign Up
+                </Link> */}
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
           </div>
         </nav>

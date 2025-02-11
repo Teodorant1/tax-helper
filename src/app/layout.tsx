@@ -38,7 +38,7 @@ export default function RootLayout({
               <UISettingsProvider>
                 <div className="relative min-h-screen w-full">
                   <SidebarNav />
-                  <main className="flex-1 p-4 pt-16 transition-all duration-200 md:p-6 md:pl-[calc(var(--ui-sidebar-width)+1.5rem)] md:pt-6">
+                  <main className="flex-1 transition-all duration-200 md:pl-[calc(var(--ui-sidebar-width)+1.5rem)]">
                     {children}
                   </main>
                 </div>

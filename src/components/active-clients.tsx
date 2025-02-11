@@ -177,14 +177,35 @@ export function ActiveClients() {
                   </div>
                 </div>
                 <div className="mt-4 flex items-center gap-2 md:mt-0">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Search className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Data?clientId=${client.id}`}>
+                      <Search className="h-4 w-4" />
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Bell className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Alerts?clientId=${client.id}`}>
+                      <Bell className="h-4 w-4" />
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <FileText className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    asChild
+                  >
+                    <Link href={`/Documents?clientId=${client.id}`}>
+                      <FileText className="h-4 w-4" />
+                    </Link>
                   </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <MoreHorizontal className="h-4 w-4" />
