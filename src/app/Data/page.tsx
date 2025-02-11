@@ -56,9 +56,10 @@ const mockTransactions: Transaction[] = [
 export default async function DataPage({
   searchParams,
 }: {
-  searchParams: { clientId?: string };
+  searchParams: Promise<{ clientId?: string }>;
 }) {
-  const { clientId } = searchParams;
+  const resolvedParams = await searchParams;
+  const { clientId } = resolvedParams;
   const clientName = clientId
     ? mockTransactions.find((t) => t.id === clientId)?.form
     : null;
