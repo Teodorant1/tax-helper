@@ -1,12 +1,13 @@
 import { mockAlerts } from "~/types/alerts";
 import { AlertsContent } from "~/components/alerts-content";
 
-export default function AlertsPage({
+export default async function AlertsPage({
   searchParams,
 }: {
-  searchParams: { clientId?: string | undefined };
+  searchParams: Promise<{ clientId?: string }>;
 }) {
-  const { clientId } = searchParams;
+  const resolvedParams = await searchParams;
+  const { clientId } = resolvedParams;
   const filteredAlerts = mockAlerts.filter(
     (alert) => !clientId || alert.id === clientId,
   );
