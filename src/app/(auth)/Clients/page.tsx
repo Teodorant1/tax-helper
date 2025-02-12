@@ -27,18 +27,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-interface Client {
-  id: string;
-  name: string;
-  taxId: string;
-  email: string;
-  phone: string;
-  status: "Active" | "Pending" | "Inactive";
-  lastFiling: string;
-  nextFiling: string;
-  pendingTasks: number;
-  alerts: number;
-}
+import { type Client } from "~/server/db/schema";
 
 const mockClients: Client[] = [
   {

@@ -1,23 +1,3 @@
-interface Logo {
-  type: "url" | "upload";
-  value: string;
-}
+import { type Logo, type UIConfig } from "~/server/db/schema";
 
-export interface UIConfig {
-  sidebarTitle: string;
-  sidebarLogo: Logo | null;
-  greeting: {
-    title: string;
-    subtitle: string;
-    logo: Logo | null;
-  };
-  layout: {
-    borderRadius: string;
-    layoutDensity: "comfortable" | "compact" | "spacious";
-    sidebarWidth: number;
-  };
-  typography: {
-    baseFontSize: string;
-    animationSpeed: "slower" | "default" | "faster";
-  };
-}
+export type { Logo, UIConfig };

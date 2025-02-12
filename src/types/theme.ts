@@ -1,10 +1,3 @@
-interface ThemeColors {
-  primary: string;
-  secondary: string;
-  accent: string;
-}
+import { type ThemeColors, type ThemeConfig } from "~/server/db/schema";
 
-export interface ThemeConfig {
-  light: ThemeColors;
-  dark: ThemeColors;
-}
+export type { ThemeColors, ThemeConfig };

@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -18,6 +19,163 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `tax-helper_${name}`);
 
+// Client-related tables
+export const clients = createTable("client", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  taxId: text("tax_id").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  status: text("status", { enum: ["Active", "Pending", "Inactive"] }).notNull(),
+  lastFiling: text("last_filing").notNull(),
+  nextFiling: text("next_filing").notNull(),
+  pendingTasks: integer("pending_tasks").notNull().default(0),
+  alerts: integer("alerts").notNull().default(0),
+});
+
+export const alerts = createTable("alert", {
+  id: text("id").primaryKey(),
+  type: text("type", { enum: ["warning", "info"] }).notNull(),
+  clientName: text("client_name").notNull(),
+  clientType: text("client_type").notNull(),
+  taxId: text("tax_id").notNull(),
+  alert: text("alert").notNull(),
+  taxPeriod: text("tax_period").notNull(),
+  alertDate: text("alert_date").notNull(),
+  transactionDate: text("transaction_date").notNull(),
+  amount: text("amount").notNull(),
+});
+
+export const transactions = createTable("transaction", {
+  id: text("id").primaryKey(),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => clients.id),
+  type: text("type").notNull(),
+  date: text("date").notNull(),
+  form: text("form").notNull(),
+  taxPeriod: text("tax_period").notNull(),
+  amount: text("amount").notNull(),
+});
+
+// UI Configuration tables
+export const logos = createTable("logo", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  type: text("type", { enum: ["url", "upload"] }).notNull(),
+  value: text("value").notNull(),
+});
+
+export const uiConfigs = createTable("ui_config", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  sidebarTitle: text("sidebar_title").notNull(),
+  sidebarLogoId: text("sidebar_logo_id").references(() => logos.id),
+  greetingTitle: text("greeting_title").notNull(),
+  greetingSubtitle: text("greeting_subtitle").notNull(),
+  greetingLogoId: text("greeting_logo_id").references(() => logos.id),
+  layoutBorderRadius: text("layout_border_radius").notNull(),
+  layoutDensity: text("layout_density", {
+    enum: ["comfortable", "compact", "spacious"],
+  }).notNull(),
+  sidebarWidth: integer("sidebar_width").notNull(),
+  baseFontSize: text("base_font_size").notNull(),
+  animationSpeed: text("animation_speed", {
+    enum: ["slower", "default", "faster"],
+  }).notNull(),
+});
+
+// Theme Configuration tables
+export const themeColors = createTable("theme_colors", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  primary: text("primary").notNull(),
+  secondary: text("secondary").notNull(),
+  accent: text("accent").notNull(),
+});
+
+export const themeConfigs = createTable("theme_config", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  lightThemeId: text("light_theme_id")
+    .notNull()
+    .references(() => themeColors.id),
+  darkThemeId: text("dark_theme_id")
+    .notNull()
+    .references(() => themeColors.id),
+});
+
+// Tax History Models
+export const taxHistoryEntries = createTable("tax_history_entry", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => clients.id),
+  period: text("period").notNull(),
+  returnFiled: text("return_filed").notNull(),
+  principalTax: text("principal_tax").notNull(),
+  interest: text("interest").notNull(),
+  penalties: text("penalties").notNull(),
+  paymentsAndCredits: text("payments_and_credits").notNull(),
+  refunds: text("refunds").notNull(),
+  balance: text("balance").notNull(),
+  type: text("type", { enum: ["income", "employment"] }).notNull(),
+});
+
+// ERC Tracker Models
+export const ercTransactions = createTable("erc_transaction", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => clients.id),
+  irsTracking: text("irs_tracking").notNull(),
+  filed: boolean("filed").notNull(),
+  clientEnteredErcClaim: text("client_entered_erc_claim").notNull(),
+  approvedErcAmount: text("approved_erc_amount").notNull(),
+  interestAccrued: text("interest_accrued").notNull(),
+  adjustments: text("adjustments").notNull(),
+  totalRefundProcessed: text("total_refund_processed").notNull(),
+  totalErcPending: text("total_erc_pending").notNull(),
+});
+
+export const ercEvents = createTable("erc_event", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  transactionId: text("transaction_id")
+    .notNull()
+    .references(() => ercTransactions.id),
+  irsTracking: text("irs_tracking").notNull(),
+  form941xReceivedDate: text("form_941x_received_date").notNull(),
+  form941xForwardDate: text("form_941x_forward_date").notNull(),
+  refundApprovedDate: text("refund_approved_date").notNull(),
+  refundPaidDate: text("refund_paid_date").notNull(),
+  examinationIndicator: text("examination_indicator"),
+});
+
+// Documents Model
+export const documents = createTable("document", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => clients.id),
+  name: text("name").notNull(),
+  status: text("status", { enum: ["Ready", "Error"] }).notNull(),
+  type: text("type").notNull(),
+  taxPeriod: text("tax_period").notNull(),
+  requestedOn: text("requested_on").notNull(),
+});
+
 export const posts = createTable(
   "post",
   {
@@ -30,13 +188,13 @@ export const posts = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
   (example) => ({
     createdByIdIdx: index("created_by_idx").on(example.createdById),
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
 );
 
 export const users = createTable("user", {
@@ -83,7 +241,7 @@ export const accounts = createTable(
       columns: [account.provider, account.providerAccountId],
     }),
     userIdIdx: index("account_user_id_idx").on(account.userId),
-  })
+  }),
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -106,7 +264,7 @@ export const sessions = createTable(
   },
   (session) => ({
     userIdIdx: index("session_user_id_idx").on(session.userId),
-  })
+  }),
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -125,5 +283,102 @@ export const verificationTokens = createTable(
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  }),
 );
+
+// Relations
+export const clientsRelations = relations(clients, ({ many }) => ({
+  taxHistory: many(taxHistoryEntries),
+  ercTransactions: many(ercTransactions),
+  documents: many(documents),
+  alerts: many(alerts, { relationName: "client_alerts" }),
+  transactions: many(transactions, { relationName: "client_transactions" }),
+}));
+
+export const uiConfigsRelations = relations(uiConfigs, ({ one }) => ({
+  sidebarLogo: one(logos, {
+    fields: [uiConfigs.sidebarLogoId],
+    references: [logos.id],
+  }),
+  greetingLogo: one(logos, {
+    fields: [uiConfigs.greetingLogoId],
+    references: [logos.id],
+  }),
+}));
+
+export const themeConfigsRelations = relations(themeConfigs, ({ one }) => ({
+  lightTheme: one(themeColors, {
+    fields: [themeConfigs.lightThemeId],
+    references: [themeColors.id],
+  }),
+  darkTheme: one(themeColors, {
+    fields: [themeConfigs.darkThemeId],
+    references: [themeColors.id],
+  }),
+}));
+
+export const taxHistoryRelations = relations(taxHistoryEntries, ({ one }) => ({
+  client: one(clients, {
+    fields: [taxHistoryEntries.clientId],
+    references: [clients.id],
+  }),
+}));
+
+export const ercTransactionsRelations = relations(
+  ercTransactions,
+  ({ one, many }) => ({
+    client: one(clients, {
+      fields: [ercTransactions.clientId],
+      references: [clients.id],
+    }),
+    events: many(ercEvents),
+  }),
+);
+
+export const ercEventsRelations = relations(ercEvents, ({ one }) => ({
+  transaction: one(ercTransactions, {
+    fields: [ercEvents.transactionId],
+    references: [ercTransactions.id],
+  }),
+}));
+
+export const documentsRelations = relations(documents, ({ one }) => ({
+  client: one(clients, {
+    fields: [documents.clientId],
+    references: [clients.id],
+  }),
+}));
+
+// Type Exports
+export type Client = typeof clients.$inferSelect;
+export type NewClient = typeof clients.$inferInsert;
+
+export type Alert = typeof alerts.$inferSelect;
+export type NewAlert = typeof alerts.$inferInsert;
+
+export type Transaction = typeof transactions.$inferSelect;
+export type NewTransaction = typeof transactions.$inferInsert;
+
+export type Logo = typeof logos.$inferSelect;
+export type NewLogo = typeof logos.$inferInsert;
+
+export type UIConfig = typeof uiConfigs.$inferSelect;
+export type NewUIConfig = typeof uiConfigs.$inferInsert;
+
+export type ThemeColors = typeof themeColors.$inferSelect;
+export type NewThemeColors = typeof themeColors.$inferInsert;
+
+export type ThemeConfig = typeof themeConfigs.$inferSelect;
+export type NewThemeConfig = typeof themeConfigs.$inferInsert;
+
+export type TaxHistoryEntry = typeof taxHistoryEntries.$inferSelect;
+export type NewTaxHistoryEntry = typeof taxHistoryEntries.$inferInsert;
+
+export type ErcTransaction = typeof ercTransactions.$inferSelect;
+export type NewErcTransaction = typeof ercTransactions.$inferInsert;
+
+export type ErcEvent = typeof ercEvents.$inferSelect;
+export type NewErcEvent = typeof ercEvents.$inferInsert;
+
+export type Document = typeof documents.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;

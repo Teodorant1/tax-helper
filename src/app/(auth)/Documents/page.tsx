@@ -6,18 +6,12 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Copy, Trash2 } from "lucide-react";
 
-interface Document {
-  id: string;
-  name: string;
-  status: "Ready" | "Error";
-  type: string;
-  taxPeriod: string;
-  requestedOn: string;
-}
+import { type Document } from "~/server/db/schema";
 
 const mockDocuments: Document[] = [
   {
     id: "1",
+    clientId: "1",
     name: "ACTR-941-2020-Q4",
     status: "Ready",
     type: "Account",
@@ -26,6 +20,7 @@ const mockDocuments: Document[] = [
   },
   {
     id: "2",
+    clientId: "1",
     name: "ACTR-941-2020-Q2",
     status: "Ready",
     type: "Account",
@@ -34,6 +29,7 @@ const mockDocuments: Document[] = [
   },
   {
     id: "3",
+    clientId: "1",
     name: "ACTR-941-2020-Q1",
     status: "Error",
     type: "Account",
@@ -42,6 +38,7 @@ const mockDocuments: Document[] = [
   },
   {
     id: "4",
+    clientId: "1",
     name: "ACTR-941-2020-Q3",
     status: "Ready",
     type: "Account",

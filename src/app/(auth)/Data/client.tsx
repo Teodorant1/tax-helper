@@ -7,14 +7,7 @@ import { SortOrder } from "~/components/ui/sort-order";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-interface Transaction {
-  id: string;
-  type: string;
-  date: string;
-  form: string;
-  taxPeriod: string;
-  amount: string;
-}
+import { type Transaction } from "~/server/db/schema";
 
 interface DataClientProps {
   clientId?: string;

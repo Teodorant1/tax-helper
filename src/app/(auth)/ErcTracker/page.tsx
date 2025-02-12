@@ -9,6 +9,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { type ErcTransaction, type ErcEvent } from "~/server/db/schema";
+
+const mockTransactions: ErcTransaction[] = [
+  {
+    id: crypto.randomUUID(),
+    clientId: "1",
+    irsTracking: "Q2 2020 06/30/20",
+    filed: true,
+    clientEnteredErcClaim: "$350,002.70",
+    approvedErcAmount: "$350,002.70",
+    interestAccrued: "$40,361.21",
+    adjustments: "$2,150.00",
+    totalRefundProcessed: "$368,213.91",
+    totalErcPending: "$350,002.70",
+  },
+];
+
+const mockEvents: ErcEvent[] = [
+  {
+    id: crypto.randomUUID(),
+    transactionId: mockTransactions[0]!.id,
+    irsTracking: "Q2 2020 06/30/20",
+    form941xReceivedDate: "May 30, 2023",
+    form941xForwardDate: "May 30, 2023",
+    refundApprovedDate: "Sep 23, 2024",
+    refundPaidDate: "Sep 23, 2024",
+    examinationIndicator: "-",
+  },
+];
 
 export default function ERCTrackerPage() {
   return (
@@ -37,23 +66,24 @@ export default function ERCTrackerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    Q2 2020
-                    <br />
-                    <span className="text-sm text-muted-foreground">
-                      06/30/20
-                    </span>
-                  </TableCell>
-                  <TableCell>✓</TableCell>
-                  <TableCell>$350,002.70</TableCell>
-                  <TableCell>$350,002.70</TableCell>
-                  <TableCell>$40,361.21</TableCell>
-                  <TableCell>$2,150.00</TableCell>
-                  <TableCell>$368,213.91</TableCell>
-                  <TableCell>$350,002.70</TableCell>
-                </TableRow>
-                {/* Add more rows as needed */}
+                {mockTransactions.map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell className="font-medium">
+                      {transaction.irsTracking.split(" ")[0]}
+                      <br />
+                      <span className="text-sm text-muted-foreground">
+                        {transaction.irsTracking.split(" ").slice(1).join(" ")}
+                      </span>
+                    </TableCell>
+                    <TableCell>{transaction.filed ? "✓" : "✗"}</TableCell>
+                    <TableCell>{transaction.clientEnteredErcClaim}</TableCell>
+                    <TableCell>{transaction.approvedErcAmount}</TableCell>
+                    <TableCell>{transaction.interestAccrued}</TableCell>
+                    <TableCell>{transaction.adjustments}</TableCell>
+                    <TableCell>{transaction.totalRefundProcessed}</TableCell>
+                    <TableCell>{transaction.totalErcPending}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </Card>
@@ -75,21 +105,22 @@ export default function ERCTrackerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    Q2 2020
-                    <br />
-                    <span className="text-sm text-muted-foreground">
-                      06/30/20
-                    </span>
-                  </TableCell>
-                  <TableCell>May 30, 2023</TableCell>
-                  <TableCell>May 30, 2023</TableCell>
-                  <TableCell>Sep 23, 2024</TableCell>
-                  <TableCell>Sep 23, 2024</TableCell>
-                  <TableCell>-</TableCell>
-                </TableRow>
-                {/* Add more rows as needed */}
+                {mockEvents.map((event) => (
+                  <TableRow key={event.id}>
+                    <TableCell className="font-medium">
+                      {event.irsTracking.split(" ")[0]}
+                      <br />
+                      <span className="text-sm text-muted-foreground">
+                        {event.irsTracking.split(" ").slice(1).join(" ")}
+                      </span>
+                    </TableCell>
+                    <TableCell>{event.form941xReceivedDate}</TableCell>
+                    <TableCell>{event.form941xForwardDate}</TableCell>
+                    <TableCell>{event.refundApprovedDate}</TableCell>
+                    <TableCell>{event.refundPaidDate}</TableCell>
+                    <TableCell>{event.examinationIndicator}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </Card>

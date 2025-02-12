@@ -9,18 +9,12 @@ import {
 } from "~/components/ui/card";
 import { DataClient } from "./client";
 
-interface Transaction {
-  id: string;
-  type: string;
-  date: string;
-  form: string;
-  taxPeriod: string;
-  amount: string;
-}
+import { type Transaction } from "~/server/db/schema";
 
 const mockTransactions: Transaction[] = [
   {
     id: "1",
+    clientId: "1",
     type: "Appointed representative",
     date: "June 10, 2024",
     form: "1120",
@@ -29,6 +23,7 @@ const mockTransactions: Transaction[] = [
   },
   {
     id: "2",
+    clientId: "1",
     type: "Tax return filed",
     date: "April 22, 2024",
     form: "1120S",
@@ -37,6 +32,7 @@ const mockTransactions: Transaction[] = [
   },
   {
     id: "3",
+    clientId: "1",
     type: "Extension of time to file tax return ext. Date 09-15-2024",
     date: "April 8, 2024",
     form: "1120S",
@@ -45,6 +41,7 @@ const mockTransactions: Transaction[] = [
   },
   {
     id: "4",
+    clientId: "1",
     type: "Appointed representative",
     date: "June 5, 2023",
     form: "1120S",

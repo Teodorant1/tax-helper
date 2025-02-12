@@ -1,4 +1,6 @@
 import { postRouter } from "~/server/api/routers/post";
+import { uiConfigRouter } from "./routers/ui-config";
+import { client_and_alert_Router } from "./routers/Clients-n-Alerts";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -8,6 +10,8 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   post: postRouter,
+  uiConfig: uiConfigRouter,
+  client_and_alert: client_and_alert_Router,
 });
 
 // export type definition of API

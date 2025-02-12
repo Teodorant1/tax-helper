@@ -1,15 +1,4 @@
-export interface Alert {
-  id: string;
-  type: "warning" | "info";
-  clientName: string;
-  clientType: string;
-  taxId: string;
-  alert: string;
-  taxPeriod: string;
-  alertDate: string;
-  transactionDate: string;
-  amount: string;
-}
+import { type Alert } from "~/server/db/schema";
 
 export const mockAlerts: Alert[] = [
   {
