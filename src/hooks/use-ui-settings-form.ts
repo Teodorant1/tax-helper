@@ -4,24 +4,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useUISettings } from "~/store/ui-settings";
 import type { UIConfig } from "~/types/ui";
+import { generateId } from "~/lib/utils";
 
 const UISchema = z
   .object({
     sidebarTitle: z.string().min(1, "Sidebar title is required"),
     greetingTitle: z.string().min(1, "Greeting title is required"),
+    greetingSubtitle: z.string().min(1, "Greeting subtitle is required"),
+    sidebarLogoId: z.string().nullable(),
+    greetingLogoId: z.string().nullable(),
+    layoutBorderRadius: z.string().min(1, "Border radius is required"),
+    layoutDensity: z.enum(["comfortable", "compact", "spacious"]),
+    sidebarWidth: z.number().min(200).max(400),
+    baseFontSize: z.string().min(1, "Base font size is required"),
+    animationSpeed: z.enum(["slower", "default", "faster"]),
+    // For form handling only
     sidebarLogoType: z.enum(["none", "url", "upload"]),
     sidebarLogoUrl: z.string().optional(),
     greetingLogoType: z.enum(["none", "url", "upload"]),
     greetingLogoUrl: z.string().optional(),
-    layout: z.object({
-      borderRadius: z.string().min(1, "Border radius is required"),
-      layoutDensity: z.enum(["comfortable", "compact", "spacious"]),
-      sidebarWidth: z.number().min(200).max(400),
-    }),
-    typography: z.object({
-      baseFontSize: z.string().min(1, "Base font size is required"),
-      animationSpeed: z.enum(["slower", "default", "faster"]),
-    }),
   })
   .refine(
     (data) => {
@@ -58,20 +59,20 @@ export function useUISettingsForm() {
       try {
         return {
           sidebarTitle: config.sidebarTitle,
-          greetingTitle: config.greeting.title,
-          sidebarLogoType: config.sidebarLogo ? "url" : "none",
-          sidebarLogoUrl: config.sidebarLogo?.value ?? "",
-          greetingLogoType: config.greeting.logo ? "url" : "none",
-          greetingLogoUrl: config.greeting.logo?.value ?? "",
-          layout: {
-            borderRadius: config.layout.borderRadius,
-            layoutDensity: config.layout.layoutDensity,
-            sidebarWidth: config.layout.sidebarWidth,
-          },
-          typography: {
-            baseFontSize: config.typography.baseFontSize,
-            animationSpeed: config.typography.animationSpeed,
-          },
+          greetingTitle: config.greetingTitle,
+          greetingSubtitle: config.greetingSubtitle,
+          sidebarLogoId: config.sidebarLogoId,
+          greetingLogoId: config.greetingLogoId,
+          layoutBorderRadius: config.layoutBorderRadius,
+          layoutDensity: config.layoutDensity,
+          sidebarWidth: config.sidebarWidth,
+          baseFontSize: config.baseFontSize,
+          animationSpeed: config.animationSpeed,
+          // Set logo types based on ID presence
+          sidebarLogoType: config.sidebarLogoId ? "url" : "none",
+          sidebarLogoUrl: "", // Will be populated from logos table
+          greetingLogoType: config.greetingLogoId ? "url" : "none",
+          greetingLogoUrl: "", // Will be populated from logos table
         };
       } catch (err) {
         const error =
@@ -113,47 +114,21 @@ export function useUISettingsForm() {
       greetingPreview: string | null,
     ): NonNullable<UIConfig> => {
       const config: UIConfig = {
+        id: generateId(),
         sidebarTitle: values.sidebarTitle,
-        sidebarLogo: null,
-        greeting: {
-          title: values.greetingTitle,
-          subtitle: "Your modern tax management solution",
-          logo: null,
-        },
-        layout: {
-          borderRadius: values.layout.borderRadius,
-          layoutDensity: values.layout.layoutDensity,
-          sidebarWidth: values.layout.sidebarWidth,
-        },
-        typography: {
-          baseFontSize: values.typography.baseFontSize,
-          animationSpeed: values.typography.animationSpeed,
-        },
+        greetingTitle: values.greetingTitle,
+        greetingSubtitle: values.greetingSubtitle,
+        sidebarLogoId: null,
+        greetingLogoId: null,
+        layoutBorderRadius: values.layoutBorderRadius,
+        layoutDensity: values.layoutDensity,
+        sidebarWidth: values.sidebarWidth,
+        baseFontSize: values.baseFontSize,
+        animationSpeed: values.animationSpeed,
       };
 
-      if (values.sidebarLogoType === "url" && values.sidebarLogoUrl) {
-        config.sidebarLogo = {
-          type: "url",
-          value: values.sidebarLogoUrl,
-        };
-      } else if (values.sidebarLogoType === "upload" && sidebarPreview) {
-        config.sidebarLogo = {
-          type: "upload",
-          value: sidebarPreview,
-        };
-      }
-
-      if (values.greetingLogoType === "url" && values.greetingLogoUrl) {
-        config.greeting.logo = {
-          type: "url",
-          value: values.greetingLogoUrl,
-        };
-      } else if (values.greetingLogoType === "upload" && greetingPreview) {
-        config.greeting.logo = {
-          type: "upload",
-          value: greetingPreview,
-        };
-      }
+      // Note: Logo IDs should be set after creating logo records in the logos table
+      // The component using this hook should handle the logo creation and ID assignment
 
       return config;
     },

@@ -2,22 +2,17 @@ import { create } from "zustand";
 import type { UIConfig } from "~/types/ui";
 
 const defaultConfig: NonNullable<UIConfig> = {
+  id: crypto.randomUUID(),
   sidebarTitle: "TaxNow PRO",
-  sidebarLogo: null,
-  greeting: {
-    title: "TaxNow PRO",
-    subtitle: "Your modern tax management solution",
-    logo: null,
-  },
-  layout: {
-    borderRadius: "0.5rem",
-    layoutDensity: "comfortable",
-    sidebarWidth: 280,
-  },
-  typography: {
-    baseFontSize: "1rem",
-    animationSpeed: "default",
-  },
+  sidebarLogoId: null,
+  greetingTitle: "TaxNow PRO",
+  greetingSubtitle: "Your modern tax management solution",
+  greetingLogoId: null,
+  layoutBorderRadius: "0.5rem",
+  layoutDensity: "comfortable",
+  sidebarWidth: 280,
+  baseFontSize: "1rem",
+  animationSpeed: "default",
 };
 
 function isValidConfig(obj: unknown): obj is NonNullable<UIConfig> {
@@ -25,40 +20,32 @@ function isValidConfig(obj: unknown): obj is NonNullable<UIConfig> {
     if (!obj || typeof obj !== "object") return false;
     const config = obj as Record<string, unknown>;
 
-    // Validate basic structure
+    // Validate fields
+    if (typeof config.id !== "string") return false;
     if (typeof config.sidebarTitle !== "string") return false;
-    if (config.sidebarLogo !== null && typeof config.sidebarLogo !== "object")
+    if (
+      config.sidebarLogoId !== null &&
+      typeof config.sidebarLogoId !== "string"
+    )
       return false;
-    if (!config.greeting || typeof config.greeting !== "object") return false;
-
-    // Validate greeting
-    const greeting = config.greeting as Record<string, unknown>;
-    if (typeof greeting.title !== "string") return false;
-    if (typeof greeting.subtitle !== "string") return false;
-    if (greeting.logo !== null && typeof greeting.logo !== "object")
+    if (typeof config.greetingTitle !== "string") return false;
+    if (typeof config.greetingSubtitle !== "string") return false;
+    if (
+      config.greetingLogoId !== null &&
+      typeof config.greetingLogoId !== "string"
+    )
       return false;
-
-    // Validate layout
-    if (!config.layout || typeof config.layout !== "object") return false;
-    const layout = config.layout as Record<string, unknown>;
-    if (typeof layout.borderRadius !== "string") return false;
+    if (typeof config.layoutBorderRadius !== "string") return false;
     if (
       !["comfortable", "compact", "spacious"].includes(
-        layout.layoutDensity as string,
+        config.layoutDensity as string,
       )
     )
       return false;
-    if (typeof layout.sidebarWidth !== "number") return false;
-
-    // Validate typography
-    if (!config.typography || typeof config.typography !== "object")
-      return false;
-    const typography = config.typography as Record<string, unknown>;
-    if (typeof typography.baseFontSize !== "string") return false;
+    if (typeof config.sidebarWidth !== "number") return false;
+    if (typeof config.baseFontSize !== "string") return false;
     if (
-      !["slower", "default", "faster"].includes(
-        typography.animationSpeed as string,
-      )
+      !["slower", "default", "faster"].includes(config.animationSpeed as string)
     )
       return false;
 
@@ -84,23 +71,11 @@ function getSavedSettings(): NonNullable<UIConfig> {
       return defaultConfig;
     }
 
-    // Deep merge with default config to ensure all fields are present
+    // Merge with default config to ensure all fields are present
     const config = parsed;
     const mergedConfig = {
       ...defaultConfig,
       ...config,
-      layout: {
-        ...defaultConfig.layout,
-        ...config.layout,
-      },
-      typography: {
-        ...defaultConfig.typography,
-        ...config.typography,
-      },
-      greeting: {
-        ...defaultConfig.greeting,
-        ...config.greeting,
-      },
     };
 
     // Update storage with merged config
@@ -133,19 +108,19 @@ export const useUISettings = create<UIStore>()((set, get) => ({
       requestAnimationFrame(() => {
         const root = document.documentElement;
         const variables = {
-          "--ui-border-radius": newSettings.layout.borderRadius,
-          "--ui-base-font-size": newSettings.typography.baseFontSize,
-          "--ui-sidebar-width": `${newSettings.layout.sidebarWidth}px`,
+          "--ui-border-radius": newSettings.layoutBorderRadius,
+          "--ui-base-font-size": newSettings.baseFontSize,
+          "--ui-sidebar-width": `${newSettings.sidebarWidth}px`,
           "--ui-animation-speed":
-            newSettings.typography.animationSpeed === "slower"
+            newSettings.animationSpeed === "slower"
               ? "400ms"
-              : newSettings.typography.animationSpeed === "faster"
+              : newSettings.animationSpeed === "faster"
                 ? "100ms"
                 : "200ms",
           "--ui-layout-spacing":
-            newSettings.layout.layoutDensity === "compact"
+            newSettings.layoutDensity === "compact"
               ? "0.5rem"
-              : newSettings.layout.layoutDensity === "spacious"
+              : newSettings.layoutDensity === "spacious"
                 ? "1.5rem"
                 : "1rem",
         };
@@ -166,24 +141,6 @@ export const useUISettings = create<UIStore>()((set, get) => ({
     const updated = {
       ...current,
       ...partial,
-      layout: partial.layout
-        ? {
-            ...current.layout,
-            ...partial.layout,
-          }
-        : current.layout,
-      typography: partial.typography
-        ? {
-            ...current.typography,
-            ...partial.typography,
-          }
-        : current.typography,
-      greeting: partial.greeting
-        ? {
-            ...current.greeting,
-            ...partial.greeting,
-          }
-        : current.greeting,
     };
     if (!isValidConfig(updated)) {
       console.error("Invalid partial settings update");

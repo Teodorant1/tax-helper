@@ -17,8 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import type { Alert } from "~/types/alerts";
-
+import { type Alert } from "~/server/db/schema";
 interface MobileAlertsProps {
   alerts: Alert[];
   searchQuery: string;

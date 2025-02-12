@@ -11,7 +11,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import type { Alert } from "~/types/alerts";
+import { type Alert } from "~/server/db/schema";
+// import type { Alert } from "~/types/alerts";
 
 interface DesktopAlertsProps {
   alerts: Alert[];

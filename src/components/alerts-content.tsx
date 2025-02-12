@@ -5,7 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { DesktopAlerts } from "~/components/desktop-alerts";
 import { MobileAlerts } from "~/components/mobile-alerts";
-import { type Alert } from "~/types/alerts";
+import { type Alert } from "~/server/db/schema";
+// import { type Alert } from "~/types/alerts";
 
 interface AlertsContentProps {
   initialAlerts: Alert[];

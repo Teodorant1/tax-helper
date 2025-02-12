@@ -123,7 +123,7 @@ export function UICustomization() {
             <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
-                name="layout.borderRadius"
+                name="layoutBorderRadius"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Border Radius</FormLabel>
@@ -140,7 +140,7 @@ export function UICustomization() {
 
               <FormField
                 control={form.control}
-                name="layout.layoutDensity"
+                name="layoutDensity"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Layout Density</FormLabel>
@@ -169,7 +169,7 @@ export function UICustomization() {
 
               <FormField
                 control={form.control}
-                name="layout.sidebarWidth"
+                name="sidebarWidth"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sidebar Width</FormLabel>
@@ -201,7 +201,7 @@ export function UICustomization() {
             <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
-                name="typography.baseFontSize"
+                name="baseFontSize"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Base Font Size</FormLabel>
@@ -218,7 +218,7 @@ export function UICustomization() {
 
               <FormField
                 control={form.control}
-                name="typography.animationSpeed"
+                name="animationSpeed"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Animation Speed</FormLabel>

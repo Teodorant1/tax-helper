@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import * as z from "zod";
-import type { ThemeConfig } from "~/types/theme";
+import type { ClientThemeConfig } from "~/types/theme";
+import { useTheme } from "~/store/theme";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -18,7 +19,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { toast } from "~/components/ui/use-toast";
 
-const ThemeSchema: z.ZodType<ThemeConfig> = z.object({
+const ThemeSchema: z.ZodType<ClientThemeConfig> = z.object({
   light: z.object({
     primary: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
       message: "Must be a valid hex color code",
@@ -44,54 +45,18 @@ const ThemeSchema: z.ZodType<ThemeConfig> = z.object({
 });
 
 export function ThemeConfig() {
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const [isSaved, setIsSaved] = React.useState(false);
 
   const form = useForm<z.infer<typeof ThemeSchema>>({
     resolver: zodResolver(ThemeSchema),
-    defaultValues: React.useMemo(() => {
-      if (typeof window === "undefined") {
-        return {
-          light: {
-            primary: "#7c3aed",
-            secondary: "#6b7280",
-            accent: "#f59e0b",
-          },
-          dark: {
-            primary: "#8b5cf6",
-            secondary: "#9ca3af",
-            accent: "#fbbf24",
-          },
-        };
-      }
-
-      const savedConfig = localStorage.getItem("theme-config");
-      if (savedConfig) {
-        try {
-          return JSON.parse(savedConfig) as ThemeConfig;
-        } catch (e) {
-          console.error("Failed to parse saved theme config:", e);
-        }
-      }
-
-      return {
-        light: {
-          primary: "#7c3aed",
-          secondary: "#6b7280",
-          accent: "#f59e0b",
-        },
-        dark: {
-          primary: "#8b5cf6",
-          secondary: "#9ca3af",
-          accent: "#fbbf24",
-        },
-      };
-    }, []),
+    defaultValues: theme,
   });
 
-  async function onSubmit(values: ThemeConfig) {
+  async function onSubmit(values: ClientThemeConfig) {
     try {
-      localStorage.setItem("theme-config", JSON.stringify(values));
+      setTheme(values);
       toast({
         title: "Theme updated",
         description: "Your theme settings have been saved.",
