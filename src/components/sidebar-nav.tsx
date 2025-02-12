@@ -23,6 +23,7 @@ import { useTheme } from "next-themes";
 import styles from "~/styles/ui-settings.module.css";
 import { SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { OrganizationSwitcher } from "./organization-switcher/organization-switcher";
 
 const sidebarItems = [
   {
@@ -194,13 +195,13 @@ export function SidebarNav() {
 
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out md:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0",
           !isMobileOpen && "-translate-x-full",
         )}
       >
         <nav
           className={cn(
-            "flex h-full flex-col p-0 text-white shadow-xl md:p-[var(--ui-layout-spacing)] md:shadow-none",
+            "relative flex h-full flex-col p-0 text-white shadow-xl md:p-[var(--ui-layout-spacing)] md:shadow-none",
             styles.sidebarWrapper,
           )}
           style={{
@@ -248,7 +249,7 @@ export function SidebarNav() {
               );
             })}
           </div>
-          <div className="mt-auto space-y-4 transition-all duration-200">
+          <div className="relative mt-auto space-y-4 transition-all duration-200">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20"
@@ -265,12 +266,8 @@ export function SidebarNav() {
                 </>
               )}
             </button>
-            <div className="flex items-center gap-3 rounded-lg bg-black/20 p-4">
-              <Building2 className="h-8 w-8" />
-              <div>
-                <div className="font-medium">Edgewater Ventures</div>
-                <div className="text-sm opacity-80">Admin</div>
-              </div>
+            <div className="relative">
+              <OrganizationSwitcher />
             </div>
             <div className="flex h-16 items-center justify-end gap-4 p-4">
               <SignedOut>
@@ -280,12 +277,6 @@ export function SidebarNav() {
                 >
                   Sign In / Sign Up
                 </Link>
-                {/* <Link
-                  href="/sign-up"
-                  className="rounded-md bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20"
-                >
-                  Sign Up
-                </Link> */}
               </SignedOut>
               <SignedIn>
                 <UserButton />
