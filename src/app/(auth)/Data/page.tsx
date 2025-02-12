@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { DataClient } from "~/app/Data/client";
+import { DataClient } from "./client";
 
 interface Transaction {
   id: string;

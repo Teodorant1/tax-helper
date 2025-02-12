@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -66,20 +64,30 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen w-full items-center justify-center bg-background">
-      <div className="flex w-full rounded-lg bg-white shadow-sm">
+    <div className="flex h-full min-h-screen w-full items-center justify-center bg-white dark:bg-gray-900">
+      <div className="flex w-full rounded-lg bg-white shadow-sm dark:bg-gray-800">
         {/* Left side - Auth Form */}
         <div className="flex h-full w-full max-w-[50%] justify-center pt-24">
           <div className="w-full max-w-[360px] space-y-8">
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 border-border">
+                <TabsTrigger
+                  value="signin"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400"
+                >
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger
+                  value="signup"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400"
+                >
+                  Sign Up
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="signin" className="space-y-8">
                 <div className="text-center">
-                  <h1 className="text-3xl font-bold tracking-tight">
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                     Welcome Back!
                   </h1>
                 </div>
@@ -88,45 +96,44 @@ export default function AuthPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="signin-email"
-                      className="text-sm font-medium"
+                      className="text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Email
                     </label>
-                    <Input
+                    <input
                       id="signin-email"
                       type="email"
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full"
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
                     />
                   </div>
 
-                  <Button
+                  <button
                     type="submit"
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    className="w-full rounded-md bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-purple-500 dark:hover:bg-purple-600"
                     disabled={isLoading}
                   >
                     {isLoading ? "Loading..." : "Continue"}
-                  </Button>
+                  </button>
                 </form>
 
-                <div className="relative">
+                <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" />
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-muted-foreground">
+                    <span className="bg-white px-2 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                       OR
                     </span>
                   </div>
                 </div>
 
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  className="w-full"
+                  className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                   onClick={() => handleGoogleAuth("signin")}
                 >
                   <svg
@@ -145,12 +152,12 @@ export default function AuthPage() {
                     ></path>
                   </svg>
                   Sign in with Google
-                </Button>
+                </button>
 
                 <div className="text-center">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-purple-600 hover:underline"
+                    className="text-sm text-purple-600 hover:underline dark:text-purple-400"
                   >
                     Forgot Password?
                   </Link>
@@ -159,10 +166,10 @@ export default function AuthPage() {
 
               <TabsContent value="signup" className="space-y-8">
                 <div className="text-center">
-                  <h1 className="text-3xl font-bold tracking-tight">
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                     Create your account
                   </h1>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Get started with TaxHelper today
                   </p>
                 </div>
@@ -171,45 +178,44 @@ export default function AuthPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="signup-email"
-                      className="text-sm font-medium"
+                      className="text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       Email
                     </label>
-                    <Input
+                    <input
                       id="signup-email"
                       type="email"
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full"
+                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
                     />
                   </div>
 
-                  <Button
+                  <button
                     type="submit"
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    className="w-full rounded-md bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-purple-500 dark:hover:bg-purple-600"
                     disabled={isLoading}
                   >
                     {isLoading ? "Loading..." : "Continue"}
-                  </Button>
+                  </button>
                 </form>
 
-                <div className="relative">
+                <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" />
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-muted-foreground">
+                    <span className="bg-white px-2 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                       OR
                     </span>
                   </div>
                 </div>
 
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  className="w-full"
+                  className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                   onClick={() => handleGoogleAuth("signup")}
                 >
                   <svg
@@ -228,17 +234,17 @@ export default function AuthPage() {
                     ></path>
                   </svg>
                   Sign up with Google
-                </Button>
+                </button>
               </TabsContent>
             </Tabs>
           </div>
         </div>
 
         {/* Right side - Feature Highlights */}
-        <div className="hidden h-full min-h-screen w-full flex-1 justify-center bg-slate-50 lg:flex">
+        <div className="hidden h-full min-h-screen w-full flex-1 justify-center bg-gray-50 dark:bg-gray-900 lg:flex">
           <div className="w-[90%] space-y-8 py-8">
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Welcome to a brand new way
                 <br />
                 to experience your taxes.
@@ -247,10 +253,10 @@ export default function AuthPage() {
 
             <div className="space-y-6">
               {/* Feature 1 */}
-              <div className="rounded-lg border bg-white p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/10">
                   <svg
-                    className="h-6 w-6 text-red-600"
+                    className="h-6 w-6 text-red-600 dark:text-red-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -263,10 +269,10 @@ export default function AuthPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold">
+                <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
                   Mend your estranged relationship with the IRS.
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-gray-600 dark:text-gray-400">
                   TaxNow brings your IRS tax account into focus by providing
                   real-time access to historical tax return and transaction
                   data, as well as actionable insights and alerts to save you
@@ -274,10 +280,10 @@ export default function AuthPage() {
                 </p>
               </div>
               {/* Feature 2 */}
-              <div className="rounded-lg border bg-white p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/10">
                   <svg
-                    className="h-6 w-6 text-purple-600"
+                    className="h-6 w-6 text-purple-600 dark:text-purple-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -290,21 +296,21 @@ export default function AuthPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold">
+                <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
                   TaxNow&apos;s IRS account access is always free for first-time
                   users.
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-gray-600 dark:text-gray-400">
                   Enjoy TaxNow&apos;s core features, including IRS tax account
                   monitoring and alerts for up to one IRS individual or business
                   tax account completely on the house.
                 </p>
               </div>
               {/* Feature 3 */}
-              <div className="rounded-lg border bg-white p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/10">
                   <svg
-                    className="h-6 w-6 text-green-600"
+                    className="h-6 w-6 text-green-600 dark:text-green-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -317,10 +323,10 @@ export default function AuthPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold">
+                <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
                   Data security beyond measure.
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-gray-600 dark:text-gray-400">
                   We are obsessed with the security and confidentiality of your
                   data and personal information.
                 </p>

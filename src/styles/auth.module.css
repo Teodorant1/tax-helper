@@ -1,0 +1,239 @@
+.authContainer {
+  @apply flex h-full min-h-screen w-full items-center justify-center;
+  background-color: var(--background);
+}
+
+.authCard {
+  @apply flex w-full rounded-lg shadow-sm;
+  background-color: var(--card-background);
+}
+
+.formContainer {
+  @apply flex h-full w-full max-w-[50%] justify-center pt-24;
+}
+
+.formWrapper {
+  @apply w-full max-w-[360px] space-y-8;
+}
+
+.tabsList {
+  @apply grid w-full grid-cols-2;
+  border-color: var(--border-color);
+}
+
+.tabsTrigger {
+  @apply px-4 py-2 text-sm font-medium;
+  color: var(--text-muted);
+  background-color: transparent;
+  border-bottom: 2px solid transparent;
+}
+
+.tabsTrigger[data-state="active"] {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-color);
+}
+
+.title {
+  @apply text-3xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  @apply mt-2 text-sm;
+  color: var(--text-muted);
+}
+
+.inputLabel {
+  @apply text-sm font-medium;
+  color: var(--text-primary);
+}
+
+.input {
+  @apply w-full rounded-md border px-3 py-2;
+  background-color: var(--input-background);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.input:focus {
+  @apply outline-none ring-2;
+  border-color: var(--accent-color);
+  ring-color: var(--accent-color);
+}
+
+.button {
+  @apply w-full rounded-md px-4 py-2 font-medium transition-colors;
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.button:hover {
+  background-color: var(--accent-color-hover);
+}
+
+.button:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.buttonOutline {
+  @apply w-full rounded-md border px-4 py-2 font-medium transition-colors;
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.buttonOutline:hover {
+  background-color: var(--hover-background);
+}
+
+.divider {
+  @apply relative my-6;
+}
+
+.dividerLine {
+  @apply absolute inset-0 flex items-center;
+}
+
+.dividerLine::before {
+  content: "";
+  @apply w-full border-t;
+  border-color: var(--border-color);
+}
+
+.dividerText {
+  @apply relative flex justify-center text-xs uppercase;
+  color: var(--text-muted);
+}
+
+.dividerText span {
+  @apply px-2;
+  background-color: var(--card-background);
+}
+
+.featuresContainer {
+  @apply hidden h-full min-h-screen w-full flex-1 justify-center lg:flex;
+  background-color: var(--features-background);
+}
+
+.featuresWrapper {
+  @apply w-[90%] space-y-8 py-8;
+}
+
+.featureCard {
+  @apply rounded-lg border p-6;
+  background-color: var(--card-background);
+  border-color: var(--border-color);
+}
+
+.featureIcon {
+  @apply mb-4 flex h-12 w-12 items-center justify-center rounded-full;
+}
+
+.featureTitle {
+  @apply mb-2 text-xl font-semibold;
+  color: var(--text-primary);
+}
+
+.featureText {
+  color: var(--text-muted);
+}
+
+.link {
+  @apply text-sm hover:underline;
+  color: var(--accent-color);
+}
+
+.textCenter {
+  @apply text-center;
+}
+
+.spaceY4 {
+  @apply space-y-4;
+}
+
+.spaceY8 {
+  @apply space-y-8;
+}
+
+.spaceY2 {
+  @apply space-y-2;
+}
+
+.spaceY6 {
+  @apply space-y-6;
+}
+
+.fullWidth {
+  @apply w-full;
+}
+
+.googleIcon {
+  @apply mr-2 h-4 w-4;
+}
+
+.featureIconSvg {
+  @apply h-6 w-6;
+  color: var(--accent-color);
+}
+
+.featureIconRed {
+  background-color: var(--icon-red-background);
+}
+
+.featureIconRed svg {
+  color: var(--icon-red-color);
+}
+
+.featureIconPurple {
+  background-color: var(--icon-purple-background);
+}
+
+.featureIconPurple svg {
+  color: var(--icon-purple-color);
+}
+
+.featureIconGreen {
+  background-color: var(--icon-green-background);
+}
+
+.featureIconGreen svg {
+  color: var(--icon-green-color);
+}
+
+:root {
+  --icon-red-background: #fee2e2;
+  --icon-red-color: #dc2626;
+  --icon-purple-background: #f3e8ff;
+  --icon-purple-color: #9333ea;
+  --icon-green-background: #dcfce7;
+  --icon-green-color: #16a34a;
+  --background: #ffffff;
+  --card-background: #ffffff;
+  --features-background: #f8fafc;
+  --input-background: #ffffff;
+  --hover-background: #f3f4f6;
+  --text-primary: #111827;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --accent-color: #9333ea;
+  --accent-color-hover: #7e22ce;
+}
+
+:global(.dark) {
+  --icon-red-background: rgba(220, 38, 38, 0.1);
+  --icon-red-color: #ef4444;
+  --icon-purple-background: rgba(147, 51, 234, 0.1);
+  --icon-purple-color: #a855f7;
+  --icon-green-background: rgba(22, 163, 74, 0.1);
+  --icon-green-color: #22c55e;
+  --background: #0f172a;
+  --card-background: #1e293b;
+  --features-background: #0f172a;
+  --input-background: #1e293b;
+  --hover-background: #2d3748;
+  --text-primary: #f3f4f6;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+  --accent-color: #9333ea;
+  --accent-color-hover: #7e22ce;
+}
