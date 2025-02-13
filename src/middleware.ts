@@ -14,14 +14,7 @@ export const config = {
 }
 */
 
-// New config - handle API routes and pages while excluding static files
+// Use Clerk's recommended matcher pattern
 export const config = {
-  matcher: [
-    '/api/:path*',
-  '/trpc/:path*',
-  '/clients/:path*',
-  '/data/:path*',
-  '/alerts/:path*',
-  '/documents/:path*'
-  ],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 }
