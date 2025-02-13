@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { testRouter } from "./routers/testing";
 import { authRouter } from "./routers/auth";
 import { uiSettingsRouter } from "./routers/ui-settings";
+
 /**
  * This is the primary router for your server.
  *
