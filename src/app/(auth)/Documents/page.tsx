@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, notFound } from "next/navigation";
 import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -13,9 +13,14 @@ export default function DocumentsPage() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get("clientId");
 
-  const { data: documents = [] } = clientId
+  const { data: documents = [], isSuccess } = clientId
     ? api.test.getDocumentsByClient.useQuery({ clientId })
     : api.test.getAllDocuments.useQuery();
+
+  // Trigger the custom not-found page if we have a clientId but no documents were found
+  if (isSuccess && clientId && documents.length === 0) {
+    notFound();
+  }
 
   return (
     <div className="container mx-auto py-6">

@@ -63,6 +63,7 @@ export const testRouter = createTRPCRouter({
         console.info("[Clients] Fetching all clients", {
           userId: ctx.user?.id ?? "unknown",
           sessionId: ctx.session?.sessionId ?? "unknown",
+          timestamp: new Date().toISOString(),
         });
       }
 
@@ -80,19 +81,26 @@ export const testRouter = createTRPCRouter({
       if (process.env.VERCEL) {
         console.info("[Clients] Successfully fetched clients", {
           count: clients.length,
+          timestamp: new Date().toISOString(),
+          nestedCounts: {
+            alerts: clients.reduce((sum, client) => sum + client.alerts.length, 0),
+            transactions: clients.reduce((sum, client) => sum + client.transactions.length, 0),
+          }
         });
       }
 
       return clients;
     } catch (error) {
-      console.error("Error fetching clients:", error);
-      if (process.env.VERCEL) {
-        console.error("[Clients] Failed to fetch clients", {
-          error,
-          userId: ctx.user?.id ?? "unknown",
-          sessionId: ctx.session?.sessionId ?? "unknown",
-        });
-      }
+      console.error("[Clients] Failed to fetch clients:", {
+        error: error instanceof Error ? {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+        } : error,
+        userId: ctx.user?.id ?? "unknown",
+        sessionId: ctx.session?.sessionId ?? "unknown",
+        timestamp: new Date().toISOString(),
+      });
       throw error;
     }
   }),
@@ -120,6 +128,7 @@ export const testRouter = createTRPCRouter({
         console.info("[Alerts] Fetching all alerts", {
           userId: ctx.user?.id ?? "unknown",
           sessionId: ctx.session?.sessionId ?? "unknown",
+          timestamp: new Date().toISOString(),
         });
       }
 
@@ -132,19 +141,23 @@ export const testRouter = createTRPCRouter({
       if (process.env.VERCEL) {
         console.info("[Alerts] Successfully fetched alerts", {
           count: all_alerts.length,
+          timestamp: new Date().toISOString(),
+          withClientCount: all_alerts.filter(alert => alert.client !== null).length
         });
       }
 
       return all_alerts;
     } catch (error) {
-      console.error("Error fetching alerts:", error);
-      if (process.env.VERCEL) {
-        console.error("[Alerts] Failed to fetch alerts", {
-          error,
-          userId: ctx.user?.id ?? "unknown",
-          sessionId: ctx.session?.sessionId ?? "unknown",
-        });
-      }
+      console.error("[Alerts] Failed to fetch alerts:", {
+        error: error instanceof Error ? {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+        } : error,
+        userId: ctx.user?.id ?? "unknown",
+        sessionId: ctx.session?.sessionId ?? "unknown",
+        timestamp: new Date().toISOString(),
+      });
       throw error;
     }
   }),
@@ -282,11 +295,42 @@ export const testRouter = createTRPCRouter({
     }),
 
   getAllDocuments: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.documents.findMany({
-      with: {
-        client: true,
-      },
-    });
+    try {
+      if (process.env.VERCEL) {
+        console.info("[Documents] Fetching all documents", {
+          userId: ctx.user?.id ?? "unknown",
+          sessionId: ctx.session?.sessionId ?? "unknown",
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const documents = await ctx.db.query.documents.findMany({
+        with: {
+          client: true,
+        },
+      });
+
+      if (process.env.VERCEL) {
+        console.info("[Documents] Successfully fetched documents", {
+          count: documents.length,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return documents;
+    } catch (error) {
+      console.error("[Documents] Failed to fetch documents:", {
+        error: error instanceof Error ? {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+        } : error,
+        userId: ctx.user?.id ?? "unknown",
+        sessionId: ctx.session?.sessionId ?? "unknown",
+        timestamp: new Date().toISOString(),
+      });
+      throw error;
+    }
   }),
 
   getDocumentsByClient: protectedProcedure
