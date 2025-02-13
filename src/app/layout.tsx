@@ -38,8 +38,6 @@ export default async function RootLayout({
             >
               <UISettingsProvider>
                 <div className="relative min-h-screen w-full">
-                  {/* <SidebarNav /> */}
-                  {/* md:pl-[calc(var(--ui-sidebar-width)+1.5rem)] */}
                   <main className="flex-1 transition-all duration-200">
                     {children}
                   </main>
