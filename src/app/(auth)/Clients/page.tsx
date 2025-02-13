@@ -211,7 +211,7 @@ export default function ClientsPage() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Data?clientId=${client.id}`}>
+                    <Link href={`/data?clientId=${client.id}`}>
                       <Search className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -221,7 +221,7 @@ export default function ClientsPage() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Alerts?clientId=${client.id}`}>
+                    <Link href={`/alerts?clientId=${client.id}`}>
                       <Bell className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -231,7 +231,7 @@ export default function ClientsPage() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Documents?clientId=${client.id}`}>
+                    <Link href={`/documents?clientId=${client.id}`}>
                       <FileText className="h-4 w-4" />
                     </Link>
                   </Button>
