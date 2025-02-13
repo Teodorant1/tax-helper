@@ -57,7 +57,7 @@ export const testRouter = createTRPCRouter({
     }),
 
   getAllClients: protectedProcedure.query(async ({ ctx }) => {
-    console.log("getAllClients", ctx.session, ctx.user);
+    console.log("getAllClients_auth", ctx.session, ctx.user);
 
     return await ctx.db.query.clients.findMany({
       with: {
