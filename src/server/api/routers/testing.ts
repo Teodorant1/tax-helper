@@ -92,7 +92,8 @@ export const testRouter = createTRPCRouter({
       },
     });
 
-    console.log("all_alerts", all_alerts);
+    // console.log("all_alerts", all_alerts);
+    console.log("all_alerts_auth", ctx.session, ctx.user);
 
     return all_alerts;
   }),
