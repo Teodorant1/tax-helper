@@ -26,9 +26,32 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <TRPCReactProvider>
-        <html lang="en">
+    <html lang="en">
+      <ClerkProvider
+        appearance={{
+          baseTheme: undefined,
+          variables: { colorPrimary: "rgb(var(--primary))" },
+          elements: {
+            formButtonPrimary:
+              "bg-primary hover:bg-primary/90 text-primary-foreground",
+            card: "bg-background",
+            headerTitle: "text-foreground",
+            headerSubtitle: "text-muted-foreground",
+            socialButtonsBlockButton: "bg-background border-border hover:bg-muted",
+            socialButtonsBlockButtonText: "text-foreground font-normal",
+            formFieldLabel: "text-foreground",
+            formFieldInput: "bg-background border-input",
+            dividerLine: "bg-border",
+            dividerText: "text-muted-foreground",
+            formResendCodeLink: "text-primary hover:text-primary/90",
+            identityPreviewEditButton: "text-primary hover:text-primary/90",
+            formFieldAction: "text-primary hover:text-primary/90",
+            navbar: "hidden",
+            headerBackRow: "hidden",
+          },
+        }}
+      >
+        <TRPCReactProvider>
           <body className={`font-sans ${inter.variable}`}>
             <ThemeProvider
               attribute="class"
@@ -46,8 +69,8 @@ export default async function RootLayout({
               </UISettingsProvider>
             </ThemeProvider>
           </body>
-        </html>
-      </TRPCReactProvider>
-    </ClerkProvider>
+        </TRPCReactProvider>
+      </ClerkProvider>
+    </html>
   );
 }

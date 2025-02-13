@@ -387,13 +387,24 @@ export async function updateUserRole(
 }
 
 export async function AuthGuard() {
-  const route = (await headers()).get("x-pathname") || "/";
-  console.log("route", route);
   const awaited_auth = await auth();
 
-  console.log("awaited_auth", awaited_auth);
+  if (process.env.VERCEL) {
+    console.info("[AuthGuard] Checking auth", {
+      userId: awaited_auth?.userId ?? "unknown",
+      sessionId: awaited_auth?.sessionId ?? "unknown",
+      timestamp: new Date().toISOString(),
+    });
+  }
 
-  if (!awaited_auth.userId && route !== "/login") {
+  if (!awaited_auth?.userId) {
+    if (process.env.VERCEL) {
+      console.error("[AuthGuard] No user ID found, redirecting to login", {
+        timestamp: new Date().toISOString(),
+      });
+    }
     redirect("/login");
   }
+
+  return awaited_auth;
 }

@@ -17,7 +17,11 @@ export const config = {
 // New config - handle API routes and pages while excluding static files
 export const config = {
   matcher: [
-    '/(api|trpc)(.*)',
-    '/((?!_next|.*\\..*).*)', // Match all pages except Next.js internals and static files
+    '/api/:path*',
+  '/trpc/:path*',
+  '/clients/:path*',
+  '/data/:path*',
+  '/alerts/:path*',
+  '/documents/:path*'
   ],
 }
