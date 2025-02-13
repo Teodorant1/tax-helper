@@ -29,7 +29,7 @@ export function DataPageClient() {
     <div className="container mx-auto py-6">
       <div className="mb-6">
         <Link
-          href="/Clients"
+          href="/clients"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
