@@ -28,11 +28,40 @@ import {
 import { type Client } from "~/server/db/schema";
 
 export function ActiveClients() {
-  const { data: allClients = [] } = api.test.getAllClients.useQuery();
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    data: allClients = [],
+    error,
+    isLoading,
+  } = api.test.getAllClients.useQuery();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
+          <CardDescription>Loading clients...</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (error) {
+    console.error("Error loading clients:", error);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
+          <CardDescription className="text-red-500">
+            Error loading clients. Please try again later.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
   const clients = allClients.filter(
     (client: Client) => client.status === "Active",
   );
-  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <Card>

@@ -48,6 +48,16 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    // Log error details
+    console.error(`[TRPC Error] ${error.message}`);
+    if (process.env.VERCEL) {
+      console.error(`[TRPC Error] ${error.message}`, {
+        code: error.code,
+        cause: error.cause,
+        stack: error.stack,
+      });
+    }
+
     return {
       ...shape,
       data: {

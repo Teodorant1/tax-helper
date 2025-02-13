@@ -57,18 +57,44 @@ export const testRouter = createTRPCRouter({
     }),
 
   getAllClients: protectedProcedure.query(async ({ ctx }) => {
-    console.log("getAllClients_auth", ctx.session, ctx.user);
+    try {
+      console.log("getAllClients_auth", ctx.session, ctx.user);
+      if (process.env.VERCEL) {
+        console.info("[Clients] Fetching all clients", {
+          userId: ctx.user?.id ?? "unknown",
+          sessionId: ctx.session?.sessionId ?? "unknown",
+        });
+      }
 
-    return await ctx.db.query.clients.findMany({
-      with: {
-        alerts: true,
-        transactions: {
-          with: {
-            client: true,
+      const clients = await ctx.db.query.clients.findMany({
+        with: {
+          alerts: true,
+          transactions: {
+            with: {
+              client: true,
+            },
           },
         },
-      },
-    });
+      });
+
+      if (process.env.VERCEL) {
+        console.info("[Clients] Successfully fetched clients", {
+          count: clients.length,
+        });
+      }
+
+      return clients;
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      if (process.env.VERCEL) {
+        console.error("[Clients] Failed to fetch clients", {
+          error,
+          userId: ctx.user?.id ?? "unknown",
+          sessionId: ctx.session?.sessionId ?? "unknown",
+        });
+      }
+      throw error;
+    }
   }),
 
   // Alert queries
@@ -88,16 +114,39 @@ export const testRouter = createTRPCRouter({
     }),
 
   getAllAlerts: protectedProcedure.query(async ({ ctx }) => {
-    const all_alerts = await ctx.db.query.alerts.findMany({
-      with: {
-        client: true,
-      },
-    });
+    try {
+      console.log("all_alerts_auth", ctx.session, ctx.user);
+      if (process.env.VERCEL) {
+        console.info("[Alerts] Fetching all alerts", {
+          userId: ctx.user?.id ?? "unknown",
+          sessionId: ctx.session?.sessionId ?? "unknown",
+        });
+      }
 
-    // console.log("all_alerts", all_alerts);
-    console.log("all_alerts_auth", ctx.session, ctx.user);
+      const all_alerts = await ctx.db.query.alerts.findMany({
+        with: {
+          client: true,
+        },
+      });
 
-    return all_alerts;
+      if (process.env.VERCEL) {
+        console.info("[Alerts] Successfully fetched alerts", {
+          count: all_alerts.length,
+        });
+      }
+
+      return all_alerts;
+    } catch (error) {
+      console.error("Error fetching alerts:", error);
+      if (process.env.VERCEL) {
+        console.error("[Alerts] Failed to fetch alerts", {
+          error,
+          userId: ctx.user?.id ?? "unknown",
+          sessionId: ctx.session?.sessionId ?? "unknown",
+        });
+      }
+      throw error;
+    }
   }),
 
   getAlertsByClient: protectedProcedure
