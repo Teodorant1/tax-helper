@@ -11,11 +11,10 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { type Alert } from "~/server/db/schema";
-// import type { Alert } from "~/types/alerts";
+import { type Alert, type Client } from "~/server/db/schema";
 
 interface DesktopAlertsProps {
-  alerts: Alert[];
+  alerts: (Alert & { client: Client })[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
@@ -84,9 +83,9 @@ export function DesktopAlerts({
                   </div>
                 </div>
                 <div>
-                  <div className="font-medium">{alert.clientName}</div>
+                  <div className="font-medium">{alert.client.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {alert.clientType} • {alert.taxId}
+                    {alert.clientType} • {alert.client.taxId}
                   </div>
                 </div>
                 <div className="whitespace-pre-line">{alert.alert}</div>

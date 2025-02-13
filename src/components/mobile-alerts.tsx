@@ -17,9 +17,9 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { type Alert } from "~/server/db/schema";
+import { type Alert, type Client } from "~/server/db/schema";
 interface MobileAlertsProps {
-  alerts: Alert[];
+  alerts: (Alert & { client: Client })[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
@@ -77,9 +77,9 @@ export function MobileAlerts({
                     )}
                   </div>
                   <div>
-                    <div className="font-medium">{alert.clientName}</div>
+                    <div className="font-medium">{alert.client.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {alert.clientType} • {alert.taxId}
+                      {alert.clientType} • {alert.client.taxId}
                     </div>
                   </div>
                 </div>

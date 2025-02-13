@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useUISettings } from "~/store/ui-settings";
+import { useUISettings, useUISettingsSync } from "~/store/ui-settings";
 import styles from "~/styles/ui-settings.module.css";
 import { cn } from "~/lib/utils";
 
@@ -11,6 +11,7 @@ interface UISettingsProviderProps {
 
 export function UISettingsProvider({ children }: UISettingsProviderProps) {
   const { settings } = useUISettings();
+  const { isLoading } = useUISettingsSync();
 
   // Get layout density class
   const layoutClass = React.useMemo(() => {
@@ -35,6 +36,11 @@ export function UISettingsProvider({ children }: UISettingsProviderProps) {
         return styles.default;
     }
   }, [settings.animationSpeed]);
+
+  // Show nothing while initial settings are loading
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div

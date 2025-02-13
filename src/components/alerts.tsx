@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "~/trpc/react";
 import { Search, AlertTriangle, Info } from "lucide-react";
 import Link from "next/link";
 import { Input } from "~/components/ui/input";
@@ -13,56 +14,15 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-interface Alert {
-  id: string;
-  type: "warning" | "info";
-  title: string;
-  code: string;
-  period: string;
-  form: string;
-  date: string;
-  amount: string;
-}
-
-const mockAlerts: Alert[] = [
-  {
-    id: "1",
-    type: "warning",
-    title: "Rodan Enterprises, Inc.",
-    code: "Code 150 - Return Filed",
-    period: "2019 Q4",
-    form: "F1120",
-    date: "02-05-2025",
-    amount: "$0.00",
-  },
-  {
-    id: "2",
-    type: "info",
-    title: "Rodan Enterprises, Inc.",
-    code: "Code 960 - Appointed Representative",
-    period: "2019 Q4",
-    form: "F1120",
-    date: "02-05-2025",
-    amount: "$0.00",
-  },
-  {
-    id: "3",
-    type: "info",
-    title: "Rodan Enterprises, Inc.",
-    code: "Code 460 - Extension of time for filing",
-    period: "2019 Q4",
-    form: "F1120",
-    date: "02-05-2025",
-    amount: "$0.00",
-  },
-];
+import { type Alert } from "~/server/db/schema";
 
 export function Alerts() {
+  const { data: alerts = [] } = api.test.getAllAlerts.useQuery();
   const [searchQuery, setSearchQuery] = useState("");
-  const warningCount = mockAlerts.filter(
+  const warningCount = alerts.filter(
     (alert) => alert.type === "warning",
   ).length;
-  const infoCount = mockAlerts.filter((alert) => alert.type === "info").length;
+  const infoCount = alerts.filter((alert) => alert.type === "info").length;
 
   return (
     <Card>
@@ -75,7 +35,7 @@ export function Alerts() {
           <CardDescription>View and manage your tax alerts</CardDescription>
         </div>
         <Button variant="link" className="text-primary" asChild>
-          <Link href="/Alerts">View All</Link>
+          <Link href="/alerts">View All</Link>
         </Button>
       </CardHeader>
       <CardContent>
@@ -91,11 +51,13 @@ export function Alerts() {
           />
         </div>
         <div className="space-y-4">
-          {mockAlerts
+          {alerts
             .filter(
               (alert) =>
-                alert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                alert.code.toLowerCase().includes(searchQuery.toLowerCase()),
+                alert.client.name
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                alert.alert.toLowerCase().includes(searchQuery.toLowerCase()),
             )
             .map((alert) => (
               <div
@@ -117,14 +79,14 @@ export function Alerts() {
                     )}
                   </div>
                   <div>
-                    <div className="font-medium">{alert.title}</div>
+                    <div className="font-medium">{alert.client.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      {alert.code}
+                      {alert.alert}
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground md:flex md:gap-4">
-                      <span>{alert.period}</span>
-                      <span>{alert.form}</span>
-                      <span>{alert.date}</span>
+                      <span>{alert.taxPeriod}</span>
+                      <span>{alert.clientType}</span>
+                      <span>{alert.alertDate}</span>
                       <span>{alert.amount}</span>
                     </div>
                   </div>

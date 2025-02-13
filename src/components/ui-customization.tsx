@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useUISettings } from "~/store/ui-settings";
+import { useUISettings, useUISettingsSync } from "~/store/ui-settings";
 import { useUISettingsForm } from "~/hooks/use-ui-settings-form";
 import type { FormValues } from "~/hooks/use-ui-settings-form";
 import { Button } from "~/components/ui/button";
@@ -41,6 +41,7 @@ export function UICustomization() {
 
   const { form, createConfig } = useUISettingsForm();
   const { updateSettings } = useUISettings();
+  const { updateMutation } = useUISettingsSync();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -83,7 +84,8 @@ export function UICustomization() {
           sidebarLogoPreview,
           greetingLogoPreview,
         );
-        updateSettings(config);
+        await updateMutation.mutateAsync(config);
+        await updateSettings(config);
         toast({
           title: "Success",
           description: "UI settings have been updated.",
@@ -101,7 +103,13 @@ export function UICustomization() {
         });
       }
     },
-    [createConfig, updateSettings, sidebarLogoPreview, greetingLogoPreview],
+    [
+      createConfig,
+      updateSettings,
+      updateMutation,
+      sidebarLogoPreview,
+      greetingLogoPreview,
+    ],
   );
 
   // Debug log for form state

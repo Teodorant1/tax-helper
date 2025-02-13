@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "~/trpc/react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,78 +14,64 @@ import {
 
 import { type TaxHistoryEntry } from "~/server/db/schema";
 
-const mockTaxHistory: TaxHistoryEntry[] = [
-  {
-    id: crypto.randomUUID(),
-    clientId: "1",
-    period: "2022",
-    returnFiled: "Original",
-    principalTax: "$2,746.25",
-    interest: "$0.00",
-    penalties: "$0.00",
-    paymentsAndCredits: "($2,746.25)",
-    refunds: "$0.00",
-    balance: "$0.00",
-    type: "income",
-  },
-  {
-    id: crypto.randomUUID(),
-    clientId: "1",
-    period: "2021",
-    returnFiled: "Original",
-    principalTax: "$145,855.36",
-    interest: "($17,977.99)",
-    penalties: "$0.00",
-    paymentsAndCredits: "($290,503.43)",
-    refunds: "$162,626.06",
-    balance: "$0.00",
-    type: "income",
-  },
-  {
-    id: crypto.randomUUID(),
-    clientId: "1",
-    period: "2020",
-    returnFiled: "Original",
-    principalTax: "$713,169.00",
-    interest: "($40,361.21)",
-    penalties: "$0.00",
-    paymentsAndCredits: "($1,041,021.70)",
-    refunds: "$368,213.91",
-    balance: "$0.00",
-    type: "income",
-  },
-  {
-    id: crypto.randomUUID(),
-    clientId: "1",
-    period: "2024",
-    returnFiled: "No",
-    principalTax: "$0.00",
-    interest: "$0.00",
-    penalties: "$0.00",
-    paymentsAndCredits: "$0.00",
-    refunds: "$0.00",
-    balance: "$0.00",
-    type: "employment",
-  },
-];
-
 export default function TaxHistoryPage() {
-  const incomeEntries = mockTaxHistory.filter(
-    (entry) => entry.type === "income",
+  const { data: taxHistory = [] } = api.test.getAllTaxHistory.useQuery();
+
+  const incomeEntries = taxHistory.filter(
+    (entry: TaxHistoryEntry) => entry.type === "income",
   );
-  const employmentEntries = mockTaxHistory.filter(
-    (entry) => entry.type === "employment",
+  const employmentEntries = taxHistory.filter(
+    (entry: TaxHistoryEntry) => entry.type === "employment",
   );
+
+  // Helper function for currency calculations
+  const formatCurrency = (value: string) => {
+    const numericValue = parseFloat(value.replace(/[$,()]/g, ""));
+    return numericValue.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
   // Calculate totals for income
   const incomeTotals = incomeEntries.reduce(
     (acc, entry) => ({
-      principalTax: "$861,770.61", // Hardcoded for now, would need proper currency math
-      interest: "($58,339.20)",
-      penalties: "$0.00",
-      paymentsAndCredits: "($1,334,271.38)",
-      refunds: "$530,839.97",
-      balance: "$0.00",
+      principalTax: `$${formatCurrency(
+        (
+          parseFloat(acc.principalTax.replace(/[$,]/g, "")) +
+          parseFloat(entry.principalTax.replace(/[$,]/g, ""))
+        ).toString(),
+      )}`,
+      interest: `$${formatCurrency(
+        (
+          parseFloat(acc.interest.replace(/[$,()]/g, "")) +
+          parseFloat(entry.interest.replace(/[$,()]/g, ""))
+        ).toString(),
+      )}`,
+      penalties: `$${formatCurrency(
+        (
+          parseFloat(acc.penalties.replace(/[$,]/g, "")) +
+          parseFloat(entry.penalties.replace(/[$,]/g, ""))
+        ).toString(),
+      )}`,
+      paymentsAndCredits: `($${formatCurrency(
+        (
+          parseFloat(acc.paymentsAndCredits.replace(/[$,()]/g, "")) +
+          parseFloat(entry.paymentsAndCredits.replace(/[$,()]/g, ""))
+        ).toString(),
+      )})`,
+      refunds: `$${formatCurrency(
+        (
+          parseFloat(acc.refunds.replace(/[$,]/g, "")) +
+          parseFloat(entry.refunds.replace(/[$,]/g, ""))
+        ).toString(),
+      )}`,
+      balance: `$${formatCurrency(
+        (
+          parseFloat(acc.balance.replace(/[$,]/g, "")) +
+          parseFloat(entry.balance.replace(/[$,]/g, ""))
+        ).toString(),
+      )}`,
     }),
     {
       principalTax: "$0.00",

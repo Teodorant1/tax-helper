@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useUISettings } from "~/store/ui-settings";
 import type { UIConfig } from "~/types/ui";
-import { generateId } from "~/lib/utils";
 
 const UISchema = z
   .object({
@@ -52,10 +51,10 @@ const UISchema = z
 export type FormValues = z.infer<typeof UISchema>;
 
 export function useUISettingsForm() {
-  const { settings, setSettings } = useUISettings();
+  const { settings } = useUISettings();
 
   const getFormValues = React.useCallback(
-    (config: NonNullable<UIConfig>): FormValues => {
+    (config: Omit<UIConfig, "id" | "userId">): FormValues => {
       try {
         return {
           sidebarTitle: config.sidebarTitle,
@@ -112,9 +111,8 @@ export function useUISettingsForm() {
       values: FormValues,
       sidebarPreview: string | null,
       greetingPreview: string | null,
-    ): NonNullable<UIConfig> => {
-      const config: UIConfig = {
-        id: generateId(),
+    ): Omit<UIConfig, "id" | "userId"> => {
+      const config: Omit<UIConfig, "id" | "userId"> = {
         sidebarTitle: values.sidebarTitle,
         greetingTitle: values.greetingTitle,
         greetingSubtitle: values.greetingSubtitle,
@@ -138,6 +136,5 @@ export function useUISettingsForm() {
   return {
     form,
     createConfig,
-    setSettings,
   };
 }

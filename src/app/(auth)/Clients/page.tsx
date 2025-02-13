@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "~/trpc/react";
 import {
   Search,
   Filter,
@@ -26,113 +27,26 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-
 import { type Client } from "~/server/db/schema";
 
-const mockClients: Client[] = [
-  {
-    id: "1",
-    name: "Big Sky Trading, LLC",
-    taxId: "77-0616924",
-    email: "contact@bigskytrading.com",
-    phone: "(555) 123-4567",
-    status: "Active",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 2,
-    alerts: 1,
-  },
-  {
-    id: "2",
-    name: "Carolina Food Services, Inc.",
-    taxId: "20-5778510",
-    email: "admin@carolinafood.com",
-    phone: "(555) 234-5678",
-    status: "Active",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 0,
-    alerts: 0,
-  },
-  {
-    id: "3",
-    name: "Cutting Edge Plumbing & Mechanical, Inc.",
-    taxId: "94-2392371",
-    email: "info@cuttingedgeplumbing.com",
-    phone: "(555) 345-6789",
-    status: "Pending",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 3,
-    alerts: 2,
-  },
-  {
-    id: "4",
-    name: "Dalent LLC",
-    taxId: "94-2392371",
-    email: "contact@dalent.com",
-    phone: "(555) 456-7890",
-    status: "Active",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 1,
-    alerts: 0,
-  },
-  {
-    id: "5",
-    name: "EZERC LLC",
-    taxId: "94-2392371",
-    email: "support@ezerc.com",
-    phone: "(555) 567-8901",
-    status: "Inactive",
-    lastFiling: "2024 Q3",
-    nextFiling: "N/A",
-    pendingTasks: 0,
-    alerts: 1,
-  },
-  {
-    id: "6",
-    name: "Frontier Solutions Group",
-    taxId: "45-7890123",
-    email: "info@frontiersolutions.com",
-    phone: "(555) 678-9012",
-    status: "Active",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 4,
-    alerts: 2,
-  },
-  {
-    id: "7",
-    name: "Global Innovations Corp",
-    taxId: "56-8901234",
-    email: "contact@globalinnovations.com",
-    phone: "(555) 789-0123",
-    status: "Active",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 1,
-    alerts: 0,
-  },
-];
-
 export default function ClientsPage() {
+  const { data: clients = [], isLoading } = api.test.getAllClients.useQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "Active" | "Pending" | "Inactive"
   >("all");
 
-  const activeCount = mockClients.filter(
-    (client) => client.status === "Active",
+  const activeCount = clients.filter(
+    (client: Client) => client.status === "Active",
   ).length;
-  const pendingCount = mockClients.filter(
-    (client) => client.status === "Pending",
+  const pendingCount = clients.filter(
+    (client: Client) => client.status === "Pending",
   ).length;
-  const inactiveCount = mockClients.filter(
-    (client) => client.status === "Inactive",
+  const inactiveCount = clients.filter(
+    (client: Client) => client.status === "Inactive",
   ).length;
 
-  const filteredClients = mockClients.filter((client) => {
+  const filteredClients = clients.filter((client: Client) => {
     const matchesSearch =
       client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.taxId.includes(searchQuery) ||
@@ -282,9 +196,9 @@ export default function ClientsPage() {
                           {client.pendingTasks} Pending Tasks
                         </span>
                       )}
-                      {client.alerts > 0 && (
+                      {client.alertCount > 0 && (
                         <span className="text-red-500">
-                          {client.alerts} Alerts
+                          {client.alertCount} Alerts
                         </span>
                       )}
                     </div>

@@ -1,17 +1,16 @@
-import { postRouter } from "~/server/api/routers/post";
-import { uiConfigRouter } from "./routers/ui-config";
-import { client_and_alert_Router } from "./routers/Clients-n-Alerts";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-
+import { testRouter } from "./routers/testing";
+import { authRouter } from "./routers/auth";
+import { uiSettingsRouter } from "./routers/ui-settings";
 /**
  * This is the primary router for your server.
  *
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
-  uiConfig: uiConfigRouter,
-  client_and_alert: client_and_alert_Router,
+  test: testRouter,
+  auth: authRouter,
+  uiSettings: uiSettingsRouter,
 });
 
 // export type definition of API

@@ -2,58 +2,20 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Copy, Trash2 } from "lucide-react";
 
 import { type Document } from "~/server/db/schema";
 
-const mockDocuments: Document[] = [
-  {
-    id: "1",
-    clientId: "1",
-    name: "ACTR-941-2020-Q4",
-    status: "Ready",
-    type: "Account",
-    taxPeriod: "2020 Q4",
-    requestedOn: "February 10, 2025",
-  },
-  {
-    id: "2",
-    clientId: "1",
-    name: "ACTR-941-2020-Q2",
-    status: "Ready",
-    type: "Account",
-    taxPeriod: "2020 Q2",
-    requestedOn: "February 10, 2025",
-  },
-  {
-    id: "3",
-    clientId: "1",
-    name: "ACTR-941-2020-Q1",
-    status: "Error",
-    type: "Account",
-    taxPeriod: "2020 Q1",
-    requestedOn: "February 10, 2025",
-  },
-  {
-    id: "4",
-    clientId: "1",
-    name: "ACTR-941-2020-Q3",
-    status: "Ready",
-    type: "Account",
-    taxPeriod: "2020 Q3",
-    requestedOn: "February 10, 2025",
-  },
-];
-
 export default function DocumentsPage() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get("clientId");
 
-  // In a real app, we would filter documents based on clientId
-  // For now, we'll just show all mock documents
-  const documents = mockDocuments;
+  const { data: documents = [] } = clientId
+    ? api.test.getDocumentsByClient.useQuery({ clientId })
+    : api.test.getAllDocuments.useQuery();
 
   return (
     <div className="container mx-auto py-6">

@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "~/trpc/react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -11,35 +12,9 @@ import {
 } from "@/components/ui/table";
 import { type ErcTransaction, type ErcEvent } from "~/server/db/schema";
 
-const mockTransactions: ErcTransaction[] = [
-  {
-    id: crypto.randomUUID(),
-    clientId: "1",
-    irsTracking: "Q2 2020 06/30/20",
-    filed: true,
-    clientEnteredErcClaim: "$350,002.70",
-    approvedErcAmount: "$350,002.70",
-    interestAccrued: "$40,361.21",
-    adjustments: "$2,150.00",
-    totalRefundProcessed: "$368,213.91",
-    totalErcPending: "$350,002.70",
-  },
-];
-
-const mockEvents: ErcEvent[] = [
-  {
-    id: crypto.randomUUID(),
-    transactionId: mockTransactions[0]!.id,
-    irsTracking: "Q2 2020 06/30/20",
-    form941xReceivedDate: "May 30, 2023",
-    form941xForwardDate: "May 30, 2023",
-    refundApprovedDate: "Sep 23, 2024",
-    refundPaidDate: "Sep 23, 2024",
-    examinationIndicator: "-",
-  },
-];
-
 export default function ERCTrackerPage() {
+  const { data: transactions = [] } = api.test.getAllErcTransactions.useQuery();
+  const { data: events = [] } = api.test.getAllErcEvents.useQuery();
   return (
     <div className="container mx-auto p-6">
       <h1 className="mb-4 text-2xl font-bold">ERC Tracker</h1>
@@ -66,7 +41,7 @@ export default function ERCTrackerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockTransactions.map((transaction) => (
+                {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
                     <TableCell className="font-medium">
                       {transaction.irsTracking.split(" ")[0]}
@@ -105,7 +80,7 @@ export default function ERCTrackerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockEvents.map((event) => (
+                {events.map((event) => (
                   <TableRow key={event.id}>
                     <TableCell className="font-medium">
                       {event.irsTracking.split(" ")[0]}

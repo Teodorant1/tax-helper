@@ -9,7 +9,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { type AdapterAccount } from "next-auth/adapters";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -17,11 +16,35 @@ import { type AdapterAccount } from "next-auth/adapters";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `tax-helper_${name}`);
+export const createTable = pgTableCreator((name) => `${name}`);
+
+export const actual_user = createTable("actual_user", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .unique()
+    .default("user"),
+  username: varchar("username", { length: 255 }).unique().notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  role: varchar("role", { length: 255 }).notNull().default("user"),
+});
+
+export type actual_userv2 = typeof actual_user.$inferSelect;
+export type Newactual_userv2 = typeof actual_user.$inferInsert;
 
 // Client-related tables
 export const clients = createTable("client", {
-  id: text("id").primaryKey(),
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => actual_user.userId)
+    .unique(),
   name: text("name").notNull(),
   taxId: text("tax_id").notNull(),
   email: text("email").notNull(),
@@ -30,13 +53,18 @@ export const clients = createTable("client", {
   lastFiling: text("last_filing").notNull(),
   nextFiling: text("next_filing").notNull(),
   pendingTasks: integer("pending_tasks").notNull().default(0),
-  alerts: integer("alerts").notNull().default(0),
+  alertCount: integer("alert_count").notNull().default(0),
 });
 
 export const alerts = createTable("alert", {
-  id: text("id").primaryKey(),
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  clientId: varchar("client_id", { length: 255 })
+    .notNull()
+    .references(() => clients.id),
   type: text("type", { enum: ["warning", "info"] }).notNull(),
-  clientName: text("client_name").notNull(),
   clientType: text("client_type").notNull(),
   taxId: text("tax_id").notNull(),
   alert: text("alert").notNull(),
@@ -47,8 +75,11 @@ export const alerts = createTable("alert", {
 });
 
 export const transactions = createTable("transaction", {
-  id: text("id").primaryKey(),
-  clientId: text("client_id")
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  clientId: varchar("client_id", { length: 255 })
     .notNull()
     .references(() => clients.id),
   type: text("type").notNull(),
@@ -60,7 +91,8 @@ export const transactions = createTable("transaction", {
 
 // UI Configuration tables
 export const logos = createTable("logo", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   type: text("type", { enum: ["url", "upload"] }).notNull(),
@@ -68,28 +100,44 @@ export const logos = createTable("logo", {
 });
 
 export const uiConfigs = createTable("ui_config", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  sidebarTitle: text("sidebar_title").notNull(),
-  sidebarLogoId: text("sidebar_logo_id").references(() => logos.id),
-  greetingTitle: text("greeting_title").notNull(),
-  greetingSubtitle: text("greeting_subtitle").notNull(),
-  greetingLogoId: text("greeting_logo_id").references(() => logos.id),
-  layoutBorderRadius: text("layout_border_radius").notNull(),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => actual_user.userId)
+    .unique(),
+  sidebarTitle: text("sidebar_title").notNull().default("TaxNow PRO"),
+  sidebarLogoId: varchar("sidebar_logo_id", { length: 255 }).references(
+    () => logos.id,
+  ),
+  greetingTitle: text("greeting_title").notNull().default("TaxNow PRO"),
+  greetingSubtitle: text("greeting_subtitle")
+    .notNull()
+    .default("Your modern tax management solution"),
+  greetingLogoId: varchar("greeting_logo_id", { length: 255 }).references(
+    () => logos.id,
+  ),
+  layoutBorderRadius: text("layout_border_radius").notNull().default("0.5rem"),
   layoutDensity: text("layout_density", {
     enum: ["comfortable", "compact", "spacious"],
-  }).notNull(),
-  sidebarWidth: integer("sidebar_width").notNull(),
-  baseFontSize: text("base_font_size").notNull(),
+  })
+    .notNull()
+    .default("comfortable"),
+  sidebarWidth: integer("sidebar_width").notNull().default(280),
+  baseFontSize: text("base_font_size").notNull().default("1rem"),
   animationSpeed: text("animation_speed", {
     enum: ["slower", "default", "faster"],
-  }).notNull(),
+  })
+    .notNull()
+    .default("default"),
 });
 
 // Theme Configuration tables
 export const themeColors = createTable("theme_colors", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   primary: text("primary").notNull(),
@@ -98,23 +146,34 @@ export const themeColors = createTable("theme_colors", {
 });
 
 export const themeConfigs = createTable("theme_config", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  lightThemeId: text("light_theme_id")
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => actual_user.userId),
+  lightThemeId: varchar("light_theme_id", { length: 255 })
     .notNull()
     .references(() => themeColors.id),
-  darkThemeId: text("dark_theme_id")
+  darkThemeId: varchar("dark_theme_id", { length: 255 })
     .notNull()
     .references(() => themeColors.id),
 });
 
+export const actual_userRelations = relations(actual_user, ({ many }) => ({
+  clients: many(clients),
+  uiConfigs: many(uiConfigs),
+  themeConfigs: many(themeConfigs),
+}));
+
 // Tax History Models
 export const taxHistoryEntries = createTable("tax_history_entry", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  clientId: text("client_id")
+  clientId: varchar("client_id", { length: 255 })
     .notNull()
     .references(() => clients.id),
   period: text("period").notNull(),
@@ -130,10 +189,11 @@ export const taxHistoryEntries = createTable("tax_history_entry", {
 
 // ERC Tracker Models
 export const ercTransactions = createTable("erc_transaction", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  clientId: text("client_id")
+  clientId: varchar("client_id", { length: 255 })
     .notNull()
     .references(() => clients.id),
   irsTracking: text("irs_tracking").notNull(),
@@ -147,10 +207,11 @@ export const ercTransactions = createTable("erc_transaction", {
 });
 
 export const ercEvents = createTable("erc_event", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  transactionId: text("transaction_id")
+  transactionId: varchar("transaction_id", { length: 255 })
     .notNull()
     .references(() => ercTransactions.id),
   irsTracking: text("irs_tracking").notNull(),
@@ -163,10 +224,11 @@ export const ercEvents = createTable("erc_event", {
 
 // Documents Model
 export const documents = createTable("document", {
-  id: text("id")
+  id: varchar("id", { length: 255 })
+    .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  clientId: text("client_id")
+  clientId: varchar("client_id", { length: 255 })
     .notNull()
     .references(() => clients.id),
   name: text("name").notNull(),
@@ -176,126 +238,129 @@ export const documents = createTable("document", {
   requestedOn: text("requested_on").notNull(),
 });
 
-export const posts = createTable(
-  "post",
-  {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("created_by", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date(),
-    ),
-  },
-  (example) => ({
-    createdByIdIdx: index("created_by_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
-);
+// export const posts = createTable(
+//   "post",
+//   {
+//     id: integer("id").primaryKey(),
+//     name: varchar("name", { length: 256 }),
+//     createdById: varchar("created_by", { length: 255 })
+//       .notNull()
+//       .references(() => users.id),
+//     createdAt: timestamp("created_at", { withTimezone: true })
+//       .default(sql`CURRENT_TIMESTAMP`)
+//       .notNull(),
+//     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+//       () => new Date(),
+//     ),
+//   },
+//   (example) => ({
+//     createdByIdIdx: index("created_by_idx").on(example.createdById),
+//     nameIndex: index("name_idx").on(example.name),
+//   }),
+// );
 
-export const users = createTable("user", {
-  id: varchar("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("email_verified", {
-    mode: "date",
-    withTimezone: true,
-  }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 }),
-});
+// export const users = createTable("user", {
+//   id: varchar("id", { length: 255 })
+//     .notNull()
+//     .primaryKey()
+//     .$defaultFn(() => crypto.randomUUID()),
+//   name: varchar("name", { length: 255 }),
+//   email: varchar("email", { length: 255 }).notNull(),
+//   emailVerified: timestamp("email_verified", {
+//     mode: "date",
+//     withTimezone: true,
+//   }).default(sql`CURRENT_TIMESTAMP`),
+//   image: varchar("image", { length: 255 }),
+// });
 
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
-}));
+// export const usersRelations = relations(users, ({ many }) => ({
+//   accounts: many(accounts),
+// }));
 
-export const accounts = createTable(
-  "account",
-  {
-    userId: varchar("user_id", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("provider_account_id", {
-      length: 255,
-    }).notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
-    id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
-  },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-    userIdIdx: index("account_user_id_idx").on(account.userId),
-  }),
-);
+// export const accounts = createTable(
+//   "account",
+//   {
+//     userId: varchar("user_id", { length: 255 })
+//       .notNull()
+//       .references(() => users.id),
+//     type: varchar("type", { length: 255 })
+//       .notNull(),
+//     provider: varchar("provider", { length: 255 }).notNull(),
+//     providerAccountId: varchar("provider_account_id", {
+//       length: 255,
+//     }).notNull(),
+//     refresh_token: text("refresh_token"),
+//     access_token: text("access_token"),
+//     expires_at: integer("expires_at"),
+//     token_type: varchar("token_type", { length: 255 }),
+//     scope: varchar("scope", { length: 255 }),
+//     id_token: text("id_token"),
+//     session_state: varchar("session_state", { length: 255 }),
+//   },
+//   (account) => ({
+//     compoundKey: primaryKey({
+//       columns: [account.provider, account.providerAccountId],
+//     }),
+//     userIdIdx: index("account_user_id_idx").on(account.userId),
+//   }),
+// );
 
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] }),
-}));
+// export const accountsRelations = relations(accounts, ({ one }) => ({
+//   user: one(users, { fields: [accounts.userId], references: [users.id] }),
+// }));
 
-export const sessions = createTable(
-  "session",
-  {
-    sessionToken: varchar("session_token", { length: 255 })
-      .notNull()
-      .primaryKey(),
-    userId: varchar("user_id", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    expires: timestamp("expires", {
-      mode: "date",
-      withTimezone: true,
-    }).notNull(),
-  },
-  (session) => ({
-    userIdIdx: index("session_user_id_idx").on(session.userId),
-  }),
-);
+// export const sessions = createTable(
+//   "session",
+//   {
+//     sessionToken: varchar("session_token", { length: 255 })
+//       .notNull()
+//       .primaryKey(),
+//     userId: varchar("user_id", { length: 255 })
+//       .notNull()
+//       .references(() => users.id),
+//     expires: timestamp("expires", {
+//       mode: "date",
+//       withTimezone: true,
+//     }).notNull(),
+//   },
+//   (session) => ({
+//     userIdIdx: index("session_user_id_idx").on(session.userId),
+//   }),
+// );
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] }),
-}));
+// export const sessionsRelations = relations(sessions, ({ one }) => ({
+//   user: one(users, { fields: [sessions.userId], references: [users.id] }),
+// }));
 
-export const verificationTokens = createTable(
-  "verification_token",
-  {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", {
-      mode: "date",
-      withTimezone: true,
-    }).notNull(),
-  },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  }),
-);
+// export const verificationTokens = createTable(
+//   "verification_token",
+//   {
+//     identifier: varchar("identifier", { length: 255 }).notNull(),
+//     token: varchar("token", { length: 255 }).notNull(),
+//     expires: timestamp("expires", {
+//       mode: "date",
+//       withTimezone: true,
+//     }).notNull(),
+//   },
+//   (vt) => ({
+//     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+//   }),
+// );
 
 // Relations
 export const clientsRelations = relations(clients, ({ many }) => ({
   taxHistory: many(taxHistoryEntries),
   ercTransactions: many(ercTransactions),
   documents: many(documents),
-  alerts: many(alerts, { relationName: "client_alerts" }),
-  transactions: many(transactions, { relationName: "client_transactions" }),
+  alerts: many(alerts),
+  transactions: many(transactions),
 }));
 
 export const uiConfigsRelations = relations(uiConfigs, ({ one }) => ({
+  user: one(actual_user, {
+    fields: [uiConfigs.userId],
+    references: [actual_user.userId],
+  }),
   sidebarLogo: one(logos, {
     fields: [uiConfigs.sidebarLogoId],
     references: [logos.id],
@@ -307,6 +372,10 @@ export const uiConfigsRelations = relations(uiConfigs, ({ one }) => ({
 }));
 
 export const themeConfigsRelations = relations(themeConfigs, ({ one }) => ({
+  user: one(actual_user, {
+    fields: [themeConfigs.userId],
+    references: [actual_user.userId],
+  }),
   lightTheme: one(themeColors, {
     fields: [themeConfigs.lightThemeId],
     references: [themeColors.id],
@@ -314,6 +383,13 @@ export const themeConfigsRelations = relations(themeConfigs, ({ one }) => ({
   darkTheme: one(themeColors, {
     fields: [themeConfigs.darkThemeId],
     references: [themeColors.id],
+  }),
+}));
+
+export const alertsRelations = relations(alerts, ({ one }) => ({
+  client: one(clients, {
+    fields: [alerts.clientId],
+    references: [clients.id],
   }),
 }));
 
@@ -334,6 +410,13 @@ export const ercTransactionsRelations = relations(
     events: many(ercEvents),
   }),
 );
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  client: one(clients, {
+    fields: [transactions.clientId],
+    references: [clients.id],
+  }),
+}));
 
 export const ercEventsRelations = relations(ercEvents, ({ one }) => ({
   transaction: one(ercTransactions, {

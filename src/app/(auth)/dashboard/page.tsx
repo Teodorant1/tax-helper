@@ -1,24 +1,37 @@
+"use client";
+
+import { api } from "~/trpc/react";
 import { TaxStatusBanner } from "~/components/tax-status-banner";
 import { TaxSummaryCard } from "~/components/tax-summary-card";
 import { TransactionHistory } from "~/components/transaction-history";
 import { UpcomingEvents } from "~/components/upcoming-events";
 
-const taxableIncomeData = [
-  { period: "2023", amount: "-" },
-  { period: "2022", amount: "-" },
-];
-
-const taxesPaidData = [
-  { period: "2023", amount: "-" },
-  { period: "2022", amount: "-" },
-];
-
-const outstandingBalanceData = [
-  { period: "2023", amount: "-" },
-  { period: "2022", amount: "-" },
-];
-
 export default function DashboardPage() {
+  const { data: taxHistory = [] } = api.test.getAllTaxHistory.useQuery();
+
+  const taxableIncomeData = taxHistory
+    .filter((entry) => entry.type === "income")
+    .map((entry) => ({
+      period: entry.period,
+      amount: entry.principalTax,
+    }))
+    .slice(0, 2);
+
+  const taxesPaidData = taxHistory
+    .filter((entry) => entry.type === "income")
+    .map((entry) => ({
+      period: entry.period,
+      amount: entry.paymentsAndCredits,
+    }))
+    .slice(0, 2);
+
+  const outstandingBalanceData = taxHistory
+    .filter((entry) => entry.type === "income")
+    .map((entry) => ({
+      period: entry.period,
+      amount: entry.balance,
+    }))
+    .slice(0, 2);
   return (
     <div className="container mx-auto space-y-6 p-6">
       <TaxStatusBanner />

@@ -5,11 +5,10 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { DesktopAlerts } from "~/components/desktop-alerts";
 import { MobileAlerts } from "~/components/mobile-alerts";
-import { type Alert } from "~/server/db/schema";
-// import { type Alert } from "~/types/alerts";
+import { type Alert, type Client } from "~/server/db/schema";
 
 interface AlertsContentProps {
-  initialAlerts: Alert[];
+  initialAlerts: (Alert & { client: Client })[];
   clientName: string | null;
 }
 
@@ -21,7 +20,7 @@ export function AlertsContent({
 
   const filteredAlerts = initialAlerts.filter(
     (alert) =>
-      alert.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      alert.client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       alert.alert.toLowerCase().includes(searchQuery.toLowerCase()) ||
       alert.taxPeriod.toLowerCase().includes(searchQuery.toLowerCase()),
   );

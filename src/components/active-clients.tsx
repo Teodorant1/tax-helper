@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "~/trpc/react";
 import {
   Search,
   Filter,
@@ -24,59 +25,13 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-interface Client {
-  id: string;
-  name: string;
-  taxId: string;
-  status: "Active" | "Pending" | "Inactive";
-  email: string;
-  phone: string;
-  lastFiling: string;
-  nextFiling: string;
-  pendingTasks: number;
-  alerts: number;
-}
-
-const mockClients: Client[] = [
-  {
-    id: "1",
-    name: "Big Sky Trading, LLC",
-    taxId: "77-0616924",
-    status: "Active",
-    email: "contact@bigskytrading.com",
-    phone: "(555) 123-4567",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 2,
-    alerts: 1,
-  },
-  {
-    id: "2",
-    name: "Carolina Food Services, Inc.",
-    taxId: "20-5778510",
-    status: "Pending",
-    email: "info@carolinafoodservices.com",
-    phone: "(555) 234-5678",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 0,
-    alerts: 0,
-  },
-  {
-    id: "3",
-    name: "Cutting Edge Plumbing & Mechanical, Inc.",
-    taxId: "94-2392371",
-    status: "Active",
-    email: "support@cuttingedgeplumbing.com",
-    phone: "(555) 345-6789",
-    lastFiling: "2024 Q4",
-    nextFiling: "2025 Q1",
-    pendingTasks: 1,
-    alerts: 0,
-  },
-];
+import { type Client } from "~/server/db/schema";
 
 export function ActiveClients() {
+  const { data: allClients = [] } = api.test.getAllClients.useQuery();
+  const clients = allClients.filter(
+    (client: Client) => client.status === "Active",
+  );
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -87,7 +42,7 @@ export function ActiveClients() {
           <CardDescription>Manage your active client list</CardDescription>
         </div>
         <Button variant="link" className="text-primary" asChild>
-          <Link href="/Clients">View All</Link>
+          <Link href="/clients">View All</Link>
         </Button>
       </CardHeader>
       <CardContent>
@@ -111,13 +66,13 @@ export function ActiveClients() {
           </Button>
         </div>
         <div className="divide-y">
-          {mockClients
+          {clients
             .filter(
-              (client) =>
+              (client: Client) =>
                 client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 client.taxId.includes(searchQuery),
             )
-            .map((client) => (
+            .map((client: Client) => (
               <div
                 key={client.id}
                 className="flex flex-col items-start justify-between overflow-x-clip whitespace-normal break-words rounded-lg px-4 py-6 transition-colors hover:bg-muted/50 md:flex-row md:border md:border-border"
@@ -168,9 +123,9 @@ export function ActiveClients() {
                           {client.pendingTasks} Pending Tasks
                         </span>
                       )}
-                      {client.alerts > 0 && (
+                      {client.alertCount > 0 && (
                         <span className="text-red-500">
-                          {client.alerts} Alerts
+                          {client.alertCount} Alerts
                         </span>
                       )}
                     </div>
@@ -183,7 +138,7 @@ export function ActiveClients() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Data?clientId=${client.id}`}>
+                    <Link href={`/data?clientId=${client.id}`}>
                       <Search className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -193,7 +148,7 @@ export function ActiveClients() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Alerts?clientId=${client.id}`}>
+                    <Link href={`/alerts?clientId=${client.id}`}>
                       <Bell className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -203,7 +158,7 @@ export function ActiveClients() {
                     className="h-8 w-8"
                     asChild
                   >
-                    <Link href={`/Documents?clientId=${client.id}`}>
+                    <Link href={`/documents?clientId=${client.id}`}>
                       <FileText className="h-4 w-4" />
                     </Link>
                   </Button>
