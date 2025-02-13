@@ -30,7 +30,6 @@ export default async function RootLayout({
       <ClerkProvider
         appearance={{
           baseTheme: undefined,
-          variables: { colorPrimary: "rgb(var(--primary))" },
           elements: {
             formButtonPrimary:
               "bg-primary hover:bg-primary/90 text-primary-foreground",
