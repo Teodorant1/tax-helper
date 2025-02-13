@@ -27,31 +27,31 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ClerkProvider
-        appearance={{
-          baseTheme: undefined,
-          elements: {
-            formButtonPrimary:
-              "bg-primary hover:bg-primary/90 text-primary-foreground",
-            card: "bg-background",
-            headerTitle: "text-foreground",
-            headerSubtitle: "text-muted-foreground",
-            socialButtonsBlockButton: "bg-background border-border hover:bg-muted",
-            socialButtonsBlockButtonText: "text-foreground font-normal",
-            formFieldLabel: "text-foreground",
-            formFieldInput: "bg-background border-input",
-            dividerLine: "bg-border",
-            dividerText: "text-muted-foreground",
-            formResendCodeLink: "text-primary hover:text-primary/90",
-            identityPreviewEditButton: "text-primary hover:text-primary/90",
-            formFieldAction: "text-primary hover:text-primary/90",
-            navbar: "hidden",
-            headerBackRow: "hidden",
-          },
-        }}
-      >
-        <TRPCReactProvider>
-          <body className={`font-sans ${inter.variable}`}>
+      <body className={`font-sans ${inter.variable}`}>
+        <ClerkProvider
+          appearance={{
+            baseTheme: undefined,
+            elements: {
+              formButtonPrimary:
+                "bg-primary hover:bg-primary/90 text-primary-foreground",
+              card: "bg-background",
+              headerTitle: "text-foreground",
+              headerSubtitle: "text-muted-foreground",
+              socialButtonsBlockButton: "bg-background border-border hover:bg-muted",
+              socialButtonsBlockButtonText: "text-foreground font-normal",
+              formFieldLabel: "text-foreground",
+              formFieldInput: "bg-background border-input",
+              dividerLine: "bg-border",
+              dividerText: "text-muted-foreground",
+              formResendCodeLink: "text-primary hover:text-primary/90",
+              identityPreviewEditButton: "text-primary hover:text-primary/90",
+              formFieldAction: "text-primary hover:text-primary/90",
+              navbar: "hidden",
+              headerBackRow: "hidden",
+            },
+          }}
+        >
+          <TRPCReactProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -67,9 +67,9 @@ export default async function RootLayout({
                 <Toaster />
               </UISettingsProvider>
             </ThemeProvider>
-          </body>
-        </TRPCReactProvider>
-      </ClerkProvider>
+          </TRPCReactProvider>
+        </ClerkProvider>
+      </body>
     </html>
   );
 }
