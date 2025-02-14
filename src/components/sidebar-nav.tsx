@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { cn } from "~/lib/utils";
 import { Menu, X } from "lucide-react";
-import { RoleToggler } from "./role-toggler";
+// import { RoleToggler } from "./role-toggler";
 import { useUISettings } from "~/store/ui-settings";
 import { useTheme } from "~/store/theme";
 import {
@@ -182,7 +182,7 @@ export function SidebarNav() {
             })}
           </div>
           <div className="relative mt-auto space-y-4 transition-all duration-200">
-            <RoleToggler />
+            {/* <RoleToggler /> */}
             <button
               onClick={toggleDarkMode}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/20"

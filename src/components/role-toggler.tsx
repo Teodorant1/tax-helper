@@ -26,7 +26,7 @@ export function RoleToggler() {
         disabled={toggleRoleMutation.isPending}
         variant="outline"
       >
-        {toggleRoleMutation.isPending ? "Updating..." : "Toggle to Admin Role"}
+        {/* {toggleRoleMutation.isPending ? "Updating..." : "Toggle to Admin Role"} */}
       </Button>
 
       {isSuccess && (
