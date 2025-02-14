@@ -161,6 +161,7 @@ export const themeConfigs = createTable("theme_config", {
     .references(() => themeColors.id),
 });
 
+
 export const actual_userRelations = relations(actual_user, ({ many }) => ({
   clients: many(clients),
   uiConfigs: many(uiConfigs),
@@ -348,7 +349,11 @@ export const documents = createTable("document", {
 // );
 
 // Relations
-export const clientsRelations = relations(clients, ({ many }) => ({
+export const clientsRelations = relations(clients, ({ one, many }) => ({
+  user: one(actual_user, {
+    fields: [clients.userId],
+    references: [actual_user.userId],
+  }),
   taxHistory: many(taxHistoryEntries),
   ercTransactions: many(ercTransactions),
   documents: many(documents),
