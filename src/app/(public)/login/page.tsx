@@ -64,28 +64,28 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen w-full items-center justify-center bg-white dark:bg-gray-900">
-      <div className="flex w-full rounded-lg bg-white shadow-sm dark:bg-gray-800">
+    <div className="flex h-full min-h-screen w-full items-center justify-center bg-white px-4 dark:bg-gray-900 md:px-0">
+      <div className="flex w-full max-w-[95%] rounded-lg bg-white shadow-sm dark:bg-gray-800 md:max-w-none">
         {/* Left side - Auth Form */}
-        <div className="flex h-full w-full max-w-[50%] justify-center pt-24">
-          <div className="w-full max-w-[360px] space-y-8">
+        <div className="flex h-full w-full justify-center pt-16 md:max-w-[50%] md:pt-24">
+          <div className="w-full max-w-[360px] space-y-6 px-4 md:px-0 md:space-y-8">
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 border-border">
                 <TabsTrigger
                   value="signin"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400"
+                  className="px-2 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400 md:px-4"
                 >
                   Sign In
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400"
+                  className="px-2 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 dark:text-gray-400 data-[state=active]:dark:text-purple-400 md:px-4"
                 >
                   Sign Up
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="signin" className="space-y-8">
+              <TabsContent value="signin" className="space-y-6 md:space-y-8">
                 <div className="text-center">
                   <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                     Welcome Back!
@@ -164,7 +164,7 @@ export default function AuthPage() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="signup" className="space-y-8">
+              <TabsContent value="signup" className="space-y-6 md:space-y-8">
                 <div className="text-center">
                   <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                     Create your account
@@ -241,7 +241,7 @@ export default function AuthPage() {
         </div>
 
         {/* Right side - Feature Highlights */}
-        <div className="hidden h-full min-h-screen w-full flex-1 justify-center bg-gray-50 dark:bg-gray-900 lg:flex">
+        <div className="hidden h-full min-h-screen w-full flex-1 justify-center bg-gray-50 dark:bg-gray-900 md:flex">
           <div className="w-[90%] space-y-8 py-8">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
