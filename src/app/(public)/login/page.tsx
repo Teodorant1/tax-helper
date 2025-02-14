@@ -67,7 +67,7 @@ export default function AuthPage() {
     <div className="flex h-full min-h-screen w-full items-center justify-center bg-white px-4 dark:bg-gray-900 md:px-0">
       <div className="flex w-full max-w-[95%] rounded-lg bg-white shadow-sm dark:bg-gray-800 md:max-w-none">
         {/* Left side - Auth Form */}
-        <div className="flex h-full w-full justify-center pt-16 md:max-w-[50%] md:pt-24">
+        <div className="flex h-full w-full justify-center py-16 md:max-w-[50%] md:pt-24">
           <div className="w-full max-w-[360px] space-y-6 px-4 md:px-0 md:space-y-8">
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 border-border">
@@ -157,7 +157,7 @@ export default function AuthPage() {
                 <div className="text-center">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-purple-600 hover:underline dark:text-purple-400"
+                    className="  text-sm text-purple-600 hover:underline dark:text-purple-400"
                   >
                     Forgot Password?
                   </Link>
