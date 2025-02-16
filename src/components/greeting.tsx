@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import Image from "next/image";
-import type { CompleteUIConfig } from "~/server/db/schema";
-import type { ClientThemeConfig } from "~/types/theme";
+import type { CompleteUIConfig , CompleteThemeConfig } from "~/server/db/schema";
 
 interface GreetingProps {
   uiConfig: CompleteUIConfig;
-  themeConfig: ClientThemeConfig;
+  themeConfig: CompleteThemeConfig;
 }
 
 export function Greeting({ uiConfig, themeConfig }: GreetingProps) {
@@ -55,6 +54,7 @@ export function Greeting({ uiConfig, themeConfig }: GreetingProps) {
           className="font-bold tracking-tight"
           style={{
             fontSize: `calc(${uiConfig.baseFontSize} * 2.5)`,
+            color: themeConfig.lightTheme.primary,
             transition: `all ${
               uiConfig.animationSpeed === 'slower' ? '0.4s' :
               uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -64,9 +64,10 @@ export function Greeting({ uiConfig, themeConfig }: GreetingProps) {
           Welcome to {uiConfig.greetingTitle}
         </h1>
         <p 
-          className="mt-2 text-muted-foreground"
+          className="mt-2"
           style={{
             fontSize: `calc(${uiConfig.baseFontSize} * 1.125)`,
+            color: themeConfig.lightTheme.secondary,
             transition: `all ${
               uiConfig.animationSpeed === 'slower' ? '0.4s' :
               uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'

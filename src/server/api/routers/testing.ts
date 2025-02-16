@@ -33,7 +33,8 @@ export const testRouter = createTRPCRouter({
     }),
 
   getAllUsers: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.actual_user.findMany();
+   const users = await ctx.db.query.actual_user.findMany();
+    return users
   }),
 
   // Client queries

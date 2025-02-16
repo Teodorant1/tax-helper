@@ -29,40 +29,51 @@ export function AlertsContent({
       alert.taxPeriod.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  // Compute animation duration based on speed setting
+  const getTransitionDuration = () => {
+    switch (ui_config.animationSpeed) {
+      case 'slower': return '0.4s';
+      case 'faster': return '0.15s';
+      default: return '0.25s';
+    }
+  };
+
+  // Compute padding based on density
+  const getPadding = () => {
+    switch (ui_config.layoutDensity) {
+      case 'compact': return '1rem';
+      case 'spacious': return '2rem';
+      default: return '1.5rem';
+    }
+  };
+
   return (
     <div 
       className="md:container md:mx-auto"
       style={{
-        padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
-                ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
-        transition: `all ${
-          ui_config.animationSpeed === 'slower' ? '0.4s' :
-          ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-        } ease`
+        padding: getPadding(),
+        transition: `all ${getTransitionDuration()} ease`
       }}
     >
       <div 
         style={{
-          marginBottom: ui_config.layoutDensity === 'compact' ? '1rem' : 
-                       ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
-          transition: `all ${
-            ui_config.animationSpeed === 'slower' ? '0.4s' :
-            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-          } ease`
+          marginBottom: getPadding(),
+          transition: `all ${getTransitionDuration()} ease`
         }}
       >
         <Link
           href="/"
-          className="inline-flex items-center text-muted-foreground hover:text-primary"
+          className="inline-flex items-center hover:text-primary"
           style={{
             fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
-            transition: `all ${
-              ui_config.animationSpeed === 'slower' ? '0.4s' :
-              ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-            } ease`
+            color: theme_config.lightTheme.secondary,
+            transition: `all ${getTransitionDuration()} ease`
           }}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft 
+            className="mr-2 h-4 w-4" 
+            style={{ color: 'currentColor' }}
+          />
           Back to Dashboard
         </Link>
       </div>
@@ -71,44 +82,37 @@ export function AlertsContent({
         style={{
           marginBottom: ui_config.layoutDensity === 'compact' ? '2rem' : 
                        ui_config.layoutDensity === 'spacious' ? '4rem' : '3rem',
-          transition: `all ${
-            ui_config.animationSpeed === 'slower' ? '0.4s' :
-            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-          } ease`
+          transition: `all ${getTransitionDuration()} ease`
         }}
       >
         <h1 
           className="font-bold"
           style={{
             fontSize: `calc(${ui_config.baseFontSize} * 2)`,
-            transition: `all ${
-              ui_config.animationSpeed === 'slower' ? '0.4s' :
-              ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-            } ease`
+            color: theme_config.lightTheme.primary,
+            transition: `all ${getTransitionDuration()} ease`
           }}
         >
           Tax Alerts
           {clientName && (
-          <span 
-            className="ml-2 text-muted-foreground"
-            style={{
-              fontSize: `calc(${ui_config.baseFontSize} * 2)`,
-              transition: `all ${
-                ui_config.animationSpeed === 'slower' ? '0.4s' :
-                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-              } ease`
-            }}
-          >for {clientName}</span>
+            <span 
+              style={{
+                marginLeft: '0.5rem',
+                fontSize: `calc(${ui_config.baseFontSize} * 2)`,
+                color: theme_config.lightTheme.secondary,
+                transition: `all ${getTransitionDuration()} ease`
+              }}
+            >
+              for {clientName}
+            </span>
           )}
         </h1>
         <p 
-          className="mt-2 text-muted-foreground"
           style={{
+            marginTop: '0.5rem',
             fontSize: ui_config.baseFontSize,
-            transition: `all ${
-              ui_config.animationSpeed === 'slower' ? '0.4s' :
-              ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
-            } ease`
+            color: theme_config.lightTheme.secondary,
+            transition: `all ${getTransitionDuration()} ease`
           }}
         >
           {clientName

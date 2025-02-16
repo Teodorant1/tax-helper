@@ -56,7 +56,7 @@ export function DashboardClient({ uiConfig, themeConfig }: DashboardClientProps)
             : "200ms"} ease-in-out`
       }}
     >
-      <TaxStatusBanner uiConfig={uiConfig} themeConfig={themeConfig} />
+      <TaxStatusBanner uiConfig={uiConfig} theme_config={themeConfig} />
 
       <div 
         className="grid md:grid-cols-3"
@@ -78,21 +78,21 @@ export function DashboardClient({ uiConfig, themeConfig }: DashboardClientProps)
           year="2024"
           data={taxableIncomeData}
           uiConfig={uiConfig}
-          themeConfig={themeConfig}
+          theme_config={themeConfig}
         />
         <TaxSummaryCard 
           title="Taxes Paid" 
           year="2024" 
           data={taxesPaidData}
           uiConfig={uiConfig}
-          themeConfig={themeConfig}
+          theme_config={themeConfig}
         />
         <TaxSummaryCard
           title="Outstanding Balance"
           year="2024"
           data={outstandingBalanceData}
           uiConfig={uiConfig}
-          themeConfig={themeConfig}
+          theme_config={themeConfig}
         />
       </div>
 
@@ -112,10 +112,10 @@ export function DashboardClient({ uiConfig, themeConfig }: DashboardClientProps)
         }}
       >
         <div className="md:col-span-2">
-          <TransactionHistory uiConfig={uiConfig} themeConfig={themeConfig} />
+          <TransactionHistory uiConfig={uiConfig} theme_config={themeConfig} />
         </div>
         <div>
-          <UpcomingEvents uiConfig={uiConfig} themeConfig={themeConfig} />
+          <UpcomingEvents uiConfig={uiConfig} theme_config={themeConfig} />
         </div>
       </div>
     </div>
