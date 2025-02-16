@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { CompleteThemeConfig, CompleteUIConfig } from "~/server/db/schema";
 
 const defaultFAQs = [
   {
@@ -34,18 +35,87 @@ const defaultFAQs = [
       "Tax alerts are generated based on your business type, filing deadlines, and transaction patterns. Our system monitors these factors continuously to provide timely notifications about important tax-related actions.",
   },
 ];
+interface UICustomizationProps {
+  theme_config: CompleteThemeConfig;
+  ui_config: CompleteUIConfig;
+}
 
-export function FAQ() {
+export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <h2 className="mb-6 text-2xl font-bold">Frequently Asked Questions</h2>
-      <Accordion type="single" collapsible className="w-full">
+    <div 
+      className="mx-auto w-full max-w-3xl"
+      style={{
+        background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+        border: `1px solid ${theme_config.lightTheme.primary}40`,
+        boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
+        borderRadius: ui_config.layoutBorderRadius,
+        padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
+                ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+        transition: `all ${
+          ui_config.animationSpeed === 'slower' ? '0.4s' :
+          ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+        } ease`
+      }}
+    >
+      <h2 
+        className="mb-6 font-bold"
+        style={{
+          fontSize: `calc(${ui_config.baseFontSize} * 1.5)`,
+          color: theme_config.lightTheme.primary,
+          transition: `all ${
+            ui_config.animationSpeed === 'slower' ? '0.4s' :
+            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+          } ease`
+        }}
+      >
+        Frequently Asked Questions
+      </h2>
+      <Accordion 
+        type="single" 
+        collapsible 
+        className="w-full space-y-2"
+      >
         {defaultFAQs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
-            <AccordionTrigger className="text-left">
+          <AccordionItem 
+            key={index} 
+            value={`item-${index}`}
+            style={{
+              borderColor: `${theme_config.lightTheme.primary}40`,
+              marginBottom: ui_config.layoutDensity === 'compact' ? '0.5rem' : 
+                          ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem'
+            }}
+          >
+            <AccordionTrigger 
+              className="text-left hover:no-underline group"
+              style={{
+                fontSize: ui_config.baseFontSize,
+                padding: ui_config.layoutDensity === 'compact' ? '0.75rem' : 
+                        ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem',
+                borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`,
+                color: theme_config.lightTheme.primary,
+                backgroundColor: 'transparent'
+              }}
+            >
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent>{faq.answer}</AccordionContent>
+            <AccordionContent
+              style={{
+                fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
+                padding: ui_config.layoutDensity === 'compact' ? '0.75rem' : 
+                        ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem',
+                color: theme_config.lightTheme.secondary,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >
+              {faq.answer}
+            </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>

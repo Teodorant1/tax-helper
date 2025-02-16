@@ -34,8 +34,8 @@ export default async function HomePage() {
         } ease`
       }}
     >
-      <Greeting uiConfig={uiConfig as CompleteUIConfig} themeConfig={clientThemeConfig} />
-      <HomePageClient uiConfig={uiConfig as CompleteUIConfig} themeConfig={clientThemeConfig} />
+      <Greeting uiConfig={uiConfig} themeConfig={themeConfig} />
+      <HomePageClient uiConfig={uiConfig} themeConfig={themeConfig} />
     </div>
   );
 }

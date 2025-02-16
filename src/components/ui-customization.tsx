@@ -118,9 +118,9 @@ export function UICustomization({ theme_config, ui_config }: UICustomizationProp
             className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
                        ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
-              border: '1px solid #e0e0e040',
-              boxShadow: '0 0 10px #00000010',
+              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+              border: `1px solid ${theme_config.lightTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
               borderRadius: ui_config.layoutBorderRadius,
               padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
                       ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -254,9 +254,9 @@ export function UICustomization({ theme_config, ui_config }: UICustomizationProp
             className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
                        ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
-              border: '1px solid #e0e0e040',
-              boxShadow: '0 0 10px #00000010',
+              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+              border: `1px solid ${theme_config.lightTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
               borderRadius: ui_config.layoutBorderRadius,
               padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
                       ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -358,9 +358,9 @@ export function UICustomization({ theme_config, ui_config }: UICustomizationProp
             className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
                        ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
-              border: '1px solid #e0e0e040',
-              boxShadow: '0 0 10px #00000010',
+              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+              border: `1px solid ${theme_config.lightTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
               borderRadius: ui_config.layoutBorderRadius,
               padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
                       ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',

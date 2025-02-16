@@ -6,6 +6,5 @@ export default async function DataPage() {
   const uiConfig = await api.uiSettings.getSettings();
   const themeConfig = await api.theme.getSettings();
 
-
-  return <DataPageClient />;
+  return <DataPageClient theme_config={themeConfig} uiConfig={uiConfig}/>;
 }

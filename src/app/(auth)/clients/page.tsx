@@ -1,4 +1,3 @@
-
 import { api } from "~/trpc/server";
 import { ClientsSubPage } from "./clients-sub-page";
 
@@ -8,11 +7,9 @@ export default async function ClientsPage() {
   const themeConfig = await api.theme.getSettings();
 
   return (
-    <div className="container mx-auto p-6">
-      <ClientsSubPage
-        theme_config={themeConfig}
-        ui_config={uiConfig}
-      />
-    </div>
+    <ClientsSubPage
+      theme_config={themeConfig}
+      ui_config={uiConfig}
+    />
   );
 }

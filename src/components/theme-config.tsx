@@ -17,7 +17,6 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { toast } from "~/components/ui/use-toast";
-
 import type { CompleteThemeConfig , CompleteUIConfig} from "~/server/db/schema";
 
 interface ThemeConfigProps {
@@ -65,9 +64,9 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
             className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
                        uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
-              border: '1px solid #e0e0e040',
-              boxShadow: '0 0 10px #00000010',
+              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+              border: `1px solid ${theme_config.lightTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
               borderRadius: uiConfig.layoutBorderRadius,
               padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
                       uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -104,6 +103,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
@@ -137,6 +137,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
@@ -170,6 +171,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
@@ -194,9 +196,9 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
             className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
                        uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
-              border: '1px solid #e0e0e040',
-              boxShadow: '0 0 10px #00000010',
+              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+              border: `1px solid ${theme_config.lightTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
               borderRadius: uiConfig.layoutBorderRadius,
               padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
                       uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -233,6 +235,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
@@ -266,6 +269,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
@@ -299,6 +303,7 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
                       <Input 
                         {...field} 
                         type="color"
+                        // className="w-[30%]"
                         style={{
                           borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
                           transition: `all ${
