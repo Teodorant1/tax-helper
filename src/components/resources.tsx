@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import type { UIConfig } from "~/types/ui";
-import type { ClientThemeConfig } from "~/types/theme";
+import type { CompleteUIConfig, CompleteThemeConfig } from "~/server/db/schema";
 
-interface ResourcesProps {
-  uiConfig: UIConfig;
-  themeConfig: ClientThemeConfig;
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
 }
 
-export function Resources({ uiConfig, themeConfig }: ResourcesProps) {
+export function Resources({ uiConfig, theme_config }: ThemeConfigProps) {
   const resources = [
     {
       name: "Add/Invite Client",
@@ -104,30 +103,25 @@ export function Resources({ uiConfig, themeConfig }: ResourcesProps) {
       ? "400ms" 
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
-        : "200ms"} ease-in-out`
-  };
-
-  const linkStyle = {
-    borderRadius: uiConfig.layoutBorderRadius,
-    transition: `all ${uiConfig.animationSpeed === "slower" 
-      ? "400ms" 
-      : uiConfig.animationSpeed === "faster" 
-        ? "100ms" 
         : "200ms"} ease-in-out`,
-    padding: uiConfig.layoutDensity === "compact" 
-      ? "0.75rem" 
-      : uiConfig.layoutDensity === "spacious" 
-        ? "1.5rem" 
-        : "1rem"
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
   };
 
   return (
     <section 
-      className="rounded-lg border bg-card p-6 shadow-sm"
+      className="rounded-lg p-6"
       style={sectionStyle}
     >
-      <h2 className="mb-2 text-xl font-semibold">Resources & Updates</h2>
-      <p className="mb-6 text-sm text-muted-foreground">
+      <h2 
+        className="mb-2 text-xl font-semibold"
+        style={{ color: theme_config.lightTheme.primary }}
+      >Resources & Updates</h2>
+      <p 
+        className="mb-6 text-sm"
+        style={{ color: theme_config.lightTheme.secondary }}
+      >
         Some resources to help you get started and stay informed
       </p>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -135,13 +129,30 @@ export function Resources({ uiConfig, themeConfig }: ResourcesProps) {
           <Link
             key={resource.name}
             href={resource.href}
-            className="flex flex-col items-center gap-2 rounded-lg p-4 text-center transition-all hover:scale-105 hover:bg-muted hover:brightness-110"
-            style={linkStyle}
+            className="flex flex-col items-center gap-2 rounded-lg p-4 text-center transition-all hover:scale-105 hover:bg-opacity-10"
+            style={{
+              borderRadius: uiConfig.layoutBorderRadius,
+              padding: uiConfig.layoutDensity === "compact" 
+                ? "0.75rem" 
+                : uiConfig.layoutDensity === "spacious" 
+                  ? "1.5rem" 
+                  : "1rem",
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`,
+              backgroundColor: `${theme_config.lightTheme.primary}05`,
+              border: `1px solid ${theme_config.lightTheme.primary}20`,
+              color: theme_config.lightTheme.primary
+            }}
           >
             <div 
-              className="rounded-full bg-primary/10 p-2 text-primary"
               style={{
-                borderRadius: "9999px", // Keep circle shape
+                borderRadius: "9999px",
+                padding: "0.5rem",
+                backgroundColor: `${theme_config.lightTheme.primary}10`,
+                color: theme_config.lightTheme.primary,
                 transition: `all ${uiConfig.animationSpeed === "slower" 
                   ? "400ms" 
                   : uiConfig.animationSpeed === "faster" 
@@ -151,7 +162,10 @@ export function Resources({ uiConfig, themeConfig }: ResourcesProps) {
             >
               {resource.icon}
             </div>
-            <span className="text-sm font-medium">{resource.name}</span>
+            <span 
+              className="text-sm font-medium"
+              style={{ color: theme_config.lightTheme.primary }}
+            >{resource.name}</span>
           </Link>
         ))}
       </div>

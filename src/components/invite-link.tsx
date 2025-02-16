@@ -3,15 +3,14 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
-import type { UIConfig } from "~/types/ui";
-import type { ClientThemeConfig } from "~/types/theme";
+import type { CompleteUIConfig, CompleteThemeConfig } from "~/server/db/schema";
 
-interface InviteLinkProps {
-  uiConfig: UIConfig;
-  themeConfig: ClientThemeConfig;
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
 }
 
-export function InviteLink({ uiConfig, themeConfig }: InviteLinkProps) {
+export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
   const inviteLink =
     "https://apps.taxnow.com/loginless?proOrg=c9586c60-ca4b-43fa-9";
 
@@ -43,25 +42,25 @@ export function InviteLink({ uiConfig, themeConfig }: InviteLinkProps) {
       ? "400ms" 
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
-        : "200ms"} ease-in-out`
-  };
-
-  const inputStyle = {
-    borderRadius: uiConfig.layoutBorderRadius,
-    transition: `all ${uiConfig.animationSpeed === "slower" 
-      ? "400ms" 
-      : uiConfig.animationSpeed === "faster" 
-        ? "100ms" 
-        : "200ms"} ease-in-out`
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
   };
 
   return (
     <section 
-      className="rounded-lg border bg-card p-6 shadow-sm"
+      className="rounded-lg p-6"
       style={sectionStyle}
     >
-      <h2 className="mb-2 text-xl font-semibold">Invite User With Link</h2>
-      <p className="mb-4 text-sm text-muted-foreground">
+      <h2 
+        className="mb-2 text-xl font-semibold"
+        style={{ color: theme_config.lightTheme.primary }}
+      >Invite User With Link</h2>
+      <p 
+        className="mb-4 text-sm"
+        style={{ color: theme_config.lightTheme.secondary }}
+      >
         Send this link to your clients for an effortless self onboarding
       </p>
       <div className="space-y-2">
@@ -70,19 +69,29 @@ export function InviteLink({ uiConfig, themeConfig }: InviteLinkProps) {
             value={inviteLink} 
             readOnly 
             className="font-mono text-sm" 
-            style={inputStyle}
+            style={{
+              borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`,
+              color: theme_config.lightTheme.primary
+            }}
           />
           <Button 
             variant="outline" 
             size="icon" 
             onClick={handleCopy}
             style={{
-              borderRadius: uiConfig.layoutBorderRadius,
+              borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
               transition: `all ${uiConfig.animationSpeed === "slower" 
                 ? "400ms" 
                 : uiConfig.animationSpeed === "faster" 
                   ? "100ms" 
-                  : "200ms"} ease-in-out`
+                  : "200ms"} ease-in-out`,
+              color: theme_config.lightTheme.primary,
+              borderColor: `${theme_config.lightTheme.primary}40`
             }}
           >
             <svg
@@ -101,7 +110,10 @@ export function InviteLink({ uiConfig, themeConfig }: InviteLinkProps) {
             <span className="sr-only">Copy link</span>
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p 
+          className="text-xs"
+          style={{ color: theme_config.lightTheme.secondary }}
+        >
           This link allows your clients to onboard to your Pro Firm Account
         </p>
       </div>

@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { CompleteUIConfig, CompleteThemeConfig } from "~/server/db/schema";
 
-interface UpcomingEventsProps {
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
   uiConfig: CompleteUIConfig;
-  themeConfig: CompleteThemeConfig;
 }
 
-export function UpcomingEvents({ uiConfig, themeConfig }: UpcomingEventsProps) {
+export function UpcomingEvents({ uiConfig, theme_config }: ThemeConfigProps) {
   const cardStyle = {
     borderRadius: uiConfig.layoutBorderRadius,
     fontSize: uiConfig.baseFontSize,
@@ -14,7 +14,10 @@ export function UpcomingEvents({ uiConfig, themeConfig }: UpcomingEventsProps) {
       ? "400ms" 
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
-        : "200ms"} ease-in-out`
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
   };
 
   const contentStyle = {
@@ -28,15 +31,36 @@ export function UpcomingEvents({ uiConfig, themeConfig }: UpcomingEventsProps) {
   return (
     <Card style={cardStyle}>
       <CardHeader style={contentStyle}>
-        <CardTitle className="text-lg">Upcoming events</CardTitle>
-        <p className="text-sm text-muted-foreground">
+        <CardTitle 
+          className="text-lg"
+          style={{ 
+            color: theme_config.lightTheme.primary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >Upcoming events</CardTitle>
+        <p 
+          className="text-sm text-muted-foreground"
+          style={{ 
+            color: theme_config.lightTheme.secondary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >
           List of important upcoming events
         </p>
       </CardHeader>
       <CardContent style={contentStyle}>
         <div 
-          className="py-4 text-center text-sm text-muted-foreground"
+          className="py-4 text-center text-sm"
           style={{
+            color: theme_config.lightTheme.secondary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 

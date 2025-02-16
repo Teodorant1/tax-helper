@@ -13,16 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { type Alert } from "~/server/db/schema";
-import type { UIConfig } from "~/types/ui";
-import type { ClientThemeConfig } from "~/types/theme";
+import { type Alert, type CompleteUIConfig, type CompleteThemeConfig } from "~/server/db/schema";
 
-interface AlertsProps {
-  uiConfig: UIConfig;
-  themeConfig: ClientThemeConfig;
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
 }
 
-export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
+export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
   const { data: alerts = [] } = api.test.getAllAlerts.useQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const warningCount = alerts.filter(
@@ -30,17 +28,41 @@ export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
   ).length;
   const infoCount = alerts.filter((alert) => alert.type === "info").length;
 
+  const cardStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    fontSize: uiConfig.baseFontSize,
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
+  };
+
   return (
-    <Card>
+    <Card style={cardStyle}>
       <CardHeader className="flex flex-col items-center justify-between space-y-2 pb-4 md:flex-row md:space-y-0">
         <div>
-          <CardTitle className="text-2xl font-bold">
-            Alerts <span className="text-yellow-500">{warningCount}</span>{" "}
-            <span className="text-blue-500">{infoCount}</span>
+          <CardTitle 
+            className="text-2xl font-bold"
+            style={{ color: theme_config.lightTheme.primary }}
+          >
+            Alerts{" "}
+            <span style={{ color: theme_config.lightTheme.accent }}>{warningCount}</span>{" "}
+            <span style={{ color: theme_config.lightTheme.secondary }}>{infoCount}</span>
           </CardTitle>
-          <CardDescription>View and manage your tax alerts</CardDescription>
+          <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
+            View and manage your tax alerts
+          </CardDescription>
         </div>
-        <Button variant="link" className="text-primary" asChild>
+        <Button 
+          variant="link" 
+          className="text-primary" 
+          asChild
+          style={{ color: theme_config.lightTheme.primary }}
+        >
           <Link href="/alerts">View All</Link>
         </Button>
       </CardHeader>
@@ -54,6 +76,14 @@ export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
+            style={{
+              borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`
+            }}
           />
         </div>
         <div className="space-y-4">
@@ -81,18 +111,26 @@ export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
                     ? "400ms" 
                     : uiConfig.animationSpeed === "faster" 
                       ? "100ms" 
-                      : "200ms"} ease-in-out`
+                      : "200ms"} ease-in-out`,
+                  background: `${theme_config.lightTheme.primary}05`,
+                  borderColor: `${theme_config.lightTheme.primary}20`
                 }}
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                      alert.type === "warning"
-                        ? "bg-yellow-500/10 text-yellow-500"
-                        : "bg-blue-500/10 text-blue-500"
-                    }`}
                     style={{
-                      borderRadius: uiConfig.layoutBorderRadius
+                      borderRadius: uiConfig.layoutBorderRadius,
+                      backgroundColor: alert.type === "warning"
+                        ? `${theme_config.lightTheme.accent}10`
+                        : `${theme_config.lightTheme.secondary}10`,
+                      color: alert.type === "warning"
+                        ? theme_config.lightTheme.accent
+                        : theme_config.lightTheme.secondary,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "2.5rem",
+                      height: "2.5rem"
                     }}
                   >
                     {alert.type === "warning" ? (
@@ -102,11 +140,20 @@ export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
                     )}
                   </div>
                   <div>
-                    <div className="font-medium">{alert.client.name}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div 
+                      className="font-medium"
+                      style={{ color: theme_config.lightTheme.primary }}
+                    >{alert.client.name}</div>
+                    <div 
+                      className="text-sm"
+                      style={{ color: theme_config.lightTheme.secondary }}
+                    >
                       {alert.alert}
                     </div>
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-muted-foreground md:flex md:gap-4">
+                    <div 
+                      className="mt-2 grid grid-cols-2 gap-2 text-xs md:flex md:gap-4"
+                      style={{ color: theme_config.lightTheme.secondary }}
+                    >
                       <span>{alert.taxPeriod}</span>
                       <span>{alert.clientType}</span>
                       <span>{alert.alertDate}</span>

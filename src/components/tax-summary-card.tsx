@@ -1,15 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { CompleteUIConfig, CompleteThemeConfig } from "~/server/db/schema";
 
-interface TaxSummaryCardProps {
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
+}
+
+interface TaxSummaryCardProps extends ThemeConfigProps {
   title: string;
   year: string;
   data: {
     period: string;
     amount: string;
   }[];
-  uiConfig: CompleteUIConfig;
-  themeConfig: CompleteThemeConfig;
 }
 
 export function TaxSummaryCard({ 
@@ -17,7 +20,7 @@ export function TaxSummaryCard({
   year, 
   data,
   uiConfig,
-  themeConfig 
+  theme_config 
 }: TaxSummaryCardProps) {
   const cardStyle = {
     borderRadius: uiConfig.layoutBorderRadius,
@@ -26,7 +29,10 @@ export function TaxSummaryCard({
       ? "400ms" 
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
-        : "200ms"} ease-in-out`
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
   };
 
   const contentStyle = {
@@ -40,12 +46,35 @@ export function TaxSummaryCard({
   return (
     <Card style={cardStyle}>
       <CardHeader style={contentStyle}>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">For {year}</p>
+        <CardTitle 
+          className="text-lg"
+          style={{ 
+            color: theme_config.lightTheme.primary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >{title}</CardTitle>
+        <p 
+          className="text-sm text-muted-foreground"
+          style={{ 
+            color: theme_config.lightTheme.secondary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >For {year}</p>
       </CardHeader>
       <CardContent style={contentStyle}>
         <div className="space-y-2">
-          <div className="grid grid-cols-2 text-sm font-medium">
+          <div 
+            className="grid grid-cols-2 text-sm font-medium"
+            style={{ color: theme_config.lightTheme.primary }}
+          >
             <div>Period</div>
             <div>{title === "Outstanding Balance" ? "Balance" : "Amount"}</div>
           </div>
@@ -54,6 +83,7 @@ export function TaxSummaryCard({
               key={item.period} 
               className="grid grid-cols-2 text-sm"
               style={{
+                color: theme_config.lightTheme.secondary,
                 transition: `all ${uiConfig.animationSpeed === "slower" 
                   ? "400ms" 
                   : uiConfig.animationSpeed === "faster" 

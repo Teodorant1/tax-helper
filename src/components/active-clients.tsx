@@ -24,16 +24,14 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { type Client } from "~/server/db/schema";
-import type { UIConfig } from "~/types/ui";
-import type { ClientThemeConfig } from "~/types/theme";
+import { type Client, type CompleteUIConfig, type CompleteThemeConfig } from "~/server/db/schema";
 
-interface ActiveClientsProps {
-  uiConfig: UIConfig;
-  themeConfig: ClientThemeConfig;
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
 }
 
-export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
+export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const {
     data: allClients = [],
@@ -41,12 +39,30 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
     isLoading,
   } = api.test.getAllClients.useQuery();
 
+  const cardStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    fontSize: uiConfig.baseFontSize,
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
+  };
+
   if (isLoading) {
     return (
-      <Card>
+      <Card style={cardStyle}>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
-          <CardDescription>Loading clients...</CardDescription>
+          <CardTitle 
+            className="text-2xl font-bold"
+            style={{ color: theme_config.lightTheme.primary }}
+          >Active Clients</CardTitle>
+          <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
+            Loading clients...
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -55,28 +71,45 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
   if (error) {
     console.error("Error loading clients:", error);
     return (
-      <Card>
+      <Card style={cardStyle}>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
-          <CardDescription className="text-red-500">
+          <CardTitle 
+            className="text-2xl font-bold"
+            style={{ color: theme_config.lightTheme.primary }}
+          >Active Clients</CardTitle>
+          <CardDescription 
+            className="text-red-500"
+            style={{ color: theme_config.lightTheme.accent }}
+          >
             Error loading clients. Please try again later.
           </CardDescription>
         </CardHeader>
       </Card>
     );
   }
+
   const clients = allClients.filter(
     (client: Client) => client.status === "Active",
   );
 
   return (
-    <Card>
+    <Card style={cardStyle}>
       <CardHeader className="flex flex-col items-center justify-between md:flex-row md:space-y-0 md:pb-4">
         <div>
-          <CardTitle className="text-2xl font-bold">Active Clients</CardTitle>
-          <CardDescription>Manage your active client list</CardDescription>
+          <CardTitle 
+            className="text-2xl font-bold"
+            style={{ color: theme_config.lightTheme.primary }}
+          >Active Clients</CardTitle>
+          <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
+            Manage your active client list
+          </CardDescription>
         </div>
-        <Button variant="link" className="text-primary" asChild>
+        <Button 
+          variant="link" 
+          className="text-primary" 
+          asChild
+          style={{ color: theme_config.lightTheme.primary }}
+        >
           <Link href="/clients">View All</Link>
         </Button>
       </CardHeader>
@@ -90,11 +123,27 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
+            style={{
+              borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`
+            }}
           />
           <Button
             variant="outline"
             size="sm"
             className="relative right-2 top-2 ml-2"
+            style={{
+              borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`
+            }}
           >
             <Filter className="h-4 w-4" />
             Filters
@@ -117,16 +166,31 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                     ? "0.75rem" 
                     : uiConfig.layoutDensity === "spacious" 
                       ? "1.5rem" 
-                      : "1rem"
+                      : "1rem",
+                  transition: `all ${uiConfig.animationSpeed === "slower" 
+                    ? "400ms" 
+                    : uiConfig.animationSpeed === "faster" 
+                      ? "100ms" 
+                      : "200ms"} ease-in-out`
                 }}
               >
                 <div className="flex flex-col gap-4 md:flex-row">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div 
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary"
+                    style={{
+                      backgroundColor: `${theme_config.lightTheme.primary}10`,
+                      color: theme_config.lightTheme.primary,
+                      borderRadius: uiConfig.layoutBorderRadius
+                    }}
+                  >
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div className="space-y-1">
                     <div className="flex flex-col items-center gap-2 md:flex-row">
-                      <div className="font-medium">{client.name}</div>
+                      <div 
+                        className="font-medium"
+                        style={{ color: theme_config.lightTheme.primary }}
+                      >{client.name}</div>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                           client.status === "Active"
@@ -135,14 +199,21 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                               ? "bg-yellow-100 text-yellow-700"
                               : "bg-red-100 text-red-700"
                         }`}
+                        style={{ borderRadius: `calc(${uiConfig.layoutBorderRadius} * 2)` }}
                       >
                         {client.status}
                       </span>
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div 
+                      className="text-sm"
+                      style={{ color: theme_config.lightTheme.secondary }}
+                    >
                       {client.taxId}
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    <div 
+                      className="flex flex-wrap gap-4 text-sm"
+                      style={{ color: theme_config.lightTheme.secondary }}
+                    >
                       <span className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
                         {client.email}
@@ -152,22 +223,28 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                         {client.phone}
                       </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-6 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
+                    <div className="mt-2 flex flex-wrap gap-6 text-xs">
+                      <span 
+                        className="flex items-center gap-1"
+                        style={{ color: theme_config.lightTheme.secondary }}
+                      >
                         <Clock className="h-3 w-3" />
                         Last Filing: {client.lastFiling}
                       </span>
-                      <span className="flex items-center gap-1">
+                      <span 
+                        className="flex items-center gap-1"
+                        style={{ color: theme_config.lightTheme.secondary }}
+                      >
                         <Calendar className="h-3 w-3" />
                         Next Filing: {client.nextFiling}
                       </span>
                       {client.pendingTasks > 0 && (
-                        <span className="text-yellow-500">
+                        <span style={{ color: theme_config.lightTheme.accent }}>
                           {client.pendingTasks} Pending Tasks
                         </span>
                       )}
                       {client.alertCount > 0 && (
-                        <span className="text-red-500">
+                        <span style={{ color: theme_config.lightTheme.accent }}>
                           {client.alertCount} Alerts
                         </span>
                       )}
@@ -180,6 +257,14 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                     size="icon"
                     className="h-8 w-8"
                     asChild
+                    style={{
+                      borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                      transition: `all ${uiConfig.animationSpeed === "slower" 
+                        ? "400ms" 
+                        : uiConfig.animationSpeed === "faster" 
+                          ? "100ms" 
+                          : "200ms"} ease-in-out`
+                    }}
                   >
                     <Link href={`/data?clientId=${client.id}`}>
                       <Search className="h-4 w-4" />
@@ -190,6 +275,14 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                     size="icon"
                     className="h-8 w-8"
                     asChild
+                    style={{
+                      borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                      transition: `all ${uiConfig.animationSpeed === "slower" 
+                        ? "400ms" 
+                        : uiConfig.animationSpeed === "faster" 
+                          ? "100ms" 
+                          : "200ms"} ease-in-out`
+                    }}
                   >
                     <Link href={`/alerts?clientId=${client.id}`}>
                       <Bell className="h-4 w-4" />
@@ -200,12 +293,32 @@ export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
                     size="icon"
                     className="h-8 w-8"
                     asChild
+                    style={{
+                      borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                      transition: `all ${uiConfig.animationSpeed === "slower" 
+                        ? "400ms" 
+                        : uiConfig.animationSpeed === "faster" 
+                          ? "100ms" 
+                          : "200ms"} ease-in-out`
+                    }}
                   >
                     <Link href={`/documents?clientId=${client.id}`}>
                       <FileText className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    style={{
+                      borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                      transition: `all ${uiConfig.animationSpeed === "slower" 
+                        ? "400ms" 
+                        : uiConfig.animationSpeed === "faster" 
+                          ? "100ms" 
+                          : "200ms"} ease-in-out`
+                    }}
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </div>

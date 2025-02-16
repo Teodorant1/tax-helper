@@ -3,12 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { type Transaction, type CompleteUIConfig, type CompleteThemeConfig } from "~/server/db/schema";
 
-interface TransactionHistoryProps {
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
   uiConfig: CompleteUIConfig;
-  themeConfig: CompleteThemeConfig;
 }
 
-export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistoryProps) {
+export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps) {
   const { data: transactions = [] } = api.test.getAllTransactions.useQuery();
 
   const cardStyle = {
@@ -18,7 +18,10 @@ export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistory
       ? "400ms" 
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
-        : "200ms"} ease-in-out`
+        : "200ms"} ease-in-out`,
+    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
+    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    boxShadow: '0 0 10px #00000010'
   };
 
   const contentStyle = {
@@ -32,8 +35,28 @@ export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistory
   return (
     <Card style={cardStyle}>
       <CardHeader style={contentStyle}>
-        <CardTitle className="text-lg">Transaction History</CardTitle>
-        <p className="text-sm text-muted-foreground">
+        <CardTitle 
+          className="text-lg"
+          style={{ 
+            color: theme_config.lightTheme.primary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >Transaction History</CardTitle>
+        <p 
+          className="text-sm text-muted-foreground"
+          style={{ 
+            color: theme_config.lightTheme.secondary,
+            transition: `all ${uiConfig.animationSpeed === "slower" 
+              ? "400ms" 
+              : uiConfig.animationSpeed === "faster" 
+                ? "100ms" 
+                : "200ms"} ease-in-out`
+          }}
+        >
           A quick peek into the most recent activity on your tax account
         </p>
       </CardHeader>
@@ -69,7 +92,10 @@ export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistory
           </TabsList>
           <TabsContent value="income">
             <div className="mt-4 space-y-4">
-              <div className="grid grid-cols-4 text-sm font-medium">
+              <div 
+                className="grid grid-cols-4 text-sm font-medium"
+                style={{ color: theme_config.lightTheme.primary }}
+              >
                 <div>Transaction</div>
                 <div>Form</div>
                 <div>Tax Period</div>
@@ -80,6 +106,7 @@ export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistory
                   key={transaction.id}
                   className="grid grid-cols-4 border-t py-2 text-sm"
                   style={{
+                    color: theme_config.lightTheme.secondary,
                     transition: `all ${uiConfig.animationSpeed === "slower" 
                       ? "400ms" 
                       : uiConfig.animationSpeed === "faster" 
@@ -106,7 +133,10 @@ export function TransactionHistory({ uiConfig, themeConfig }: TransactionHistory
             </div>
           </TabsContent>
           <TabsContent value="employment">
-            <div className="py-4 text-center text-sm text-muted-foreground">
+            <div 
+              className="py-4 text-center text-sm"
+              style={{ color: theme_config.lightTheme.secondary }}
+            >
               No employment transactions found
             </div>
           </TabsContent>

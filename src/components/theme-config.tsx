@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useThemeSettingsForm } from "~/hooks/use-theme-settings-form";
 import type { ThemeFormValues } from "~/hooks/use-theme-settings-form";
-import type { CompleteThemeConfig , CompleteUIConfig} from "~/server/db/schema";
 import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,6 +17,8 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { toast } from "~/components/ui/use-toast";
+
+import type { CompleteThemeConfig , CompleteUIConfig} from "~/server/db/schema";
 
 interface ThemeConfigProps {
   theme_config: CompleteThemeConfig;

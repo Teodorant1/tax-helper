@@ -2,14 +2,14 @@
 
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { api } from "~/trpc/react";
-import type { CompleteThemeConfig, CompleteUIConfig } from "~/server/db/schema";
+import type { CompleteUIConfig, CompleteThemeConfig } from "~/server/db/schema";
 
-interface TaxStatusBannerProps {
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
   uiConfig: CompleteUIConfig;
-  themeConfig: CompleteThemeConfig;
 }
 
-export function TaxStatusBanner({ uiConfig, themeConfig }: TaxStatusBannerProps) {
+export function TaxStatusBanner({ theme_config, uiConfig }: ThemeConfigProps) {
   const { data: taxHistory = [] } = api.test.getAllTaxHistory.useQuery();
 
   const currentYear = new Date().getFullYear();
@@ -43,8 +43,12 @@ export function TaxStatusBanner({ uiConfig, themeConfig }: TaxStatusBannerProps)
   if (hasFiledCurrentYear) {
     return (
       <div 
-        className="mb-6 rounded-lg bg-green-50 p-4 text-green-800"
-        style={bannerStyle}
+        style={{
+          ...bannerStyle,
+          backgroundColor: `${theme_config.lightTheme.primary}10`,
+          color: theme_config.lightTheme.primary,
+        }}
+        className="mb-6 rounded-lg p-4"
       >
         <div className="flex items-center">
           <CheckCircle2 className="mr-2 h-5 w-5" />
@@ -56,8 +60,12 @@ export function TaxStatusBanner({ uiConfig, themeConfig }: TaxStatusBannerProps)
 
   return (
     <div 
-      className="mb-6 rounded-lg bg-yellow-50 p-4 text-yellow-800"
-      style={bannerStyle}
+        style={{
+          ...bannerStyle,
+          backgroundColor: `${theme_config.lightTheme.accent}10`,
+          color: theme_config.lightTheme.accent,
+        }}
+        className="mb-6 rounded-lg p-4"
     >
       <div className="flex items-center">
         <AlertTriangle className="mr-2 h-5 w-5" />
