@@ -1,91 +1,41 @@
-"use client";
-
-import { api } from "~/trpc/react";
 import { Greeting } from "~/components/greeting";
-import { ActiveClients } from "~/components/active-clients";
-import { Alerts } from "~/components/alerts";
-import { InviteLink } from "~/components/invite-link";
-import { Resources } from "~/components/resources";
-import { TaxStatusBanner } from "~/components/tax-status-banner";
-import { TaxSummaryCard } from "~/components/tax-summary-card";
-import { TransactionHistory } from "~/components/transaction-history";
-import { UpcomingEvents } from "~/components/upcoming-events";
+import { HomePageClient } from "./_components/home-page-client";
+import { api } from "~/trpc/server";
+import type { CompleteUIConfig } from "~/server/db/schema";
+import type { ClientThemeConfig } from "~/types/theme";
 
-export default function HomePage() {
-  const { data: taxHistory = [] } = api.test.getAllTaxHistory.useQuery();
+export default async function HomePage() {
+  // Fetch configs at page level
+  const uiConfig = await api.uiSettings.getSettings();
+  const themeConfig = await api.theme.getSettings();
 
-  const taxableIncomeData = taxHistory
-    .filter((entry) => entry.type === "income")
-    .map((entry) => ({
-      period: entry.period,
-      amount: entry.principalTax,
-    }))
-    .slice(0, 2);
+  // Transform theme config to match ClientThemeConfig interface
+  const clientThemeConfig: ClientThemeConfig = {
+    light: {
+      primary: themeConfig.lightTheme.primary,
+      secondary: themeConfig.lightTheme.secondary,
+      accent: themeConfig.lightTheme.accent,
+    },
+    dark: {
+      primary: themeConfig.darkTheme.primary,
+      secondary: themeConfig.darkTheme.secondary,
+      accent: themeConfig.darkTheme.accent,
+    },
+  };
 
-  const taxesPaidData = taxHistory
-    .filter((entry) => entry.type === "income")
-    .map((entry) => ({
-      period: entry.period,
-      amount: entry.paymentsAndCredits,
-    }))
-    .slice(0, 2);
-
-  const outstandingBalanceData = taxHistory
-    .filter((entry) => entry.type === "income")
-    .map((entry) => ({
-      period: entry.period,
-      amount: entry.balance,
-    }))
-    .slice(0, 2);
   return (
-    <div className="space-y-6">
-      <Greeting />
-
-      {/* Client Management Section */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border bg-card shadow">
-          <ActiveClients />
-        </div>
-        <div className="rounded-lg border bg-card shadow">
-          <Alerts />
-        </div>
-      </div>
-
-      {/* Tax Information Section */}
-      <TaxStatusBanner />
-      <div className="grid gap-6 md:grid-cols-3">
-        <TaxSummaryCard
-          title="Taxable Income"
-          year="2024"
-          data={taxableIncomeData}
-        />
-        <TaxSummaryCard title="Taxes Paid" year="2024" data={taxesPaidData} />
-        <TaxSummaryCard
-          title="Outstanding Balance"
-          year="2024"
-          data={outstandingBalanceData}
-        />
-      </div>
-
-      {/* Transaction and Events Section */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2">
-          <TransactionHistory />
-        </div>
-        <div>
-          <UpcomingEvents />
-        </div>
-      </div>
-
-      {/* Resources Section */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border bg-card shadow">
-          <InviteLink />
-        </div>
-        <div className="rounded-lg border bg-card shadow">
-          <Resources />
-        </div>
-      </div>
+    <div 
+      className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
+                 uiConfig.layoutDensity === 'spacious' ? '8' : '6'}`}
+      style={{
+        transition: `all ${
+          uiConfig.animationSpeed === 'slower' ? '0.4s' :
+          uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+        } ease`
+      }}
+    >
+      <Greeting uiConfig={uiConfig as CompleteUIConfig} themeConfig={clientThemeConfig} />
+      <HomePageClient uiConfig={uiConfig as CompleteUIConfig} themeConfig={clientThemeConfig} />
     </div>
   );
 }

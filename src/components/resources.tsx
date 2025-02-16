@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import type { UIConfig } from "~/types/ui";
+import type { ClientThemeConfig } from "~/types/theme";
 
-export function Resources() {
+interface ResourcesProps {
+  uiConfig: UIConfig;
+  themeConfig: ClientThemeConfig;
+}
+
+export function Resources({ uiConfig, themeConfig }: ResourcesProps) {
   const resources = [
     {
       name: "Add/Invite Client",
@@ -85,8 +92,40 @@ export function Resources() {
     },
   ];
 
+  const sectionStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    fontSize: uiConfig.baseFontSize,
+    padding: uiConfig.layoutDensity === "compact" 
+      ? "1rem" 
+      : uiConfig.layoutDensity === "spacious" 
+        ? "2rem" 
+        : "1.5rem",
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`
+  };
+
+  const linkStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`,
+    padding: uiConfig.layoutDensity === "compact" 
+      ? "0.75rem" 
+      : uiConfig.layoutDensity === "spacious" 
+        ? "1.5rem" 
+        : "1rem"
+  };
+
   return (
-    <section className="rounded-lg border bg-card p-6 shadow-sm">
+    <section 
+      className="rounded-lg border bg-card p-6 shadow-sm"
+      style={sectionStyle}
+    >
       <h2 className="mb-2 text-xl font-semibold">Resources & Updates</h2>
       <p className="mb-6 text-sm text-muted-foreground">
         Some resources to help you get started and stay informed
@@ -97,8 +136,19 @@ export function Resources() {
             key={resource.name}
             href={resource.href}
             className="flex flex-col items-center gap-2 rounded-lg p-4 text-center transition-all hover:scale-105 hover:bg-muted hover:brightness-110"
+            style={linkStyle}
           >
-            <div className="rounded-full bg-primary/10 p-2 text-primary">
+            <div 
+              className="rounded-full bg-primary/10 p-2 text-primary"
+              style={{
+                borderRadius: "9999px", // Keep circle shape
+                transition: `all ${uiConfig.animationSpeed === "slower" 
+                  ? "400ms" 
+                  : uiConfig.animationSpeed === "faster" 
+                    ? "100ms" 
+                    : "200ms"} ease-in-out`
+              }}
+            >
               {resource.icon}
             </div>
             <span className="text-sm font-medium">{resource.name}</span>

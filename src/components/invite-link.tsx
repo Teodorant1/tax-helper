@@ -3,8 +3,15 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { toast } from "./ui/use-toast";
+import type { UIConfig } from "~/types/ui";
+import type { ClientThemeConfig } from "~/types/theme";
 
-export function InviteLink() {
+interface InviteLinkProps {
+  uiConfig: UIConfig;
+  themeConfig: ClientThemeConfig;
+}
+
+export function InviteLink({ uiConfig, themeConfig }: InviteLinkProps) {
   const inviteLink =
     "https://apps.taxnow.com/loginless?proOrg=c9586c60-ca4b-43fa-9";
 
@@ -24,16 +31,60 @@ export function InviteLink() {
     }
   };
 
+  const sectionStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    fontSize: uiConfig.baseFontSize,
+    padding: uiConfig.layoutDensity === "compact" 
+      ? "1rem" 
+      : uiConfig.layoutDensity === "spacious" 
+        ? "2rem" 
+        : "1.5rem",
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`
+  };
+
+  const inputStyle = {
+    borderRadius: uiConfig.layoutBorderRadius,
+    transition: `all ${uiConfig.animationSpeed === "slower" 
+      ? "400ms" 
+      : uiConfig.animationSpeed === "faster" 
+        ? "100ms" 
+        : "200ms"} ease-in-out`
+  };
+
   return (
-    <section className="rounded-lg border bg-card p-6 shadow-sm">
+    <section 
+      className="rounded-lg border bg-card p-6 shadow-sm"
+      style={sectionStyle}
+    >
       <h2 className="mb-2 text-xl font-semibold">Invite User With Link</h2>
       <p className="mb-4 text-sm text-muted-foreground">
         Send this link to your clients for an effortless self onboarding
       </p>
       <div className="space-y-2">
         <div className="flex flex-col gap-2 md:flex-row">
-          <Input value={inviteLink} readOnly className="font-mono text-sm" />
-          <Button variant="outline" size="icon" onClick={handleCopy}>
+          <Input 
+            value={inviteLink} 
+            readOnly 
+            className="font-mono text-sm" 
+            style={inputStyle}
+          />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleCopy}
+            style={{
+              borderRadius: uiConfig.layoutBorderRadius,
+              transition: `all ${uiConfig.animationSpeed === "slower" 
+                ? "400ms" 
+                : uiConfig.animationSpeed === "faster" 
+                  ? "100ms" 
+                  : "200ms"} ease-in-out`
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

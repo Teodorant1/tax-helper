@@ -52,17 +52,18 @@ export async function generateMockDataForUser(options: MockDataOptions) {
   } = options;
 
   return await db.transaction(async (tx) => {
+    console.log("Generate mock logos for UI config" , options)
     // Generate mock logos for UI config
     const mockLogos = await tx
       .insert(logos)
       .values([
         {
           type: "url",
-          value: "https://example.com/sidebar-logo.png",
+          value: "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
         },
         {
-          type: "url",
-          value: "https://example.com/greeting-logo.png",
+          type: "upload",
+          value: "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
         },
       ])
       .returning();
@@ -84,168 +85,240 @@ export async function generateMockDataForUser(options: MockDataOptions) {
       ])
       .returning();
 
-    // Generate mock clients
+    // Generate mock clients with real data
     const mockClients = await tx
       .insert(clients)
-      .values(
-        Array.from({ length: clientCount }, () => {
-          const status = (["Active", "Pending", "Inactive"][
-            Math.floor(Math.random() * 3)
-          ] ?? "Active") as ClientStatus;
-          return {
-            id: crypto.randomUUID(),
-            userId: userId,
-            name: `Client ${Math.random().toString(36).substring(7)}`,
-            taxId: `TAX-${Math.random().toString().substring(2, 11)}`,
-            email: `client${Math.random().toString(36).substring(7)}@example.com`,
-            phone: `+1${Math.floor(Math.random() * 9000000000 + 1000000000)}`,
-            status,
-            lastFiling: new Date(
-              Date.now() - Math.random() * 10000000000,
-            ).toISOString(),
-            nextFiling: new Date(
-              Date.now() + Math.random() * 10000000000,
-            ).toISOString(),
-          };
-        }),
-      )
+      .values([
+        {
+          id: crypto.randomUUID(),
+          userId: userId,
+          name: "Big Sky Trading, LLC",
+          taxId: "77-0616924",
+          email: "contact@bigskytrading.com",
+          phone: "(555) 123-4567",
+          status: "Active",
+          lastFiling: "2024 Q4",
+          nextFiling: "2025 Q1",
+          pendingTasks: 2,
+          alertCount: 1,
+        },
+        {
+          id: crypto.randomUUID(),
+          userId: userId,
+          name: "Carolina Food Services, Inc.",
+          taxId: "20-5778510",
+          email: "admin@carolinafood.com",
+          phone: "(555) 234-5678",
+          status: "Active",
+          lastFiling: "2024 Q4",
+          nextFiling: "2025 Q1",
+          pendingTasks: 0,
+          alertCount: 0,
+        },
+        {
+          id: crypto.randomUUID(),
+          userId: userId,
+          name: "Cutting Edge Plumbing & Mechanical, Inc.",
+          taxId: "94-2392371",
+          email: "info@cuttingedgeplumbing.com",
+          phone: "(555) 345-6789",
+          status: "Pending",
+          lastFiling: "2024 Q4",
+          nextFiling: "2025 Q1",
+          pendingTasks: 3,
+          alertCount: 2,
+        }
+      ])
       .returning();
 
-    // Generate mock alerts for each client
+    // Generate mock alerts with real data
     for (const client of mockClients) {
-      const alertsData = Array.from({ length: alertsPerClient }, () => {
-        const type = (Math.random() > 0.5 ? "warning" : "info") as AlertType;
-        const clientType = (["Individual", "Business"][
-          Math.floor(Math.random() * 2)
-        ] ?? "Individual") as ClientType;
-        return {
+      await tx.insert(alerts).values([
+        {
           id: crypto.randomUUID(),
           clientId: client.id,
-          type,
-          clientType,
+          type: "info",
+          clientType: "Business",
           taxId: client.taxId,
-          alert: `Alert message ${Math.random().toString(36).substring(7)}`,
-          taxPeriod: `2024-Q${Math.floor(Math.random() * 4) + 1}`,
-          alertDate: new Date().toISOString(),
-          transactionDate: new Date(
-            Date.now() - Math.random() * 10000000000,
-          ).toISOString(),
-          amount: `$${(Math.random() * 10000).toFixed(2)}`,
-        };
-      });
-      await tx.insert(alerts).values(alertsData);
-
-      // Generate mock transactions
-      const transactionsData = Array.from(
-        { length: transactionsPerClient },
-        () => {
-          const type =
-            ["Payment", "Refund", "Adjustment"][
-              Math.floor(Math.random() * 3)
-            ] ?? "Payment";
-          const form =
-            ["1040", "1120", "941"][Math.floor(Math.random() * 3)] ?? "1040";
-          return {
-            id: crypto.randomUUID(),
-            clientId: client.id,
-            type,
-            date: new Date(
-              Date.now() - Math.random() * 10000000000,
-            ).toISOString(),
-            form,
-            taxPeriod: `2024-Q${Math.floor(Math.random() * 4) + 1}`,
-            amount: `$${(Math.random() * 10000).toFixed(2)}`,
-          };
+          alert: "Code 960 - Appointed\nThe IRS has accepted TaxNow or another third party as an appointee for your tax matters.",
+          taxPeriod: "2024 Q1",
+          alertDate: "2025-02-05",
+          transactionDate: "2023-12-13",
+          amount: "$0.00"
         },
-      );
-      await tx.insert(transactions).values(transactionsData);
-
-      // Generate mock tax history entries
-      const taxHistoryData = Array.from({ length: taxHistoryPerClient }, () => {
-        const type = (
-          Math.random() > 0.5 ? "income" : "employment"
-        ) as TaxHistoryType;
-        return {
+        {
           id: crypto.randomUUID(),
           clientId: client.id,
-          period: `2024-Q${Math.floor(Math.random() * 4) + 1}`,
-          returnFiled: new Date(
-            Date.now() - Math.random() * 10000000000,
-          ).toISOString(),
-          principalTax: `$${(Math.random() * 50000).toFixed(2)}`,
-          interest: `$${(Math.random() * 1000).toFixed(2)}`,
-          penalties: `$${(Math.random() * 2000).toFixed(2)}`,
-          paymentsAndCredits: `$${(Math.random() * 40000).toFixed(2)}`,
-          refunds: `$${(Math.random() * 5000).toFixed(2)}`,
-          balance: `$${(Math.random() * 10000).toFixed(2)}`,
-          type,
-        };
-      });
-      await tx.insert(taxHistoryEntries).values(taxHistoryData);
+          type: "warning",
+          clientType: "Business",
+          taxId: client.taxId,
+          alert: "Code 150 - Return Filed\nThe IRS has received your 1120 form for 2024 year. Note that processing may take 6-8 weeks.",
+          taxPeriod: "2024 Q1",
+          alertDate: "2025-02-05",
+          transactionDate: "2024-01-15",
+          amount: "$0.00"
+        }
+      ]);
 
-      // Generate mock ERC transactions and events
+      // Generate mock transactions with real data
+      await tx.insert(transactions).values([
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          type: "Appointed representative",
+          date: "2024-06-10",
+          form: "1120",
+          taxPeriod: "2024",
+          amount: "-"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          type: "Tax return filed",
+          date: "2024-04-22",
+          form: "1120S",
+          taxPeriod: "2023",
+          amount: "-"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          type: "Extension of time to file tax return ext. Date 09-15-2024",
+          date: "2024-04-08",
+          form: "1120S",
+          taxPeriod: "2023",
+          amount: "-"
+        }
+      ]);
+
+      // Generate mock tax history entries with real data
+      await tx.insert(taxHistoryEntries).values([
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          period: "2022",
+          returnFiled: "Original",
+          principalTax: "$2,746.25",
+          interest: "$0.00",
+          penalties: "$0.00",
+          paymentsAndCredits: "($2,746.25)",
+          refunds: "$0.00",
+          balance: "$0.00",
+          type: "income"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          period: "2021",
+          returnFiled: "Original",
+          principalTax: "$145,855.36",
+          interest: "($17,977.99)",
+          penalties: "$0.00",
+          paymentsAndCredits: "($290,503.43)",
+          refunds: "$162,626.06",
+          balance: "$0.00",
+          type: "income"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          period: "2020",
+          returnFiled: "Original",
+          principalTax: "$713,169.00",
+          interest: "($40,361.21)",
+          penalties: "$0.00",
+          paymentsAndCredits: "($1,041,021.70)",
+          refunds: "$368,213.91",
+          balance: "$0.00",
+          type: "income"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          period: "2024",
+          returnFiled: "No",
+          principalTax: "$0.00",
+          interest: "$0.00",
+          penalties: "$0.00",
+          paymentsAndCredits: "$0.00",
+          refunds: "$0.00",
+          balance: "$0.00",
+          type: "employment"
+        }
+      ]);
+
+      // Generate mock ERC transactions with real data
       const mockErcTransactions = await tx
         .insert(ercTransactions)
-        .values(
-          Array.from({ length: ercTransactionsPerClient }, () => ({
+        .values([
+          {
             id: crypto.randomUUID(),
             clientId: client.id,
-            irsTracking: `IRS-${Math.random().toString(36).substring(7)}`,
-            filed: Math.random() > 0.3,
-            clientEnteredErcClaim: `$${(Math.random() * 100000).toFixed(2)}`,
-            approvedErcAmount: `$${(Math.random() * 80000).toFixed(2)}`,
-            interestAccrued: `$${(Math.random() * 1000).toFixed(2)}`,
-            adjustments: `$${(Math.random() * 5000).toFixed(2)}`,
-            totalRefundProcessed: `$${(Math.random() * 75000).toFixed(2)}`,
-            totalErcPending: `$${(Math.random() * 25000).toFixed(2)}`,
-          })),
-        )
+            irsTracking: "Q2 2020 06/30/20",
+            filed: true,
+            clientEnteredErcClaim: "$350,002.70",
+            approvedErcAmount: "$350,002.70",
+            interestAccrued: "$40,361.21",
+            adjustments: "$2,150.00",
+            totalRefundProcessed: "$368,213.91",
+            totalErcPending: "$350,002.70"
+          }
+        ])
         .returning();
 
-      // Generate mock ERC events for each transaction
+      // Generate mock ERC events with real data
       for (const ercTransaction of mockErcTransactions) {
         await tx.insert(ercEvents).values({
           id: crypto.randomUUID(),
           transactionId: ercTransaction.id,
           irsTracking: ercTransaction.irsTracking,
-          form941xReceivedDate: new Date(
-            Date.now() - Math.random() * 10000000000,
-          ).toISOString(),
-          form941xForwardDate: new Date(
-            Date.now() - Math.random() * 8000000000,
-          ).toISOString(),
-          refundApprovedDate: new Date(
-            Date.now() - Math.random() * 5000000000,
-          ).toISOString(),
-          refundPaidDate: new Date(
-            Date.now() - Math.random() * 2000000000,
-          ).toISOString(),
-          examinationIndicator: Math.random() > 0.7 ? "Under Review" : null,
+          form941xReceivedDate: "2023-05-30",
+          form941xForwardDate: "2023-05-30",
+          refundApprovedDate: "2024-09-23",
+          refundPaidDate: "2024-09-23",
+          examinationIndicator: "-"
         });
       }
 
-      // Generate mock documents
-      const documentsData = Array.from({ length: documentsPerClient }, () => {
-        const docType =
-          ["Tax Return", "W2", "1099", "Correspondence"][
-            Math.floor(Math.random() * 4)
-          ] ?? "Tax Return";
-        const status = (
-          Math.random() > 0.2 ? "Ready" : "Error"
-        ) as DocumentStatus;
-        return {
+      // Generate mock documents with real data
+      await tx.insert(documents).values([
+        {
           id: crypto.randomUUID(),
           clientId: client.id,
-          name: `Document ${Math.random().toString(36).substring(7)}`,
-          status,
-          type: docType,
-          taxPeriod: `2024-Q${Math.floor(Math.random() * 4) + 1}`,
-          requestedOn: new Date(
-            Date.now() - Math.random() * 10000000000,
-          ).toISOString(),
-        };
-      });
-      await tx.insert(documents).values(documentsData);
+          name: "ACTR-941-2020-Q4",
+          status: "Ready",
+          type: "Account",
+          taxPeriod: "2020 Q4",
+          requestedOn: "2025-02-10"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          name: "ACTR-941-2020-Q2",
+          status: "Ready",
+          type: "Account",
+          taxPeriod: "2020 Q2",
+          requestedOn: "2025-02-10"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          name: "ACTR-941-2020-Q1",
+          status: "Error",
+          type: "Account",
+          taxPeriod: "2020 Q1",
+          requestedOn: "2025-02-10"
+        },
+        {
+          id: crypto.randomUUID(),
+          clientId: client.id,
+          name: "ACTR-941-2020-Q3",
+          status: "Ready",
+          type: "Account",
+          taxPeriod: "2020 Q3",
+          requestedOn: "2025-02-10"
+        }
+      ]);
     }
 
     // Generate UI config

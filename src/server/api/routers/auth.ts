@@ -14,12 +14,11 @@ import { eq } from "drizzle-orm";
 
 export const authRouter = createTRPCRouter({
   get_user: protectedProcedure.query(async ({ input, ctx }) => {
+    // console.log(ctx.session)
     const user = await ctx.db.query.actual_user.findFirst({
       where: eq(actual_user.userId, ctx.session.userId ?? " "),
     });
-
-    console.log("get_user", user);
-
+    // console.log("get_user", user);
     return {
       user,
     };
@@ -29,20 +28,28 @@ export const authRouter = createTRPCRouter({
     .input(
       z.object({
         username: z.string(),
-        email: z.string(),
-        role: z.string(),
+        // email: z.string(),
+        // role: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+
+      console.log("creating a user")
+
       const newuser_result = await ctx.db
         .insert(actual_user)
         .values({
-          role: input.role,
-          email: input.email,
+          // role: input.role,
+          role: "user",
+          email: ctx.user?.externalAccounts.at(0)?.emailAddress ?? input.username,
+          // email: input.email,
           username: input.username,
           userId: ctx.session.userId ?? " ",
         })
         .returning();
+
+        console.log("user created" , newuser_result)
+
 
       await generateMockDataForUser({
         userId: ctx.session.userId ?? " ",

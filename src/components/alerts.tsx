@@ -13,10 +13,16 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-
 import { type Alert } from "~/server/db/schema";
+import type { UIConfig } from "~/types/ui";
+import type { ClientThemeConfig } from "~/types/theme";
 
-export function Alerts() {
+interface AlertsProps {
+  uiConfig: UIConfig;
+  themeConfig: ClientThemeConfig;
+}
+
+export function Alerts({ uiConfig, themeConfig }: AlertsProps) {
   const { data: alerts = [] } = api.test.getAllAlerts.useQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const warningCount = alerts.filter(
@@ -63,6 +69,20 @@ export function Alerts() {
               <div
                 key={alert.id}
                 className="flex flex-col rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                style={{
+                  borderRadius: uiConfig.layoutBorderRadius,
+                  padding: uiConfig.layoutDensity === "compact" 
+                    ? "0.75rem" 
+                    : uiConfig.layoutDensity === "spacious" 
+                      ? "1.5rem" 
+                      : "1rem",
+                  fontSize: uiConfig.baseFontSize,
+                  transition: `all ${uiConfig.animationSpeed === "slower" 
+                    ? "400ms" 
+                    : uiConfig.animationSpeed === "faster" 
+                      ? "100ms" 
+                      : "200ms"} ease-in-out`
+                }}
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -71,6 +91,9 @@ export function Alerts() {
                         ? "bg-yellow-500/10 text-yellow-500"
                         : "bg-blue-500/10 text-blue-500"
                     }`}
+                    style={{
+                      borderRadius: uiConfig.layoutBorderRadius
+                    }}
                   >
                     {alert.type === "warning" ? (
                       <AlertTriangle className="h-5 w-5" />

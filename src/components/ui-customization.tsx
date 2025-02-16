@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useUISettings, useUISettingsSync } from "~/store/ui-settings";
 import { useUISettingsForm } from "~/hooks/use-ui-settings-form";
 import type { FormValues } from "~/hooks/use-ui-settings-form";
+import type { CompleteThemeConfig, CompleteUIConfig } from "~/server/db/schema";
+import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -27,7 +28,12 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-export function UICustomization() {
+interface UICustomizationProps {
+  theme_config: CompleteThemeConfig;
+  ui_config: CompleteUIConfig;
+}
+
+export function UICustomization({ theme_config, ui_config }: UICustomizationProps) {
   const router = useRouter();
   const [sidebarLogoPreview, setSidebarLogoPreview] = React.useState<
     string | null
@@ -38,10 +44,8 @@ export function UICustomization() {
   const sidebarFileInputRef = React.useRef<HTMLInputElement>(null);
   const greetingFileInputRef = React.useRef<HTMLInputElement>(null);
   const [isSaved, setIsSaved] = React.useState(false);
-
-  const { form, createConfig } = useUISettingsForm();
-  const { updateSettings } = useUISettings();
-  const { updateMutation } = useUISettingsSync();
+  const { form, createConfig } = useUISettingsForm({ initialValues: ui_config });
+  const updateMutation = api.uiSettings.updateSettings.useMutation();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -85,7 +89,6 @@ export function UICustomization() {
           greetingLogoPreview,
         );
         await updateMutation.mutateAsync(config);
-        await updateSettings(config);
         toast({
           title: "Success",
           description: "UI settings have been updated.",
@@ -103,42 +106,67 @@ export function UICustomization() {
         });
       }
     },
-    [
-      createConfig,
-      updateSettings,
-      updateMutation,
-      sidebarLogoPreview,
-      greetingLogoPreview,
-    ],
+    [createConfig, updateMutation, sidebarLogoPreview, greetingLogoPreview],
   );
-
-  // Debug log for form state
-  React.useEffect(() => {
-    console.log("Form state:", {
-      isDirty: form.formState.isDirty,
-      errors: form.formState.errors,
-      values: form.getValues(),
-    });
-  }, [form.formState.isDirty, form.formState.errors, form]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-8">
           {/* Layout & Spacing */}
-          <div>
-            <h2 className="text-2xl font-semibold">Layout & Spacing</h2>
+          <div 
+            className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
+                       ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
+            style={{
+              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
+              border: '1px solid #e0e0e040',
+              boxShadow: '0 0 10px #00000010',
+              borderRadius: ui_config.layoutBorderRadius,
+              padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
+                      ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+              transition: `all ${
+                ui_config.animationSpeed === 'slower' ? '0.4s' :
+                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+              } ease`
+            }}
+          >
+            <h2 
+              className="text-2xl font-semibold"
+              style={{
+                fontSize: `calc(${ui_config.baseFontSize} * 1.5)`,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >Layout & Spacing</h2>
             <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
                 name="layoutBorderRadius"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Border Radius</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Border Radius</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="0.5rem" />
+                      <Input 
+                        {...field} 
+                        placeholder="0.5rem"
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       CSS value for border radius (e.g., 0.5rem, 8px)
                     </FormDescription>
                     <FormMessage />
@@ -151,13 +179,25 @@ export function UICustomization() {
                 name="layoutDensity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Layout Density</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Layout Density</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}>
                           <SelectValue placeholder="Select layout density" />
                         </SelectTrigger>
                       </FormControl>
@@ -167,7 +207,7 @@ export function UICustomization() {
                         <SelectItem value="spacious">Spacious</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       Controls the spacing between elements
                     </FormDescription>
                     <FormMessage />
@@ -180,12 +220,18 @@ export function UICustomization() {
                 name="sidebarWidth"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sidebar Width</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Sidebar Width</FormLabel>
                     <FormControl>
                       <div className="space-y-4">
                         <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between">
-                          <span>200px</span>
-                          <span>400px</span>
+                          <span style={{ fontSize: ui_config.baseFontSize }}>200px</span>
+                          <span style={{ fontSize: ui_config.baseFontSize }}>400px</span>
                         </div>
                         <Slider
                           min={200}
@@ -204,19 +250,59 @@ export function UICustomization() {
           </div>
 
           {/* Typography & Animation */}
-          <div>
-            <h2 className="text-2xl font-semibold">Typography & Animation</h2>
+          <div 
+            className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
+                       ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
+            style={{
+              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
+              border: '1px solid #e0e0e040',
+              boxShadow: '0 0 10px #00000010',
+              borderRadius: ui_config.layoutBorderRadius,
+              padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
+                      ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+              transition: `all ${
+                ui_config.animationSpeed === 'slower' ? '0.4s' :
+                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+              } ease`
+            }}
+          >
+            <h2 
+              className="text-2xl font-semibold"
+              style={{
+                fontSize: `calc(${ui_config.baseFontSize} * 1.5)`,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >Typography & Animation</h2>
             <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
                 name="baseFontSize"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Base Font Size</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Base Font Size</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="1rem" />
+                      <Input 
+                        {...field} 
+                        placeholder="1rem"
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       CSS value for base font size (e.g., 1rem, 16px)
                     </FormDescription>
                     <FormMessage />
@@ -229,13 +315,25 @@ export function UICustomization() {
                 name="animationSpeed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Animation Speed</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Animation Speed</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}>
                           <SelectValue placeholder="Select animation speed" />
                         </SelectTrigger>
                       </FormControl>
@@ -245,7 +343,7 @@ export function UICustomization() {
                         <SelectItem value="faster">Faster</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       Adjust the speed of UI animations
                     </FormDescription>
                     <FormMessage />
@@ -256,19 +354,59 @@ export function UICustomization() {
           </div>
 
           {/* Branding */}
-          <div>
-            <h2 className="text-2xl font-semibold">Branding</h2>
+          <div 
+            className={`space-y-${ui_config.layoutDensity === 'compact' ? '4' : 
+                       ui_config.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
+            style={{
+              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
+              border: '1px solid #e0e0e040',
+              boxShadow: '0 0 10px #00000010',
+              borderRadius: ui_config.layoutBorderRadius,
+              padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
+                      ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+              transition: `all ${
+                ui_config.animationSpeed === 'slower' ? '0.4s' :
+                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+              } ease`
+            }}
+          >
+            <h2 
+              className="text-2xl font-semibold"
+              style={{
+                fontSize: `calc(${ui_config.baseFontSize} * 1.5)`,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >Branding</h2>
             <div className="mt-4 space-y-4">
               <FormField
                 control={form.control}
                 name="sidebarTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sidebar Title</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Sidebar Title</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="TaxNow PRO" />
+                      <Input 
+                        {...field} 
+                        placeholder="TaxNow PRO"
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       This will be displayed at the top of the sidebar
                     </FormDescription>
                     <FormMessage />
@@ -281,11 +419,27 @@ export function UICustomization() {
                 name="greetingTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Dashboard Title</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Dashboard Title</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="TaxNow PRO" />
+                      <Input 
+                        {...field} 
+                        placeholder="TaxNow PRO"
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                       This will be displayed at the top of the dashboard
                     </FormDescription>
                     <FormMessage />
@@ -298,7 +452,13 @@ export function UICustomization() {
                 name="sidebarLogoType"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Sidebar Logo</FormLabel>
+                    <FormLabel style={{
+                    fontSize: ui_config.baseFontSize,
+                    transition: `all ${
+                      ui_config.animationSpeed === 'slower' ? '0.4s' :
+                      ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                    } ease`
+                    }}>Sidebar Logo</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -309,19 +469,23 @@ export function UICustomization() {
                           <FormControl>
                             <RadioGroupItem value="none" />
                           </FormControl>
-                          <FormLabel className="font-normal">No logo</FormLabel>
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
+                            No logo
+                          </FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="url" />
                           </FormControl>
-                          <FormLabel className="font-normal">Use URL</FormLabel>
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
+                            Use URL
+                          </FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="upload" />
                           </FormControl>
-                          <FormLabel className="font-normal">
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
                             Upload image
                           </FormLabel>
                         </FormItem>
@@ -338,14 +502,27 @@ export function UICustomization() {
                   name="sidebarLogoUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Logo URL</FormLabel>
+                      <FormLabel style={{
+                        fontSize: ui_config.baseFontSize,
+                        transition: `all ${
+                          ui_config.animationSpeed === 'slower' ? '0.4s' :
+                          ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                        } ease`
+                      }}>Logo URL</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="https://example.com/logo.png"
+                          style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                          }}
                         />
                       </FormControl>
-                      <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                         Enter the URL of your logo image
                       </FormDescription>
                       <FormMessage />
@@ -356,7 +533,13 @@ export function UICustomization() {
 
               {form.watch("sidebarLogoType") === "upload" && (
                 <FormItem>
-                  <FormLabel>Upload Logo</FormLabel>
+                  <FormLabel style={{
+                    fontSize: ui_config.baseFontSize,
+                    transition: `all ${
+                      ui_config.animationSpeed === 'slower' ? '0.4s' :
+                      ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                    } ease`
+                  }}>Upload Logo</FormLabel>
                   <FormControl>
                     <div className="space-y-4">
                       <Input
@@ -366,22 +549,38 @@ export function UICustomization() {
                         onChange={(e) =>
                           handleFileChange(e, setSidebarLogoPreview)
                         }
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
                       {sidebarLogoPreview && (
                         <div className="mt-2">
-                          <p className="mb-2 text-sm text-muted-foreground">
+                          <p className="mb-2 text-sm text-muted-foreground" style={{ 
+                            fontSize: `calc(${ui_config.baseFontSize} * 0.875)` 
+                          }}>
                             Preview:
                           </p>
                           <img
                             src={sidebarLogoPreview}
                             alt="Logo preview"
-                            className="max-h-32 rounded-lg"
+                            style={{
+                              maxHeight: "8rem",
+                              borderRadius: ui_config.layoutBorderRadius,
+                              transition: `all ${
+                                ui_config.animationSpeed === 'slower' ? '0.4s' :
+                                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                              } ease`
+                            }}
                           />
                         </div>
                       )}
                     </div>
                   </FormControl>
-                  <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                     Select an image file (max 5MB)
                   </FormDescription>
                   <FormMessage />
@@ -393,7 +592,13 @@ export function UICustomization() {
                 name="greetingLogoType"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Dashboard Logo</FormLabel>
+                    <FormLabel style={{
+                      fontSize: ui_config.baseFontSize,
+                      transition: `all ${
+                        ui_config.animationSpeed === 'slower' ? '0.4s' :
+                        ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Dashboard Logo</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -404,19 +609,23 @@ export function UICustomization() {
                           <FormControl>
                             <RadioGroupItem value="none" />
                           </FormControl>
-                          <FormLabel className="font-normal">No logo</FormLabel>
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
+                            No logo
+                          </FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="url" />
                           </FormControl>
-                          <FormLabel className="font-normal">Use URL</FormLabel>
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
+                            Use URL
+                          </FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="upload" />
                           </FormControl>
-                          <FormLabel className="font-normal">
+                          <FormLabel className="font-normal" style={{ fontSize: ui_config.baseFontSize }}>
                             Upload image
                           </FormLabel>
                         </FormItem>
@@ -433,14 +642,27 @@ export function UICustomization() {
                   name="greetingLogoUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Dashboard Logo URL</FormLabel>
+                      <FormLabel style={{
+                        fontSize: ui_config.baseFontSize,
+                        transition: `all ${
+                          ui_config.animationSpeed === 'slower' ? '0.4s' :
+                          ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                        } ease`
+                      }}>Dashboard Logo URL</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="https://example.com/logo.png"
+                          style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                          }}
                         />
                       </FormControl>
-                      <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                         Enter the URL of your dashboard logo image
                       </FormDescription>
                       <FormMessage />
@@ -451,7 +673,13 @@ export function UICustomization() {
 
               {form.watch("greetingLogoType") === "upload" && (
                 <FormItem>
-                  <FormLabel>Upload Dashboard Logo</FormLabel>
+                  <FormLabel style={{
+                    fontSize: ui_config.baseFontSize,
+                    transition: `all ${
+                      ui_config.animationSpeed === 'slower' ? '0.4s' :
+                      ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                    } ease`
+                  }}>Upload Dashboard Logo</FormLabel>
                   <FormControl>
                     <div className="space-y-4">
                       <Input
@@ -461,22 +689,38 @@ export function UICustomization() {
                         onChange={(e) =>
                           handleFileChange(e, setGreetingLogoPreview)
                         }
+                        style={{
+                          borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            ui_config.animationSpeed === 'slower' ? '0.4s' :
+                            ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
                       {greetingLogoPreview && (
                         <div className="mt-2">
-                          <p className="mb-2 text-sm text-muted-foreground">
+                          <p className="mb-2 text-sm text-muted-foreground" style={{ 
+                            fontSize: `calc(${ui_config.baseFontSize} * 0.875)` 
+                          }}>
                             Preview:
                           </p>
                           <img
                             src={greetingLogoPreview}
                             alt="Logo preview"
-                            className="max-h-32 rounded-lg"
+                            style={{
+                              maxHeight: "8rem",
+                              borderRadius: ui_config.layoutBorderRadius,
+                              transition: `all ${
+                                ui_config.animationSpeed === 'slower' ? '0.4s' :
+                                ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                              } ease`
+                            }}
                           />
                         </div>
                       )}
                     </div>
                   </FormControl>
-                  <FormDescription>
+                    <FormDescription style={{ fontSize: `calc(${ui_config.baseFontSize} * 0.875)` }}>
                     Select an image file (max 5MB)
                   </FormDescription>
                   <FormMessage />
@@ -488,16 +732,41 @@ export function UICustomization() {
 
         <div className="flex flex-col gap-4 md:flex-row md:justify-start">
           {!isSaved ? (
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={form.formState.isSubmitting}
+              style={{
+                borderRadius: ui_config.layoutBorderRadius,
+                padding: ui_config.layoutDensity === 'compact' ? '0.5rem 1rem' : 
+                        ui_config.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
+                fontSize: ui_config.baseFontSize,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+              className="hover:opacity-90 hover:-translate-y-[1px] active:translate-y-0"
+            >
               {form.formState.isSubmitting ? "Saving..." : "Save UI Settings"}
             </Button>
           ) : (
-            <Button
-              type="button"
+            <Button 
+              type="button" 
               onClick={() => {
                 void router.push("/");
                 router.refresh();
               }}
+              style={{
+                borderRadius: ui_config.layoutBorderRadius,
+                padding: ui_config.layoutDensity === 'compact' ? '0.5rem 1rem' : 
+                        ui_config.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
+                fontSize: ui_config.baseFontSize,
+                transition: `all ${
+                  ui_config.animationSpeed === 'slower' ? '0.4s' :
+                  ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+              className="hover:opacity-90 hover:-translate-y-[1px] active:translate-y-0"
             >
               Go to Dashboard
             </Button>

@@ -58,7 +58,7 @@ export const testRouter = createTRPCRouter({
 
   getAllClients: protectedProcedure.query(async ({ ctx }) => {
     try {
-      console.log("getAllClients_auth", ctx.session, ctx.user);
+      // console.log("getAllClients_auth", ctx.session, ctx.user);
       if (process.env.VERCEL) {
         console.info("[Clients] Fetching all clients", {
           userId: ctx.user?.id ?? "unknown",
@@ -123,7 +123,7 @@ export const testRouter = createTRPCRouter({
 
   getAllAlerts: protectedProcedure.query(async ({ ctx }) => {
     try {
-      console.log("all_alerts_auth", ctx.session, ctx.user);
+      // console.log("all_alerts_auth", ctx.session, ctx.user);
       if (process.env.VERCEL) {
         console.info("[Alerts] Fetching all alerts", {
           userId: ctx.user?.id ?? "unknown",

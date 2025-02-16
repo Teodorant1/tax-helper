@@ -27,7 +27,7 @@ export const actual_user = createTable("actual_user", {
     .notNull()
     .unique()
     .default("user"),
-  username: varchar("username", { length: 255 }).unique().notNull(),
+  username: varchar("username", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   role: varchar("role", { length: 255 }).notNull().default("user"),
 });
@@ -43,8 +43,7 @@ export const clients = createTable("client", {
     .$defaultFn(() => crypto.randomUUID()),
   userId: varchar("user_id", { length: 255 })
     .notNull()
-    .references(() => actual_user.userId)
-    .unique(),
+    .references(() => actual_user.userId),
   name: text("name").notNull(),
   taxId: text("tax_id").notNull(),
   email: text("email").notNull(),
@@ -470,3 +469,14 @@ export type NewErcEvent = typeof ercEvents.$inferInsert;
 
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
+
+// Complete types that include relationships
+export type CompleteUIConfig = UIConfig & {
+  sidebarLogo: Logo | null;
+  greetingLogo: Logo | null;
+};
+
+export type CompleteThemeConfig = ThemeConfig & {
+  lightTheme: NewThemeColors;
+  darkTheme: NewThemeColors;
+};

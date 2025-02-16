@@ -3,9 +3,14 @@
 import { useSearchParams } from "next/navigation";
 import { api } from "~/trpc/react";
 import { AlertsContent } from "~/components/alerts-content";
-import { type Alert, type Client } from "~/server/db/schema";
+import { type Alert, type Client, type CompleteThemeConfig, type CompleteUIConfig } from "~/server/db/schema";
 
-export function AlertsClient() {
+interface AlertsClientProps {
+  theme_config: CompleteThemeConfig;
+  ui_config: CompleteUIConfig;
+}
+
+export function AlertsClient({ theme_config, ui_config }: AlertsClientProps) {
   const searchParams = useSearchParams();
   const clientId = searchParams.get("clientId");
 
@@ -26,6 +31,8 @@ export function AlertsClient() {
     <AlertsContent
       initialAlerts={filteredAlerts}
       clientName={clientName ?? null}
+      theme_config={theme_config}
+      ui_config={ui_config}
     />
   );
 }

@@ -1,16 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import * as z from "zod";
-import type { ClientThemeConfig } from "~/types/theme";
-import { useTheme } from "~/store/theme";
+import { useThemeSettingsForm } from "~/hooks/use-theme-settings-form";
+import type { ThemeFormValues } from "~/hooks/use-theme-settings-form";
+import type { CompleteThemeConfig , CompleteUIConfig} from "~/server/db/schema";
+import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,207 +19,343 @@ import {
 import { Input } from "~/components/ui/input";
 import { toast } from "~/components/ui/use-toast";
 
-const ThemeSchema: z.ZodType<ClientThemeConfig> = z.object({
-  light: z.object({
-    primary: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-    secondary: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-    accent: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-  }),
-  dark: z.object({
-    primary: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-    secondary: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-    accent: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
-      message: "Must be a valid hex color code",
-    }),
-  }),
-});
+interface ThemeConfigProps {
+  theme_config: CompleteThemeConfig;
+  uiConfig: CompleteUIConfig;
+}
 
-export function ThemeConfig() {
-  const { theme, setTheme } = useTheme();
+function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
   const router = useRouter();
   const [isSaved, setIsSaved] = React.useState(false);
+  const { form, createConfig } = useThemeSettingsForm({ initialValues: theme_config });
+  const updateMutation = api.theme.updateSettings.useMutation();
 
-  const form = useForm<z.infer<typeof ThemeSchema>>({
-    resolver: zodResolver(ThemeSchema),
-    defaultValues: theme,
-  });
-
-  async function onSubmit(values: ClientThemeConfig) {
-    try {
-      setTheme(values);
-      toast({
-        title: "Theme updated",
-        description: "Your theme settings have been saved.",
-      });
-      setIsSaved(true);
-    } catch (error) {
-      console.error("Failed to save theme config:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save theme settings. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }
+  const onSubmit = React.useCallback(
+    async (values: ThemeFormValues) => {
+      try {
+        const config = createConfig(values);
+        await updateMutation.mutateAsync(config);
+        toast({
+          title: "Success",
+          description: "Theme settings have been updated.",
+        });
+        setIsSaved(true);
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error("Failed to save settings");
+        console.error("Failed to save settings:", error.message);
+        toast({
+          title: "Error",
+          description:
+            error.message || "Failed to save settings. Please try again.",
+          variant: "destructive",
+        });
+      }
+    },
+    [createConfig, updateMutation],
+  );
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="space-y-8">
           {/* Light Theme */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold">Light Theme</h2>
-            <FormField
-              control={form.control}
-              name="light.primary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Primary Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#7c3aed" />
-                      <input
+          <div 
+            className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
+                       uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
+            style={{
+              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
+              border: '1px solid #e0e0e040',
+              boxShadow: '0 0 10px #00000010',
+              borderRadius: uiConfig.layoutBorderRadius,
+              padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
+                      uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+              transition: `all ${
+                uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+              } ease`
+            }}
+          >
+            <h2 
+              className="text-2xl font-semibold"
+              style={{
+                fontSize: `calc(${uiConfig.baseFontSize} * 1.5)`,
+                transition: `all ${
+                  uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                  uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >Light Theme</h2>
+            <div className="mt-4 space-y-4">
+              <FormField
+                control={form.control}
+                name="lightTheme.primary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Primary Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="light.secondary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Secondary Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#6b7280" />
-                      <input
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Main color for light theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lightTheme.secondary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Secondary Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="light.accent"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Accent Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#f59e0b" />
-                      <input
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Secondary color for light theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lightTheme.accent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Accent Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Accent color for light theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           {/* Dark Theme */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold">Dark Theme</h2>
-            <FormField
-              control={form.control}
-              name="dark.primary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Primary Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#8b5cf6" />
-                      <input
+          <div 
+            className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
+                       uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
+            style={{
+              background: `linear-gradient(to bottom right, #f0f0f015, #e0e0e010)`,
+              border: '1px solid #e0e0e040',
+              boxShadow: '0 0 10px #00000010',
+              borderRadius: uiConfig.layoutBorderRadius,
+              padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
+                      uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
+              transition: `all ${
+                uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+              } ease`
+            }}
+          >
+            <h2 
+              className="text-2xl font-semibold"
+              style={{
+                fontSize: `calc(${uiConfig.baseFontSize} * 1.5)`,
+                transition: `all ${
+                  uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                  uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+            >Dark Theme</h2>
+            <div className="mt-4 space-y-4">
+              <FormField
+                control={form.control}
+                name="darkTheme.primary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Primary Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dark.secondary"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Secondary Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#9ca3af" />
-                      <input
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Main color for dark theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="darkTheme.secondary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Secondary Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dark.accent"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Accent Color</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <Input {...field} placeholder="#fbbf24" />
-                      <input
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Secondary color for dark theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="darkTheme.accent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{
+                      fontSize: uiConfig.baseFontSize,
+                      transition: `all ${
+                        uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                        uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                      } ease`
+                    }}>Accent Color</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
                         type="color"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="h-10 w-12"
+                        style={{
+                          borderRadius: `calc(${uiConfig.layoutBorderRadius} * 0.75)`,
+                          transition: `all ${
+                            uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                            uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                          } ease`
+                        }}
                       />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormDescription style={{ fontSize: `calc(${uiConfig.baseFontSize} * 0.875)` }}>
+                      Accent color for dark theme
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-4 md:flex-row md:justify-start">
           {!isSaved ? (
-            <Button type="submit" disabled={!form.formState.isDirty}>
-              Save Theme Configuration
+            <Button 
+              type="submit" 
+              disabled={form.formState.isSubmitting}
+              style={{
+                borderRadius: uiConfig.layoutBorderRadius,
+                padding: uiConfig.layoutDensity === 'compact' ? '0.5rem 1rem' : 
+                        uiConfig.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
+                fontSize: uiConfig.baseFontSize,
+                transition: `all ${
+                  uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                  uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+              className="hover:opacity-90 hover:-translate-y-[1px] active:translate-y-0"
+            >
+              {form.formState.isSubmitting ? "Saving..." : "Save Theme Settings"}
             </Button>
           ) : (
-            <Button type="button" onClick={() => router.push("/")}>
+            <Button 
+              type="button" 
+              onClick={() => {
+                void router.push("/");
+                router.refresh();
+              }}
+              style={{
+                borderRadius: uiConfig.layoutBorderRadius,
+                padding: uiConfig.layoutDensity === 'compact' ? '0.5rem 1rem' : 
+                        uiConfig.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
+                fontSize: uiConfig.baseFontSize,
+                transition: `all ${
+                  uiConfig.animationSpeed === 'slower' ? '0.4s' :
+                  uiConfig.animationSpeed === 'faster' ? '0.15s' : '0.25s'
+                } ease`
+              }}
+              className="hover:opacity-90 hover:-translate-y-[1px] active:translate-y-0"
+            >
               Go to Dashboard
             </Button>
           )}
@@ -228,3 +364,5 @@ export function ThemeConfig() {
     </Form>
   );
 }
+
+export { ThemeConfig };

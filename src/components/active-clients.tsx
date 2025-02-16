@@ -24,10 +24,16 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-
 import { type Client } from "~/server/db/schema";
+import type { UIConfig } from "~/types/ui";
+import type { ClientThemeConfig } from "~/types/theme";
 
-export function ActiveClients() {
+interface ActiveClientsProps {
+  uiConfig: UIConfig;
+  themeConfig: ClientThemeConfig;
+}
+
+export function ActiveClients({ uiConfig, themeConfig }: ActiveClientsProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const {
     data: allClients = [],
@@ -105,6 +111,14 @@ export function ActiveClients() {
               <div
                 key={client.id}
                 className="flex flex-col items-start justify-between overflow-x-clip whitespace-normal break-words rounded-lg px-4 py-6 transition-colors hover:bg-muted/50 md:flex-row md:border md:border-border"
+                style={{
+                  borderRadius: uiConfig.layoutBorderRadius,
+                  padding: uiConfig.layoutDensity === "compact" 
+                    ? "0.75rem" 
+                    : uiConfig.layoutDensity === "spacious" 
+                      ? "1.5rem" 
+                      : "1rem"
+                }}
               >
                 <div className="flex flex-col gap-4 md:flex-row">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">

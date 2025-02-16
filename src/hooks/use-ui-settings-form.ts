@@ -2,8 +2,11 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useUISettings } from "~/store/ui-settings";
 import type { UIConfig } from "~/types/ui";
+
+interface UseUISettingsFormProps {
+  initialValues: Omit<UIConfig, "id" | "userId">;
+}
 
 const UISchema = z
   .object({
@@ -50,8 +53,7 @@ const UISchema = z
 
 export type FormValues = z.infer<typeof UISchema>;
 
-export function useUISettingsForm() {
-  const { settings } = useUISettings();
+export function useUISettingsForm({ initialValues }: UseUISettingsFormProps) {
 
   const getFormValues = React.useCallback(
     (config: Omit<UIConfig, "id" | "userId">): FormValues => {
@@ -84,8 +86,8 @@ export function useUISettingsForm() {
   );
 
   const defaultValues = React.useMemo(
-    () => getFormValues(settings),
-    [getFormValues, settings],
+    () => getFormValues(initialValues),
+    [getFormValues, initialValues],
   );
 
   const form = useForm<FormValues>({
@@ -95,16 +97,10 @@ export function useUISettingsForm() {
     criteriaMode: "all",
   });
 
-  // Validate form on mount and settings change
+  // Validate form on mount
   React.useEffect(() => {
     void form.trigger();
-  }, [form, settings]);
-
-  React.useEffect(() => {
-    if (form.formState.isDirty) {
-      form.reset(getFormValues(settings));
-    }
-  }, [form, settings, getFormValues]);
+  }, [form]);
 
   const createConfig = React.useCallback(
     (
