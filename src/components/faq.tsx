@@ -45,9 +45,9 @@ export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
     <div 
       className="mx-auto w-full max-w-3xl"
       style={{
-        background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-        border: `1px solid ${theme_config.lightTheme.primary}40`,
-        boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
+        background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+        border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}40`,
+        boxShadow: `0 0 10px ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}20`,
         borderRadius: ui_config.layoutBorderRadius,
         padding: ui_config.layoutDensity === 'compact' ? '1rem' : 
                 ui_config.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -61,7 +61,7 @@ export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
         className="mb-6 font-bold"
         style={{
           fontSize: `calc(${ui_config.baseFontSize} * 1.5)`,
-          color: theme_config.lightTheme.primary,
+          color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
           transition: `all ${
             ui_config.animationSpeed === 'slower' ? '0.4s' :
             ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -80,7 +80,7 @@ export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
             key={index} 
             value={`item-${index}`}
             style={{
-              borderColor: `${theme_config.lightTheme.primary}40`,
+              borderColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}40`,
               marginBottom: ui_config.layoutDensity === 'compact' ? '0.5rem' : 
                           ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem'
             }}
@@ -96,7 +96,7 @@ export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
                   ui_config.animationSpeed === 'slower' ? '0.4s' :
                   ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
                 } ease`,
-                color: theme_config.lightTheme.primary,
+                color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
                 backgroundColor: 'transparent'
               }}
             >
@@ -107,7 +107,7 @@ export function FAQ({ theme_config, ui_config }: UICustomizationProps)  {
                 fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
                 padding: ui_config.layoutDensity === 'compact' ? '0.75rem' : 
                         ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem',
-                color: theme_config.lightTheme.secondary,
+                color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
                 transition: `all ${
                   ui_config.animationSpeed === 'slower' ? '0.4s' :
                   ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'

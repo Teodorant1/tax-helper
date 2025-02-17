@@ -43,8 +43,8 @@ export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -55,11 +55,11 @@ export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
     >
       <h2 
         className="mb-2 text-xl font-semibold"
-        style={{ color: theme_config.lightTheme.primary }}
+        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
       >Invite User With Link</h2>
       <p 
         className="mb-4 text-sm"
-        style={{ color: theme_config.lightTheme.secondary }}
+        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
       >
         Send this link to your clients for an effortless self onboarding
       </p>
@@ -76,7 +76,7 @@ export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
                 : uiConfig.animationSpeed === "faster" 
                   ? "100ms" 
                   : "200ms"} ease-in-out`,
-              color: theme_config.lightTheme.primary
+              color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary
             }}
           />
           <Button 
@@ -90,8 +90,8 @@ export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
                 : uiConfig.animationSpeed === "faster" 
                   ? "100ms" 
                   : "200ms"} ease-in-out`,
-              color: theme_config.lightTheme.primary,
-              borderColor: `${theme_config.lightTheme.primary}40`
+              color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
+              borderColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}40`
             }}
           >
             <svg
@@ -112,7 +112,7 @@ export function InviteLink({ uiConfig, theme_config }: ThemeConfigProps) {
         </div>
         <p 
           className="text-xs"
-          style={{ color: theme_config.lightTheme.secondary }}
+          style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
         >
           This link allows your clients to onboard to your Pro Firm Account
         </p>

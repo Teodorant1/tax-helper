@@ -52,7 +52,7 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
           <Button 
             className="gap-2 hover:opacity-90"
             style={{
-              backgroundColor: theme_config.lightTheme.primary,
+              backgroundColor: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
               color: "#fff"
             }}
           >
@@ -65,7 +65,7 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
               <thead 
                 className="text-muted-foreground"
                 style={{ 
-                  backgroundColor: theme_config.lightTheme.secondary + "10" 
+                  backgroundColor: (theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary) + "10"
                 }}
               >
                 <tr>
@@ -96,7 +96,7 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                     className="transition-colors duration-200"
                     style={{ 
                       backgroundColor: "transparent",
-                      "--hover-color": theme_config.lightTheme.primary + "10",
+                      "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                       ":hover": {
                         backgroundColor: "var(--hover-color)"
                       }
@@ -109,11 +109,11 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                         style={{
                           fontSize: getFontSize(0.75),
                           backgroundColor: doc.status === "Ready" 
-                            ? theme_config.lightTheme.primary + "20"
-                            : theme_config.lightTheme.accent + "20",
+                            ? (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "20"
+                            : (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent) + "20",
                           color: doc.status === "Ready"
-                            ? theme_config.lightTheme.primary
-                            : theme_config.lightTheme.accent
+                            ? (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary)
+                            : (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent)
                         }}
                       >
                         {doc.status}
@@ -135,7 +135,7 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                             className="h-8 w-8 transition-colors duration-200"
                             title="Copy/View"
                             style={{
-                              "--hover-color": theme_config.lightTheme.primary + "10",
+                              "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                               ":hover": {
                                 backgroundColor: "var(--hover-color)"
                               }
@@ -150,7 +150,7 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                           className="h-8 w-8 transition-colors duration-200"
                           title="Delete"
                           style={{
-                            "--hover-color": theme_config.lightTheme.accent + "10",
+                            "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent) + "10",
                             ":hover": {
                               backgroundColor: "var(--hover-color)"
                             }
@@ -173,8 +173,8 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                 size="sm" 
                 disabled
                 style={{
-                  borderColor: theme_config.lightTheme.primary + "40",
-                  color: theme_config.lightTheme.primary
+                  borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "40",
+                  color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary
                 }}
               >
                 Previous
@@ -184,9 +184,9 @@ export default function DocumentsPage_component({ theme_config, uiConfig }: Them
                 size="sm"
                 className="transition-colors duration-200"
                 style={{
-                  borderColor: theme_config.lightTheme.primary + "40",
-                  color: theme_config.lightTheme.primary,
-                  "--hover-color": theme_config.lightTheme.primary + "10",
+                  borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "40",
+                  color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
+                  "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                   ":hover": {
                     backgroundColor: "var(--hover-color)"
                   }

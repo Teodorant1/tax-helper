@@ -66,7 +66,7 @@ export function AlertsContent({
           className="inline-flex items-center hover:text-primary"
           style={{
             fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
-            color: theme_config.lightTheme.secondary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
             transition: `all ${getTransitionDuration()} ease`
           }}
         >
@@ -89,7 +89,7 @@ export function AlertsContent({
           className="font-bold"
           style={{
             fontSize: `calc(${ui_config.baseFontSize} * 2)`,
-            color: theme_config.lightTheme.primary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
             transition: `all ${getTransitionDuration()} ease`
           }}
         >
@@ -99,7 +99,7 @@ export function AlertsContent({
               style={{
                 marginLeft: '0.5rem',
                 fontSize: `calc(${ui_config.baseFontSize} * 2)`,
-                color: theme_config.lightTheme.secondary,
+                color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
                 transition: `all ${getTransitionDuration()} ease`
               }}
             >
@@ -111,7 +111,7 @@ export function AlertsContent({
           style={{
             marginTop: '0.5rem',
             fontSize: ui_config.baseFontSize,
-            color: theme_config.lightTheme.secondary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
             transition: `all ${getTransitionDuration()} ease`
           }}
         >

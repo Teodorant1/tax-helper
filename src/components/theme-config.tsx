@@ -64,9 +64,9 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
             className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
                        uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-              border: `1px solid ${theme_config.lightTheme.primary}40`,
-              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
+              background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+              border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}20`,
               borderRadius: uiConfig.layoutBorderRadius,
               padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
                       uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
@@ -196,9 +196,9 @@ function ThemeConfig({ theme_config, uiConfig }: ThemeConfigProps) {
             className={`space-y-${uiConfig.layoutDensity === 'compact' ? '4' : 
                        uiConfig.layoutDensity === 'spacious' ? '8' : '6'} rounded-lg`}
             style={{
-              background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-              border: `1px solid ${theme_config.lightTheme.primary}40`,
-              boxShadow: `0 0 10px ${theme_config.lightTheme.accent}20`,
+              background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+              border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}40`,
+              boxShadow: `0 0 10px ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}20`,
               borderRadius: uiConfig.layoutBorderRadius,
               padding: uiConfig.layoutDensity === 'compact' ? '1rem' : 
                       uiConfig.layoutDensity === 'spacious' ? '2rem' : '1.5rem',
