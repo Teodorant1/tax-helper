@@ -32,7 +32,7 @@ export function DesktopAlerts({
     <Card
       style={{
         borderRadius: ui_config.layoutBorderRadius,
-        borderColor: theme_config.lightTheme.primary + "20",
+        borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "20",
         transition: `all ${
           ui_config.animationSpeed === 'slower' ? '0.4s' :
           ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -59,7 +59,7 @@ export function DesktopAlerts({
           <div className="relative w-96">
             <Search 
               className="absolute left-3 top-3 h-4 w-4" 
-              style={{ color: theme_config.lightTheme.secondary }}
+              style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
             />
             <Input
               placeholder="Search alerts..."
@@ -69,7 +69,7 @@ export function DesktopAlerts({
               style={{
                 borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
                 fontSize: ui_config.baseFontSize,
-                borderColor: theme_config.lightTheme.primary + "20",
+                borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "20",
                 transition: `all ${
                   ui_config.animationSpeed === 'slower' ? '0.4s' :
                   ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -84,11 +84,11 @@ export function DesktopAlerts({
               style={{
                 borderRadius: ui_config.layoutBorderRadius,
                 fontSize: ui_config.baseFontSize,
-                borderColor: theme_config.lightTheme.primary + "30",
-                color: theme_config.lightTheme.primary,
+                borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "30",
+                color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
                 padding: ui_config.layoutDensity === 'compact' ? '0.5rem 1rem' : 
                         ui_config.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
-                "--hover-color": theme_config.lightTheme.primary + "10",
+                "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                 ":hover": {
                   backgroundColor: "var(--hover-color)"
                 }
@@ -103,11 +103,11 @@ export function DesktopAlerts({
               style={{
                 borderRadius: ui_config.layoutBorderRadius,
                 fontSize: ui_config.baseFontSize,
-                borderColor: theme_config.lightTheme.primary + "30",
-                color: theme_config.lightTheme.primary,
+                borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "30",
+                color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
                 padding: ui_config.layoutDensity === 'compact' ? '0.5rem 1rem' : 
                         ui_config.layoutDensity === 'spacious' ? '1rem 2rem' : '0.75rem 1.5rem',
-                "--hover-color": theme_config.lightTheme.primary + "10",
+                "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                 ":hover": {
                   backgroundColor: "var(--hover-color)"
                 }
@@ -133,7 +133,7 @@ export function DesktopAlerts({
           className="rounded-md border"
           style={{
             borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
-            borderColor: theme_config.lightTheme.primary + "20",
+            borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "20",
             transition: `all ${
               ui_config.animationSpeed === 'slower' ? '0.4s' :
               ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -146,8 +146,8 @@ export function DesktopAlerts({
               padding: ui_config.layoutDensity === 'compact' ? '0.75rem' : 
                       ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem',
               fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
-              backgroundColor: theme_config.lightTheme.secondary + "10",
-              borderColor: theme_config.lightTheme.primary + "20",
+              backgroundColor: (theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary) + "10",
+              borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "20",
               transition: `all ${
                 ui_config.animationSpeed === 'slower' ? '0.4s' :
                 ui_config.animationSpeed === 'faster' ? '0.15s' : '0.25s'
@@ -172,8 +172,8 @@ export function DesktopAlerts({
                   padding: ui_config.layoutDensity === 'compact' ? '0.75rem' : 
                           ui_config.layoutDensity === 'spacious' ? '1.5rem' : '1rem',
                   fontSize: `calc(${ui_config.baseFontSize} * 0.875)`,
-                  borderColor: theme_config.lightTheme.primary + "10",
-                  "--hover-color": theme_config.lightTheme.primary + "05",
+                  borderColor: (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
+                  "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "05",
                   ":hover": {
                     backgroundColor: "var(--hover-color)"
                   }
@@ -184,11 +184,11 @@ export function DesktopAlerts({
                     className="flex h-8 w-8 items-center justify-center rounded-full"
                     style={{
                       backgroundColor: alert.type === "warning"
-                        ? theme_config.lightTheme.accent + "15"
-                        : theme_config.lightTheme.primary + "15",
+                        ? (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent) + "15"
+                        : (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "15",
                       color: alert.type === "warning"
-                        ? theme_config.lightTheme.accent
-                        : theme_config.lightTheme.primary
+                        ? (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent)
+                        : (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary)
                     }}
                   >
                     {alert.type === "warning" ? (
@@ -201,14 +201,14 @@ export function DesktopAlerts({
                 <div>
                   <div 
                     className="font-medium"
-                    style={{ color: theme_config.lightTheme.primary }}
+                    style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
                   >
                     {alert.client.name}
                   </div>
                   <div 
                     style={{ 
                       fontSize: `calc(${ui_config.baseFontSize} * 0.75)`,
-                      color: theme_config.lightTheme.secondary 
+                      color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary
                     }}
                   >
                     {alert.clientType} • {alert.client.taxId}
@@ -221,8 +221,8 @@ export function DesktopAlerts({
                 <div
                   style={{
                     color: alert.amount.startsWith("-") 
-                      ? theme_config.lightTheme.accent
-                      : theme_config.lightTheme.primary
+                      ? (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent)
+                      : (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary)
                   }}
                 >
                   {alert.amount}
@@ -233,7 +233,7 @@ export function DesktopAlerts({
                   className="h-8 w-8 transition-colors duration-200"
                   style={{
                     borderRadius: `calc(${ui_config.layoutBorderRadius} * 0.75)`,
-                    "--hover-color": theme_config.lightTheme.primary + "10",
+                    "--hover-color": (theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary) + "10",
                     ":hover": {
                       backgroundColor: "var(--hover-color)"
                     }

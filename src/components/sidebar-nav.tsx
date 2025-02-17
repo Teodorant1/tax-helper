@@ -1,10 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { cn } from "~/lib/utils";
 import { Menu, X } from "lucide-react";
-// import { RoleToggler } from "./role-toggler";
 import {
   LayoutDashboard,
   Bell,
@@ -12,19 +11,21 @@ import {
   Settings,
   HelpCircle,
   Building2,
-  Sun,
-  Moon,
   FileText,
   TrendingUp,
   Target,
   Palette,
   Sliders,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { type CompleteThemeConfig, type CompleteUIConfig } from "~/server/db/schema";
 import styles from "~/styles/ui-settings.module.css";
 import { SignedOut, SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { OrganizationSwitcher } from "./organization-switcher/organization-switcher";
+import { api } from "~/trpc/react";
+
 const sidebarItems = [
   {
     title: "Dashboard",
@@ -61,11 +62,6 @@ const sidebarItems = [
     href: "/permissions",
     icon: <Building2 className="h-5 w-5" />,
   },
-  // {
-  //   title: "Theme Settings",
-  //   href: "/theme-config",
-  //   icon: <Palette className="h-5 w-5" />,
-  // },
   {
     title: "UI Settings",
     href: "/ui-settings",
@@ -83,40 +79,21 @@ interface SidebarNavProps {
   themeConfig: CompleteThemeConfig;
 }
 
-export function SidebarNav({uiConfig ,themeConfig }:SidebarNavProps) {
+export function SidebarNav({ uiConfig, themeConfig }: SidebarNavProps) {
 
-  const pathname = usePathname();
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const toggle_is_light_theme_Mutation = api.theme.toggle_is_light_theme.useMutation({
+    onSuccess: () => {
+      window.location.reload();
+    },
   });
 
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (e: MediaQueryListEvent) => {
-      setIsDark(e.matches);
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
 
+  const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  const toggleDarkMode = useCallback(() => {
-    setIsDark(prev => !prev);
-  }, []);
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileOpen((prev) => !prev);
   }, []);
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
-  const colors = isDark ? themeConfig.darkTheme : themeConfig.lightTheme;
 
   // Get padding based on density
   const getDensityPadding = () => {
@@ -143,7 +120,9 @@ export function SidebarNav({uiConfig ,themeConfig }:SidebarNavProps) {
   };
 
   const sidebarStyle = {
-    backgroundColor: isDark ? "#1f2937" : "#f3f4f6",
+    backgroundColor: themeConfig.is_light_theme 
+      ? `${themeConfig.lightTheme.primary}15` 
+      : `${themeConfig.darkTheme.primary}15`,
     borderRadius: uiConfig.layoutBorderRadius,
     fontSize: uiConfig.baseFontSize,
     padding: getDensityPadding(),
@@ -153,12 +132,14 @@ export function SidebarNav({uiConfig ,themeConfig }:SidebarNavProps) {
 
   return (
     <div style={{ width: `${uiConfig.sidebarWidth}px` }}>
-s              {/* Mobile Menu Button */}
+      {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
         className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center text-white shadow-lg hover:opacity-90 md:hidden"
         style={{
-          backgroundColor: colors.primary,
+          backgroundColor: themeConfig.is_light_theme 
+            ? themeConfig.lightTheme.primary 
+            : themeConfig.darkTheme.primary,
           borderRadius: uiConfig.layoutBorderRadius,
           transition: `all ${getTransitionTiming()} ease-in-out`,
         }}
@@ -176,7 +157,12 @@ s              {/* Mobile Menu Button */}
       {/* Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 md:hidden"
+          style={{
+            backgroundColor: themeConfig.is_light_theme 
+              ? `${themeConfig.lightTheme.primary}50`
+              : `${themeConfig.darkTheme.primary}50`,
+          }}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -197,8 +183,9 @@ s              {/* Mobile Menu Button */}
           )}
           style={{
             ...sidebarStyle,
-            backgroundColor: isDark ? "#1f2937" : "#f3f4f6",
-            color: isDark ? "#ffffff" : "#000000",
+            color: themeConfig.is_light_theme 
+              ? themeConfig.lightTheme.primary 
+              : themeConfig.darkTheme.primary,
           }}
         >
           <div className="relative mb-8 mt-16 md:mt-0">
@@ -218,25 +205,30 @@ s              {/* Mobile Menu Button */}
             </div>
           </div>
           <div className="flex h-16 items-center justify-end gap-4 p-4">
-              <SignedOut>
-                <Link
-                  href="/login"
+            <SignedOut>
+              <Link
+                href="/login"
                 className={cn(
-                  "px-4 py-2 text-sm font-medium bg-white/10 hover:bg-white/20",
-                  isDark ? "text-white" : "text-black"
+                  "px-4 py-2 text-sm font-medium hover:opacity-80",
                 )}
                 style={{
+                  backgroundColor: themeConfig.is_light_theme 
+                    ? `${themeConfig.lightTheme.primary}10`
+                    : `${themeConfig.darkTheme.primary}10`,
                   borderRadius: uiConfig.layoutBorderRadius,
                   transition: `all ${getTransitionTiming()} ease-in-out`,
+                  color: themeConfig.is_light_theme 
+                    ? themeConfig.lightTheme.primary 
+                    : themeConfig.darkTheme.primary,
                 }}
-                >
-                  Sign In / Sign Up
-                </Link>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
+              >
+                Sign In / Sign Up
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </div>
           <div className="space-y-1 transition-all duration-200">
             {sidebarItems.map((item) => {
               const isActive = pathname === item.href;
@@ -245,12 +237,16 @@ s              {/* Mobile Menu Button */}
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 text-sm hover:bg-black/20",
-                    isActive && "bg-black/20"
+                    "flex items-center gap-3 px-3 py-2 text-sm hover:opacity-80",
                   )}
                   style={{
                     borderRadius: uiConfig.layoutBorderRadius,
                     transition: `all ${getTransitionTiming()} ease-in-out`,
+                    backgroundColor: isActive 
+                      ? themeConfig.is_light_theme 
+                        ? `${themeConfig.lightTheme.primary}20`
+                        : `${themeConfig.darkTheme.primary}20`
+                      : 'transparent'
                   }}
                 >
                   {item.icon}
@@ -260,32 +256,35 @@ s              {/* Mobile Menu Button */}
             })}
           </div>
           <div className="relative mt-auto space-y-4 transition-all duration-200">
-            {/* <RoleToggler /> */}
             <button
-              onClick={toggleDarkMode}
-              className="flex w-full items-center gap-3 px-3 py-2 text-sm hover:bg-black/20"
+              className={cn(
+                "flex w-full items-center gap-3 px-3 py-2 text-sm hover:opacity-80",
+              )}
               style={{
                 borderRadius: uiConfig.layoutBorderRadius,
                 transition: `all ${getTransitionTiming()} ease-in-out`,
+                backgroundColor: themeConfig.is_light_theme 
+                  ? `${themeConfig.lightTheme.primary}10`
+                  : `${themeConfig.darkTheme.primary}10`
               }}
-              aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-            >
-              {isDark ? (
-                <>
-                  <Sun className="h-5 w-5" />
-                  Light Mode
-                </>
-              ) : (
+              aria-label={`Switch to ${themeConfig.is_light_theme ? "dark" : "light"} mode`}
+           onClick={()=>{toggle_is_light_theme_Mutation.mutate()}}
+           >
+              {themeConfig.is_light_theme ? (
                 <>
                   <Moon className="h-5 w-5" />
                   Dark Mode
+                </>
+              ) : (
+                <>
+                  <Sun className="h-5 w-5" />
+                  Light Mode
                 </>
               )}
             </button>
             <div className="relative">
               <OrganizationSwitcher />
             </div>
-
           </div>
         </nav>
       </div>

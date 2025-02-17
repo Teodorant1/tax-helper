@@ -19,8 +19,8 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -38,7 +38,7 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
         <CardTitle 
           className="text-lg"
           style={{ 
-            color: theme_config.lightTheme.primary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 
@@ -49,7 +49,7 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
         <p 
           className="text-sm text-muted-foreground"
           style={{ 
-            color: theme_config.lightTheme.secondary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 
@@ -94,7 +94,7 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
             <div className="mt-4 space-y-4">
               <div 
                 className="grid grid-cols-4 text-sm font-medium"
-                style={{ color: theme_config.lightTheme.primary }}
+                style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
               >
                 <div>Transaction</div>
                 <div>Form</div>
@@ -106,7 +106,7 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
                   key={transaction.id}
                   className="grid grid-cols-4 border-t py-2 text-sm"
                   style={{
-                    color: theme_config.lightTheme.secondary,
+                    color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
                     transition: `all ${uiConfig.animationSpeed === "slower" 
                       ? "400ms" 
                       : uiConfig.animationSpeed === "faster" 
@@ -135,7 +135,7 @@ export function TransactionHistory({ uiConfig, theme_config }: ThemeConfigProps)
           <TabsContent value="employment">
             <div 
               className="py-4 text-center text-sm"
-              style={{ color: theme_config.lightTheme.secondary }}
+              style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
             >
               No employment transactions found
             </div>

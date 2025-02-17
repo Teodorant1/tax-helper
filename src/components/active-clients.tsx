@@ -47,8 +47,8 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -58,9 +58,9 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
         <CardHeader>
           <CardTitle 
             className="text-2xl font-bold"
-            style={{ color: theme_config.lightTheme.primary }}
+            style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
           >Active Clients</CardTitle>
-          <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
+          <CardDescription style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}>
             Loading clients...
           </CardDescription>
         </CardHeader>
@@ -79,7 +79,7 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
           >Active Clients</CardTitle>
           <CardDescription 
             className="text-red-500"
-            style={{ color: theme_config.lightTheme.accent }}
+            style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent }}
           >
             Error loading clients. Please try again later.
           </CardDescription>
@@ -98,7 +98,7 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
         <div>
           <CardTitle 
             className="text-2xl font-bold"
-            style={{ color: theme_config.lightTheme.primary }}
+          style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
           >Active Clients</CardTitle>
           <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
             Manage your active client list
@@ -178,8 +178,8 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
                   <div 
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary"
                     style={{
-                      backgroundColor: `${theme_config.lightTheme.primary}10`,
-                      color: theme_config.lightTheme.primary,
+                      backgroundColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}10`,
+                      color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
                       borderRadius: uiConfig.layoutBorderRadius
                     }}
                   >
@@ -189,7 +189,7 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
                     <div className="flex flex-col items-center gap-2 md:flex-row">
                       <div 
                         className="font-medium"
-                        style={{ color: theme_config.lightTheme.primary }}
+                        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
                       >{client.name}</div>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -206,13 +206,13 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
                     </div>
                     <div 
                       className="text-sm"
-                      style={{ color: theme_config.lightTheme.secondary }}
+                      style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                     >
                       {client.taxId}
                     </div>
                     <div 
                       className="flex flex-wrap gap-4 text-sm"
-                      style={{ color: theme_config.lightTheme.secondary }}
+                      style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                     >
                       <span className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
@@ -226,25 +226,25 @@ export function ActiveClients({ uiConfig, theme_config }: ThemeConfigProps) {
                     <div className="mt-2 flex flex-wrap gap-6 text-xs">
                       <span 
                         className="flex items-center gap-1"
-                        style={{ color: theme_config.lightTheme.secondary }}
+                        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                       >
                         <Clock className="h-3 w-3" />
                         Last Filing: {client.lastFiling}
                       </span>
                       <span 
                         className="flex items-center gap-1"
-                        style={{ color: theme_config.lightTheme.secondary }}
+                        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                       >
                         <Calendar className="h-3 w-3" />
                         Next Filing: {client.nextFiling}
                       </span>
                       {client.pendingTasks > 0 && (
-                        <span style={{ color: theme_config.lightTheme.accent }}>
+                        <span style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent }}>
                           {client.pendingTasks} Pending Tasks
                         </span>
                       )}
                       {client.alertCount > 0 && (
-                        <span style={{ color: theme_config.lightTheme.accent }}>
+                        <span style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent }}>
                           {client.alertCount} Alerts
                         </span>
                       )}

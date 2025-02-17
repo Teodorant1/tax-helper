@@ -36,8 +36,8 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -47,13 +47,13 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
         <div>
           <CardTitle 
             className="text-2xl font-bold"
-            style={{ color: theme_config.lightTheme.primary }}
+            style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
           >
             Alerts{" "}
-            <span style={{ color: theme_config.lightTheme.accent }}>{warningCount}</span>{" "}
-            <span style={{ color: theme_config.lightTheme.secondary }}>{infoCount}</span>
+            <span style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent }}>{warningCount}</span>{" "}
+            <span style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}>{infoCount}</span>
           </CardTitle>
-          <CardDescription style={{ color: theme_config.lightTheme.secondary }}>
+          <CardDescription style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}>
             View and manage your tax alerts
           </CardDescription>
         </div>
@@ -61,7 +61,7 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
           variant="link" 
           className="text-primary" 
           asChild
-          style={{ color: theme_config.lightTheme.primary }}
+          style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
         >
           <Link href="/alerts">View All</Link>
         </Button>
@@ -112,8 +112,8 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
                     : uiConfig.animationSpeed === "faster" 
                       ? "100ms" 
                       : "200ms"} ease-in-out`,
-                  background: `${theme_config.lightTheme.primary}05`,
-                  borderColor: `${theme_config.lightTheme.primary}20`
+                  background: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}05`,
+                  borderColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}20`
                 }}
               >
                 <div className="flex items-start gap-4">
@@ -121,11 +121,11 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
                     style={{
                       borderRadius: uiConfig.layoutBorderRadius,
                       backgroundColor: alert.type === "warning"
-                        ? `${theme_config.lightTheme.accent}10`
-                        : `${theme_config.lightTheme.secondary}10`,
+                        ? `${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}10`
+                        : `${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10`,
                       color: alert.type === "warning"
-                        ? theme_config.lightTheme.accent
-                        : theme_config.lightTheme.secondary,
+                        ? (theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent)
+                        : (theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary),
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -142,17 +142,17 @@ export function Alerts({ uiConfig, theme_config }: ThemeConfigProps) {
                   <div>
                     <div 
                       className="font-medium"
-                      style={{ color: theme_config.lightTheme.primary }}
+                      style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
                     >{alert.client.name}</div>
                     <div 
                       className="text-sm"
-                      style={{ color: theme_config.lightTheme.secondary }}
+                      style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                     >
                       {alert.alert}
                     </div>
                     <div 
                       className="mt-2 grid grid-cols-2 gap-2 text-xs md:flex md:gap-4"
-                      style={{ color: theme_config.lightTheme.secondary }}
+                      style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
                     >
                       <span>{alert.taxPeriod}</span>
                       <span>{alert.clientType}</span>

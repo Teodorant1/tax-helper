@@ -15,8 +15,8 @@ export function UpcomingEvents({ uiConfig, theme_config }: ThemeConfigProps) {
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -34,7 +34,7 @@ export function UpcomingEvents({ uiConfig, theme_config }: ThemeConfigProps) {
         <CardTitle 
           className="text-lg"
           style={{ 
-            color: theme_config.lightTheme.primary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 
@@ -45,7 +45,7 @@ export function UpcomingEvents({ uiConfig, theme_config }: ThemeConfigProps) {
         <p 
           className="text-sm text-muted-foreground"
           style={{ 
-            color: theme_config.lightTheme.secondary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 
@@ -60,7 +60,7 @@ export function UpcomingEvents({ uiConfig, theme_config }: ThemeConfigProps) {
         <div 
           className="py-4 text-center text-sm"
           style={{
-            color: theme_config.lightTheme.secondary,
+            color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary,
             transition: `all ${uiConfig.animationSpeed === "slower" 
               ? "400ms" 
               : uiConfig.animationSpeed === "faster" 

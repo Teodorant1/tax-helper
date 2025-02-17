@@ -20,6 +20,7 @@ const themeConfigSchema = z.object({
 const defaultTheme = {
   id: "default",
   userId: "default",
+  is_light_theme: false ,
   lightThemeId: "default-light",
   darkThemeId: "default-dark",
   lightTheme: {
@@ -70,10 +71,34 @@ export const themeRouter = createTRPCRouter({
         primary: defaultTheme.darkTheme.primary,
         secondary: defaultTheme.darkTheme.secondary,
         accent: defaultTheme.darkTheme.accent
-      }
+      },
+      is_light_theme: false ,
     };
     return new_user_default_theme;
   }),
+  toggle_is_light_theme: protectedProcedure
+  .mutation(async ({ input, ctx }) => {
+
+  // Fetch the current value using the query API
+  const currentConfig = await db.query.themeConfigs.findFirst({
+    where:eq(themeConfigs.userId, ctx.session.userId ?? "")
+  })
+
+  if (!currentConfig) {
+    throw new Error("Theme config not found");
+  }
+
+  // Toggle the current value
+  const newThemeValue = !currentConfig.is_light_theme;
+
+  // Update the row with the toggled value
+  await db
+    .update(themeConfigs)
+    .set({ is_light_theme: newThemeValue })
+    .where(eq( themeConfigs.id , currentConfig.id));
+
+      return { currentConfig};
+    }),
 
   updateSettings: protectedProcedure
     .input(z.object({

@@ -157,7 +157,10 @@ export const themeConfigs = createTable("theme_config", {
     .references(() => themeColors.id),
   darkThemeId: varchar("dark_theme_id", { length: 255 })
     .notNull()
-    .references(() => themeColors.id),
+    .references(() => themeColors.id), 
+    is_light_theme: boolean("is_light_theme").default(false)
+    .notNull()
+
 });
 
 

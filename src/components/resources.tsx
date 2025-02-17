@@ -104,8 +104,8 @@ export function Resources({ uiConfig, theme_config }: ThemeConfigProps) {
       : uiConfig.animationSpeed === "faster" 
         ? "100ms" 
         : "200ms"} ease-in-out`,
-    background: `linear-gradient(to bottom right, ${theme_config.lightTheme.primary}15, ${theme_config.lightTheme.secondary}10)`,
-    border: `1px solid ${theme_config.lightTheme.accent}40`,
+    background: `linear-gradient(to bottom right, ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}15, ${theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary}10)`,
+    border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}40`,
     boxShadow: '0 0 10px #00000010'
   };
 
@@ -116,11 +116,11 @@ export function Resources({ uiConfig, theme_config }: ThemeConfigProps) {
     >
       <h2 
         className="mb-2 text-xl font-semibold"
-        style={{ color: theme_config.lightTheme.primary }}
+        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
       >Resources & Updates</h2>
       <p 
         className="mb-6 text-sm"
-        style={{ color: theme_config.lightTheme.secondary }}
+        style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.secondary : theme_config.darkTheme.secondary }}
       >
         Some resources to help you get started and stay informed
       </p>
@@ -142,17 +142,17 @@ export function Resources({ uiConfig, theme_config }: ThemeConfigProps) {
                 : uiConfig.animationSpeed === "faster" 
                   ? "100ms" 
                   : "200ms"} ease-in-out`,
-              backgroundColor: `${theme_config.lightTheme.primary}05`,
-              border: `1px solid ${theme_config.lightTheme.primary}20`,
-              color: theme_config.lightTheme.primary
+              backgroundColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}05`,
+              border: `1px solid ${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}20`,
+              color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary
             }}
           >
             <div 
               style={{
                 borderRadius: "9999px",
                 padding: "0.5rem",
-                backgroundColor: `${theme_config.lightTheme.primary}10`,
-                color: theme_config.lightTheme.primary,
+                backgroundColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}10`,
+                color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
                 transition: `all ${uiConfig.animationSpeed === "slower" 
                   ? "400ms" 
                   : uiConfig.animationSpeed === "faster" 
@@ -164,7 +164,7 @@ export function Resources({ uiConfig, theme_config }: ThemeConfigProps) {
             </div>
             <span 
               className="text-sm font-medium"
-              style={{ color: theme_config.lightTheme.primary }}
+              style={{ color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary }}
             >{resource.name}</span>
           </Link>
         ))}

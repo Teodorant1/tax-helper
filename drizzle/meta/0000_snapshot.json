@@ -1,0 +1,908 @@
+{
+  "id": "1aa91847-dbf0-4ad0-aa18-6b11a43a4846",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.actual_user": {
+      "name": "actual_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "actual_user_user_id_unique": {
+          "name": "actual_user_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        "actual_user_email_unique": {
+          "name": "actual_user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
+    },
+    "public.alert": {
+      "name": "alert",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_type": {
+          "name": "client_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_id": {
+          "name": "tax_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alert": {
+          "name": "alert",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_period": {
+          "name": "tax_period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alert_date": {
+          "name": "alert_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_date": {
+          "name": "transaction_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "alert_client_id_client_id_fk": {
+          "name": "alert_client_id_client_id_fk",
+          "tableFrom": "alert",
+          "tableTo": "client",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.client": {
+      "name": "client",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_id": {
+          "name": "tax_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_filing": {
+          "name": "last_filing",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "next_filing": {
+          "name": "next_filing",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pending_tasks": {
+          "name": "pending_tasks",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "alert_count": {
+          "name": "alert_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "client_user_id_actual_user_user_id_fk": {
+          "name": "client_user_id_actual_user_user_id_fk",
+          "tableFrom": "client",
+          "tableTo": "actual_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.document": {
+      "name": "document",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_period": {
+          "name": "tax_period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requested_on": {
+          "name": "requested_on",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "document_client_id_client_id_fk": {
+          "name": "document_client_id_client_id_fk",
+          "tableFrom": "document",
+          "tableTo": "client",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.erc_event": {
+      "name": "erc_event",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "irs_tracking": {
+          "name": "irs_tracking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form_941x_received_date": {
+          "name": "form_941x_received_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form_941x_forward_date": {
+          "name": "form_941x_forward_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refund_approved_date": {
+          "name": "refund_approved_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refund_paid_date": {
+          "name": "refund_paid_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "examination_indicator": {
+          "name": "examination_indicator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "erc_event_transaction_id_erc_transaction_id_fk": {
+          "name": "erc_event_transaction_id_erc_transaction_id_fk",
+          "tableFrom": "erc_event",
+          "tableTo": "erc_transaction",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.erc_transaction": {
+      "name": "erc_transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "irs_tracking": {
+          "name": "irs_tracking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "filed": {
+          "name": "filed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_entered_erc_claim": {
+          "name": "client_entered_erc_claim",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "approved_erc_amount": {
+          "name": "approved_erc_amount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "interest_accrued": {
+          "name": "interest_accrued",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adjustments": {
+          "name": "adjustments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_refund_processed": {
+          "name": "total_refund_processed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_erc_pending": {
+          "name": "total_erc_pending",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "erc_transaction_client_id_client_id_fk": {
+          "name": "erc_transaction_client_id_client_id_fk",
+          "tableFrom": "erc_transaction",
+          "tableTo": "client",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.logo": {
+      "name": "logo",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.tax_history_entry": {
+      "name": "tax_history_entry",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "period": {
+          "name": "period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "return_filed": {
+          "name": "return_filed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "principal_tax": {
+          "name": "principal_tax",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "interest": {
+          "name": "interest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "penalties": {
+          "name": "penalties",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payments_and_credits": {
+          "name": "payments_and_credits",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refunds": {
+          "name": "refunds",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "balance": {
+          "name": "balance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tax_history_entry_client_id_client_id_fk": {
+          "name": "tax_history_entry_client_id_client_id_fk",
+          "tableFrom": "tax_history_entry",
+          "tableTo": "client",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.theme_colors": {
+      "name": "theme_colors",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "primary": {
+          "name": "primary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "secondary": {
+          "name": "secondary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accent": {
+          "name": "accent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.theme_config": {
+      "name": "theme_config",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "light_theme_id": {
+          "name": "light_theme_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dark_theme_id": {
+          "name": "dark_theme_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_light_theme": {
+          "name": "is_light_theme",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "theme_config_user_id_actual_user_user_id_fk": {
+          "name": "theme_config_user_id_actual_user_user_id_fk",
+          "tableFrom": "theme_config",
+          "tableTo": "actual_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "theme_config_light_theme_id_theme_colors_id_fk": {
+          "name": "theme_config_light_theme_id_theme_colors_id_fk",
+          "tableFrom": "theme_config",
+          "tableTo": "theme_colors",
+          "columnsFrom": [
+            "light_theme_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "theme_config_dark_theme_id_theme_colors_id_fk": {
+          "name": "theme_config_dark_theme_id_theme_colors_id_fk",
+          "tableFrom": "theme_config",
+          "tableTo": "theme_colors",
+          "columnsFrom": [
+            "dark_theme_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.transaction": {
+      "name": "transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form": {
+          "name": "form",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tax_period": {
+          "name": "tax_period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_client_id_client_id_fk": {
+          "name": "transaction_client_id_client_id_fk",
+          "tableFrom": "transaction",
+          "tableTo": "client",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ui_config": {
+      "name": "ui_config",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sidebar_title": {
+          "name": "sidebar_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'TaxNow PRO'"
+        },
+        "sidebar_logo_id": {
+          "name": "sidebar_logo_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "greeting_title": {
+          "name": "greeting_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'TaxNow PRO'"
+        },
+        "greeting_subtitle": {
+          "name": "greeting_subtitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Your modern tax management solution'"
+        },
+        "greeting_logo_id": {
+          "name": "greeting_logo_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "layout_border_radius": {
+          "name": "layout_border_radius",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.5rem'"
+        },
+        "layout_density": {
+          "name": "layout_density",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'comfortable'"
+        },
+        "sidebar_width": {
+          "name": "sidebar_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 280
+        },
+        "base_font_size": {
+          "name": "base_font_size",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'1rem'"
+        },
+        "animation_speed": {
+          "name": "animation_speed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'default'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ui_config_user_id_actual_user_user_id_fk": {
+          "name": "ui_config_user_id_actual_user_user_id_fk",
+          "tableFrom": "ui_config",
+          "tableTo": "actual_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ui_config_sidebar_logo_id_logo_id_fk": {
+          "name": "ui_config_sidebar_logo_id_logo_id_fk",
+          "tableFrom": "ui_config",
+          "tableTo": "logo",
+          "columnsFrom": [
+            "sidebar_logo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ui_config_greeting_logo_id_logo_id_fk": {
+          "name": "ui_config_greeting_logo_id_logo_id_fk",
+          "tableFrom": "ui_config",
+          "tableTo": "logo",
+          "columnsFrom": [
+            "greeting_logo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ui_config_user_id_unique": {
+          "name": "ui_config_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

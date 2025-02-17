@@ -45,8 +45,8 @@ export function TaxStatusBanner({ theme_config, uiConfig }: ThemeConfigProps) {
       <div 
         style={{
           ...bannerStyle,
-          backgroundColor: `${theme_config.lightTheme.primary}10`,
-          color: theme_config.lightTheme.primary,
+          backgroundColor: `${theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary}10`,
+          color: theme_config.is_light_theme ? theme_config.lightTheme.primary : theme_config.darkTheme.primary,
         }}
         className="mb-6 rounded-lg p-4"
       >
@@ -62,8 +62,8 @@ export function TaxStatusBanner({ theme_config, uiConfig }: ThemeConfigProps) {
     <div 
         style={{
           ...bannerStyle,
-          backgroundColor: `${theme_config.lightTheme.accent}10`,
-          color: theme_config.lightTheme.accent,
+          backgroundColor: `${theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent}10`,
+          color: theme_config.is_light_theme ? theme_config.lightTheme.accent : theme_config.darkTheme.accent,
         }}
         className="mb-6 rounded-lg p-4"
     >
