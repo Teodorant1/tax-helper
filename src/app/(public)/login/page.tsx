@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  useSignIn,
+  useSignUp,
+} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -55,9 +62,8 @@ export default function AuthPage() {
     try {
       await auth.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "/login",
-        redirectUrlComplete:
-          process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL ?? "/",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/",
       });
     } catch (err) {
       console.error(`Error with Google ${mode}:`, err);
@@ -65,11 +71,83 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex h-full min-h-screen w-full items-center justify-center bg-white px-4 dark:bg-gray-900 md:px-0">
-      <div className="flex w-full max-w-[95%] rounded-lg bg-white shadow-sm dark:bg-gray-800 md:max-w-none">
+    <div className="flex h-full min-h-screen w-full items-center justify-center bg-gradient-to-br from-white to-gray-50 px-4 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex w-full max-w-[1200px] overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-800">
         {/* Left side - Auth Form */}
-        <div className="flex h-full w-full justify-center py-16 md:max-w-[50%] md:pt-24">
-          <div className="w-full max-w-[360px] space-y-6 px-4 md:space-y-8 md:px-0">
+        <div className="flex h-full w-full flex-col justify-start p-8 md:w-[50%] md:p-12">
+          <div className="mb-12 text-center">
+            <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+              TaxHelper
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Simplify your tax management
+            </p>
+          </div>
+
+          <div className="mx-auto w-full max-w-sm space-y-8">
+            <div className="space-y-2">
+              <h2 className="text-center text-lg font-medium text-gray-900 dark:text-white">
+                Welcome back
+              </h2>
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                Sign in to your account to continue
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <SignedOut>
+                  <SignInButton
+                    mode="modal"
+                    appearance={{
+                      elements: {
+                        formButtonPrimary: "bg-purple-600 hover:bg-purple-700",
+                      },
+                    }}
+                  >
+                    <button className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:hover:bg-purple-500">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white px-2 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                    New to TaxHelper?
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <SignedOut>
+                  <SignUpButton
+                    mode="modal"
+                    appearance={{
+                      elements: {
+                        formButtonPrimary: "bg-purple-600 hover:bg-purple-700",
+                      },
+                    }}
+                  >
+                    <button className="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                      Create Account
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+              </div>
+            </div>
+
+            <div className="mt-4 text-center">
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </div>
+          {/* <div className="w-full max-w-[360px] space-y-6 px-4 md:space-y-8 md:px-0">
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 border-border">
                 <TabsTrigger
@@ -134,7 +212,7 @@ export default function AuthPage() {
 
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                   onClick={() => handleGoogleAuth("signin")}
                 >
                   <svg
@@ -214,52 +292,48 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                <div className="flex w-full items-center justify-center">
-                  <div className="flex w-full items-center justify-center">
-                    <button
-                      type="button"
-                      className="flex w-full max-w-sm items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                      onClick={() => handleGoogleAuth("signup")}
-                    >
-                      <svg
-                        className="mr-2 h-4 w-4"
-                        aria-hidden="true"
-                        focusable="false"
-                        data-prefix="fab"
-                        data-icon="google"
-                        role="img"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 488 512"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                        ></path>
-                      </svg>
-                      Sign up with Google
-                    </button>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                  onClick={() => handleGoogleAuth("signup")}
+                >
+                  <svg
+                    className="mr-2 h-4 w-4"
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fab"
+                    data-icon="google"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 488 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+                    ></path>
+                  </svg>
+                  Sign up with Google
+                </button>
               </TabsContent>
             </Tabs>
-          </div>
+          </div> */}
         </div>
 
         {/* Right side - Feature Highlights */}
-        <div className="hidden h-full min-h-screen w-full flex-1 justify-center bg-gray-50 dark:bg-gray-900 md:flex">
-          <div className="w-[90%] space-y-8 py-8">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <div className="hidden h-full w-[50%] bg-gradient-to-br from-purple-50 to-white p-12 dark:from-gray-800 dark:to-gray-900 md:block">
+          <div className="mx-auto max-w-2xl space-y-8">
+            <div className="mb-12">
+              <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Welcome to a brand new way
                 <br />
                 to experience your taxes.
               </h2>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid gap-8">
               {/* Feature 1 */}
-              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/10">
+              <div className="group rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-red-100 transition-transform group-hover:scale-110 dark:bg-red-900/10">
                   <svg
                     className="h-6 w-6 text-red-600 dark:text-red-400"
                     fill="none"
@@ -285,8 +359,8 @@ export default function AuthPage() {
                 </p>
               </div>
               {/* Feature 2 */}
-              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/10">
+              <div className="group rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-purple-100 transition-transform group-hover:scale-110 dark:bg-purple-900/10">
                   <svg
                     className="h-6 w-6 text-purple-600 dark:text-purple-400"
                     fill="none"
@@ -312,8 +386,8 @@ export default function AuthPage() {
                 </p>
               </div>
               {/* Feature 3 */}
-              <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/10">
+              <div className="group rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-green-100 transition-transform group-hover:scale-110 dark:bg-green-900/10">
                   <svg
                     className="h-6 w-6 text-green-600 dark:text-green-400"
                     fill="none"
