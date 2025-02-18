@@ -204,7 +204,7 @@ export function SidebarNav({ uiConfig, themeConfig }: SidebarNavProps) {
               </span>
             </div>
           </div>
-          <div className="flex h-16 items-center justify-end gap-4 p-4">
+          <div className="mx-auto flex h-16 items-center justify-end gap-4 p-4">
             <SignedOut>
               <Link
                 href="/login"

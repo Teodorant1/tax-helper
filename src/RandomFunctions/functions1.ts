@@ -8,9 +8,11 @@ import {
   alerts,
   clients,
   documents,
+  domain,
   ercEvents,
   ercTransactions,
   logos,
+  pro_account,
   taxHistoryEntries,
   themeColors,
   themeConfigs,
@@ -52,18 +54,45 @@ export async function generateMockDataForUser(options: MockDataOptions) {
   } = options;
 
   return await db.transaction(async (tx) => {
-    console.log("Generate mock logos for UI config" , options)
+    // Generate mock pro account
+    const mockProAccount = await tx
+      .insert(pro_account)
+      .values({
+        id: crypto.randomUUID(),
+        userId: userId,
+        name: "Professional Account 1",
+      })
+      .returning();
+
+    if (!mockProAccount[0]) {
+      throw new Error("Failed to create mock pro account");
+    }
+
+    // Generate mock domain
+    const mockDomain = await tx
+      .insert(domain)
+      .values({
+        id: crypto.randomUUID(),
+        boss_userId: userId,
+        name: "Main Domain",
+        proAccountId: mockProAccount[0].id,
+      })
+      .returning();
+
+    console.log("Generate mock logos for UI config", options);
     // Generate mock logos for UI config
     const mockLogos = await tx
       .insert(logos)
       .values([
         {
           type: "url",
-          value: "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
+          value:
+            "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
         },
         {
           type: "upload",
-          value: "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
+          value:
+            "https://cdn.prod.website-files.com/65c4ff5034dd0560cb1d9428/65f074c84878cc4fdc075c4b_Logo%403x.png",
         },
       ])
       .returning();
@@ -127,7 +156,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           nextFiling: "2025 Q1",
           pendingTasks: 3,
           alertCount: 2,
-        }
+        },
       ])
       .returning();
 
@@ -140,11 +169,12 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           type: "info",
           clientType: "Business",
           taxId: client.taxId,
-          alert: "Code 960 - Appointed\nThe IRS has accepted TaxNow or another third party as an appointee for your tax matters.",
+          alert:
+            "Code 960 - Appointed\nThe IRS has accepted TaxNow or another third party as an appointee for your tax matters.",
           taxPeriod: "2024 Q1",
           alertDate: "2025-02-05",
           transactionDate: "2023-12-13",
-          amount: "$0.00"
+          amount: "$0.00",
         },
         {
           id: crypto.randomUUID(),
@@ -152,12 +182,13 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           type: "warning",
           clientType: "Business",
           taxId: client.taxId,
-          alert: "Code 150 - Return Filed\nThe IRS has received your 1120 form for 2024 year. Note that processing may take 6-8 weeks.",
+          alert:
+            "Code 150 - Return Filed\nThe IRS has received your 1120 form for 2024 year. Note that processing may take 6-8 weeks.",
           taxPeriod: "2024 Q1",
           alertDate: "2025-02-05",
           transactionDate: "2024-01-15",
-          amount: "$0.00"
-        }
+          amount: "$0.00",
+        },
       ]);
 
       // Generate mock transactions with real data
@@ -169,7 +200,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           date: "2024-06-10",
           form: "1120",
           taxPeriod: "2024",
-          amount: "-"
+          amount: "-",
         },
         {
           id: crypto.randomUUID(),
@@ -178,7 +209,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           date: "2024-04-22",
           form: "1120S",
           taxPeriod: "2023",
-          amount: "-"
+          amount: "-",
         },
         {
           id: crypto.randomUUID(),
@@ -187,8 +218,8 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           date: "2024-04-08",
           form: "1120S",
           taxPeriod: "2023",
-          amount: "-"
-        }
+          amount: "-",
+        },
       ]);
 
       // Generate mock tax history entries with real data
@@ -204,7 +235,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           paymentsAndCredits: "($2,746.25)",
           refunds: "$0.00",
           balance: "$0.00",
-          type: "income"
+          type: "income",
         },
         {
           id: crypto.randomUUID(),
@@ -217,7 +248,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           paymentsAndCredits: "($290,503.43)",
           refunds: "$162,626.06",
           balance: "$0.00",
-          type: "income"
+          type: "income",
         },
         {
           id: crypto.randomUUID(),
@@ -230,7 +261,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           paymentsAndCredits: "($1,041,021.70)",
           refunds: "$368,213.91",
           balance: "$0.00",
-          type: "income"
+          type: "income",
         },
         {
           id: crypto.randomUUID(),
@@ -243,8 +274,8 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           paymentsAndCredits: "$0.00",
           refunds: "$0.00",
           balance: "$0.00",
-          type: "employment"
-        }
+          type: "employment",
+        },
       ]);
 
       // Generate mock ERC transactions with real data
@@ -261,8 +292,8 @@ export async function generateMockDataForUser(options: MockDataOptions) {
             interestAccrued: "$40,361.21",
             adjustments: "$2,150.00",
             totalRefundProcessed: "$368,213.91",
-            totalErcPending: "$350,002.70"
-          }
+            totalErcPending: "$350,002.70",
+          },
         ])
         .returning();
 
@@ -276,7 +307,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           form941xForwardDate: "2023-05-30",
           refundApprovedDate: "2024-09-23",
           refundPaidDate: "2024-09-23",
-          examinationIndicator: "-"
+          examinationIndicator: "-",
         });
       }
 
@@ -289,7 +320,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           status: "Ready",
           type: "Account",
           taxPeriod: "2020 Q4",
-          requestedOn: "2025-02-10"
+          requestedOn: "2025-02-10",
         },
         {
           id: crypto.randomUUID(),
@@ -298,7 +329,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           status: "Ready",
           type: "Account",
           taxPeriod: "2020 Q2",
-          requestedOn: "2025-02-10"
+          requestedOn: "2025-02-10",
         },
         {
           id: crypto.randomUUID(),
@@ -307,7 +338,7 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           status: "Error",
           type: "Account",
           taxPeriod: "2020 Q1",
-          requestedOn: "2025-02-10"
+          requestedOn: "2025-02-10",
         },
         {
           id: crypto.randomUUID(),
@@ -316,8 +347,8 @@ export async function generateMockDataForUser(options: MockDataOptions) {
           status: "Ready",
           type: "Account",
           taxPeriod: "2020 Q3",
-          requestedOn: "2025-02-10"
-        }
+          requestedOn: "2025-02-10",
+        },
       ]);
     }
 

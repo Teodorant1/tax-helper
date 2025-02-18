@@ -1,6 +1,6 @@
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-export default clerkMiddleware()
+export default clerkMiddleware();
 
 // Original middleware config
 /*
@@ -16,5 +16,5 @@ export const config = {
 
 // Use Clerk's recommended matcher pattern
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
-}
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+};

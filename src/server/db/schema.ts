@@ -18,6 +18,47 @@ import {
  */
 export const createTable = pgTableCreator((name) => `${name}`);
 
+// Define the domain table
+export const domain = createTable("domain", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  boss_userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .unique()
+    .default("user"),
+  name: varchar("name", { length: 255 }).notNull(),
+  proAccountId: varchar("pro_account_id", { length: 255 }) // FK to pro_account
+    .notNull()
+    .references(() => pro_account.id), // A domain must be linked to a pro account
+});
+
+// Define the pro_account table
+export const pro_account = createTable("pro_account", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id", { length: 255 })
+    .unique()
+    .default("user")
+    .references(() => actual_user.userId),
+  name: varchar("name", { length: 255 }).notNull(),
+});
+
+// Create the explicit relationship between pro_account and domain
+export const proAccountRelations = relations(pro_account, ({ many }) => ({
+  domains: many(domain), // Direct many-to-one relationship using foreign key `proAccountId`
+}));
+
+export const domainRelations = relations(domain, ({ one }) => ({
+  proAccount: one(pro_account, {
+    fields: [domain.proAccountId],
+    references: [pro_account.id],
+  }),
+}));
+
 export const actual_user = createTable("actual_user", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -31,9 +72,6 @@ export const actual_user = createTable("actual_user", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   role: varchar("role", { length: 255 }).notNull().default("user"),
 });
-
-export type actual_userv2 = typeof actual_user.$inferSelect;
-export type Newactual_userv2 = typeof actual_user.$inferInsert;
 
 // Client-related tables
 export const clients = createTable("client", {
@@ -157,12 +195,9 @@ export const themeConfigs = createTable("theme_config", {
     .references(() => themeColors.id),
   darkThemeId: varchar("dark_theme_id", { length: 255 })
     .notNull()
-    .references(() => themeColors.id), 
-    is_light_theme: boolean("is_light_theme").default(false)
-    .notNull()
-
+    .references(() => themeColors.id),
+  is_light_theme: boolean("is_light_theme").default(false).notNull(),
 });
-
 
 export const actual_userRelations = relations(actual_user, ({ many }) => ({
   clients: many(clients),
@@ -473,6 +508,8 @@ export type NewErcEvent = typeof ercEvents.$inferInsert;
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
 
+export type actual_userv2 = typeof actual_user.$inferSelect;
+export type Newactual_userv2 = typeof actual_user.$inferInsert;
 // Complete types that include relationships
 export type CompleteUIConfig = UIConfig & {
   sidebarLogo: Logo | null;
