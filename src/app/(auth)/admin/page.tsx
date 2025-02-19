@@ -114,6 +114,8 @@ const mockStats = {
 };
 
 type Client = (typeof mockClients)[0];
+type Alert = (typeof mockAlerts)[0];
+type Document = (typeof mockDocuments)[0];
 
 // Helper functions for CSV
 const convertToCSV = (data: Client[]): string => {
@@ -152,7 +154,6 @@ const parseCSV = (csv: string): CSVRecord[] => {
     const record: CSVRecord = {};
     keys.forEach((key, i) => {
       const value = values[i];
-      // Try to convert to number if possible
       record[key] = isNaN(Number(value)) ? (value ?? "") : Number(value);
     });
     return record;
@@ -161,8 +162,64 @@ const parseCSV = (csv: string): CSVRecord[] => {
 
 export default function AdminPanel() {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Search states for each tab
+  const [clientsSearch, setClientsSearch] = useState("");
+  const [alertsSearch, setAlertsSearch] = useState("");
+  const [documentsSearch, setDocumentsSearch] = useState("");
+
+  // Sorting states for each tab
+  const [clientsSort, setClientsSort] = useState<{
+    field: keyof Client;
+    direction: "asc" | "desc";
+  }>({ field: "name", direction: "asc" });
+  const [alertsSort, setAlertsSort] = useState<{
+    field: keyof Alert;
+    direction: "asc" | "desc";
+  }>({ field: "type", direction: "asc" });
+  const [documentsSort, setDocumentsSort] = useState<{
+    field: keyof Document;
+    direction: "asc" | "desc";
+  }>({ field: "name", direction: "asc" });
+
+  // Generic sort function
+  function sortData<T>(
+    data: T[],
+    field: keyof T,
+    direction: "asc" | "desc",
+  ): T[] {
+    return [...data].sort((a, b) => {
+      const aValue = a[field];
+      const bValue = b[field];
+
+      const comparison =
+        typeof aValue === "string" && typeof bValue === "string"
+          ? aValue.localeCompare(bValue)
+          : typeof aValue === "number" && typeof bValue === "number"
+            ? aValue - bValue
+            : String(aValue).localeCompare(String(bValue));
+
+      return direction === "asc" ? comparison : -comparison;
+    });
+  }
+
+  // Handle sort clicks
+  function handleSort<T>(
+    field: keyof T,
+    currentSort: { field: keyof T; direction: "asc" | "desc" },
+    setSort: React.Dispatch<
+      React.SetStateAction<{ field: keyof T; direction: "asc" | "desc" }>
+    >,
+  ) {
+    setSort({
+      field,
+      direction:
+        currentSort.field === field && currentSort.direction === "asc"
+          ? "desc"
+          : "asc",
+    });
+  }
 
   const handleExport = () => {
     try {
@@ -214,23 +271,58 @@ export default function AdminPanel() {
     reader.readAsText(file);
   };
 
-  const filteredClients = mockClients.filter((client) =>
-    Object.values(client).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+  // Filter and sort data for each tab
+  const filteredAndSortedClients = sortData(
+    mockClients.filter((client) =>
+      Object.values(client).some((value) =>
+        value.toString().toLowerCase().includes(clientsSearch.toLowerCase()),
+      ),
     ),
+    clientsSort.field,
+    clientsSort.direction,
   );
+
+  const filteredAndSortedAlerts = sortData(
+    mockAlerts.filter((alert) =>
+      Object.values(alert).some((value) =>
+        value.toString().toLowerCase().includes(alertsSearch.toLowerCase()),
+      ),
+    ),
+    alertsSort.field,
+    alertsSort.direction,
+  );
+
+  const filteredAndSortedDocuments = sortData(
+    mockDocuments.filter((doc) =>
+      Object.values(doc).some((value) =>
+        value.toString().toLowerCase().includes(documentsSearch.toLowerCase()),
+      ),
+    ),
+    documentsSort.field,
+    documentsSort.direction,
+  );
+
+  // Sort indicator component
+  function SortIndicator<T>({
+    field,
+    currentSort,
+  }: {
+    field: keyof T;
+    currentSort: { field: keyof T; direction: "asc" | "desc" };
+  }) {
+    if (field !== currentSort.field) return null;
+    return (
+      <span className="ml-1">
+        {currentSort.direction === "asc" ? "↑" : "↓"}
+      </span>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <div className="flex gap-4">
-          <Input
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
           <input
             type="file"
             accept=".csv"
@@ -296,21 +388,95 @@ export default function AdminPanel() {
         </TabsList>
 
         <TabsContent value="clients" className="space-y-4">
+          <div className="mb-4">
+            <Input
+              placeholder="Search clients..."
+              value={clientsSearch}
+              onChange={(e) => setClientsSearch(e.target.value)}
+              className="w-64"
+            />
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Tax ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Next Filing</TableHead>
-                  <TableHead>Pending Tasks</TableHead>
-                  <TableHead>Alerts</TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("name", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Name{" "}
+                    <SortIndicator<Client>
+                      field="name"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("taxId", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Tax ID{" "}
+                    <SortIndicator<Client>
+                      field="taxId"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("status", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Status{" "}
+                    <SortIndicator<Client>
+                      field="status"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("nextFiling", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Next Filing{" "}
+                    <SortIndicator<Client>
+                      field="nextFiling"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("pendingTasks", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Pending Tasks{" "}
+                    <SortIndicator<Client>
+                      field="pendingTasks"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("alertCount", clientsSort, setClientsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Alerts{" "}
+                    <SortIndicator<Client>
+                      field="alertCount"
+                      currentSort={clientsSort}
+                    />
+                  </TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredClients.map((client) => (
+                {filteredAndSortedClients.map((client) => (
                   <TableRow key={client.id}>
                     <TableCell className="font-medium">{client.name}</TableCell>
                     <TableCell>{client.taxId}</TableCell>
@@ -341,21 +507,95 @@ export default function AdminPanel() {
         </TabsContent>
 
         <TabsContent value="alerts" className="space-y-4">
+          <div className="mb-4">
+            <Input
+              placeholder="Search alerts..."
+              value={alertsSearch}
+              onChange={(e) => setAlertsSearch(e.target.value)}
+              className="w-64"
+            />
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Alert</TableHead>
-                  <TableHead>Tax Period</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("type", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Type{" "}
+                    <SortIndicator<Alert>
+                      field="type"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("clientId", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Client{" "}
+                    <SortIndicator<Alert>
+                      field="clientId"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("alert", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Alert{" "}
+                    <SortIndicator<Alert>
+                      field="alert"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("taxPeriod", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Tax Period{" "}
+                    <SortIndicator<Alert>
+                      field="taxPeriod"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("alertDate", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Date{" "}
+                    <SortIndicator<Alert>
+                      field="alertDate"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("amount", alertsSort, setAlertsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Amount{" "}
+                    <SortIndicator<Alert>
+                      field="amount"
+                      currentSort={alertsSort}
+                    />
+                  </TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockAlerts.map((alert) => (
+                {filteredAndSortedAlerts.map((alert) => (
                   <TableRow key={alert.id}>
                     <TableCell>
                       <span
@@ -388,21 +628,95 @@ export default function AdminPanel() {
         </TabsContent>
 
         <TabsContent value="documents" className="space-y-4">
+          <div className="mb-4">
+            <Input
+              placeholder="Search documents..."
+              value={documentsSearch}
+              onChange={(e) => setDocumentsSearch(e.target.value)}
+              className="w-64"
+            />
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Tax Period</TableHead>
-                  <TableHead>Requested</TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("name", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Name{" "}
+                    <SortIndicator<Document>
+                      field="name"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("clientId", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Client{" "}
+                    <SortIndicator<Document>
+                      field="clientId"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("type", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Type{" "}
+                    <SortIndicator<Document>
+                      field="type"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("status", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Status{" "}
+                    <SortIndicator<Document>
+                      field="status"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("taxPeriod", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Tax Period{" "}
+                    <SortIndicator<Document>
+                      field="taxPeriod"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
+                  <TableHead
+                    onClick={() =>
+                      handleSort("requestedOn", documentsSort, setDocumentsSort)
+                    }
+                    className="cursor-pointer"
+                  >
+                    Requested{" "}
+                    <SortIndicator<Document>
+                      field="requestedOn"
+                      currentSort={documentsSort}
+                    />
+                  </TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockDocuments.map((doc) => (
+                {filteredAndSortedDocuments.map((doc) => (
                   <TableRow key={doc.id}>
                     <TableCell className="font-medium">{doc.name}</TableCell>
                     <TableCell>
