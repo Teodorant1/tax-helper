@@ -1,7 +1,7 @@
 import ServerSidebarNav from "~/components/server-sidebar-nav";
-import { AuthGuard } from "~/RandomFunctions/functions1";
+// import { AuthGuard } from "~/RandomFunctions/functions1";
+// import { AuthGuard } from "~/components/AuthGuard/AuthGuard";
 import { AccountConfirmerModal } from "~/components/account-confirmer-modal";
-
 
 export default async function AuthLayout({
   children,
@@ -9,12 +9,10 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   // Get auth session
-  const session = await AuthGuard();
-  
-
-
+  // const session = await AuthGuard();
 
   return (
+    // <AuthGuard>
     <div className="relative min-h-screen w-full">
       <AccountConfirmerModal />
       <ServerSidebarNav />
@@ -22,5 +20,6 @@ export default async function AuthLayout({
         {children}
       </main>
     </div>
+    // </AuthGuard>
   );
 }
